@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
@@ -5,6 +6,19 @@ import { getActiveItineraryForAI } from "@/lib/itinerary-ai";
 import { canUseAIForItinerary } from "@/lib/subscription";
 import { parseUserPreferences } from "@/types/database";
 import OrganizarComIAClient from "@/components/itinerary-ai/OrganizarComIAClient";
+import { buildOpenGraph } from "@/lib/metadata";
+
+const TITLE = "Organizar com IA";
+const DESCRIPTION =
+  "Deixe a IA sugerir a ordem, os dias e os horários das atrações do seu roteiro.";
+
+// robots noindex já vem herdado de app/meu-roteiro/layout.tsx.
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/meu-roteiro/organizar-com-ia" },
+  openGraph: buildOpenGraph({ title: TITLE, description: DESCRIPTION }),
+};
 
 export default async function OrganizarComIAPage() {
   const supabase = await createClient();
@@ -27,8 +41,8 @@ export default async function OrganizarComIAPage() {
     : null;
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14">
-      <div className="mx-auto max-w-3xl">
+    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <div className="mx-auto max-w-4xl">
         <Link
           href="/meu-roteiro"
           className="text-sm text-oliva transition-colors hover:text-terracota"

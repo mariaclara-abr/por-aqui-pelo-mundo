@@ -523,6 +523,34 @@ export interface Database {
           },
         ];
       };
+      about_page_content: {
+        Row: {
+          id: number;
+          author_name: string;
+          author_photo_url: string | null;
+          bio: string;
+          why_site_text: string;
+          quote_text: string;
+          travel_photo_1_url: string | null;
+          travel_photo_2_url: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          author_name?: string;
+          author_photo_url?: string | null;
+          bio?: string;
+          why_site_text?: string;
+          quote_text?: string;
+          travel_photo_1_url?: string | null;
+          travel_photo_2_url?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["about_page_content"]["Insert"]
+        >;
+        Relationships: [];
+      };
       shared_itineraries: {
         Row: {
           id: string;

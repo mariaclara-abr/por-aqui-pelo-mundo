@@ -222,8 +222,8 @@ export default function MeuRoteiroPage() {
   }
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14">
-      <div className="mx-auto max-w-3xl">
+    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <div className="mx-auto max-w-4xl">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2">
             <RoteiroTitle />

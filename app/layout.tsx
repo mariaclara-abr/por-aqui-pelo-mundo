@@ -3,6 +3,7 @@ import { Fraunces, Inter } from "next/font/google";
 import { AuthProvider } from "@/lib/auth";
 import { RoteiroProvider } from "@/lib/roteiro";
 import Header from "@/components/Header";
+import { SITE_NAME, SITE_URL, buildOpenGraph } from "@/lib/metadata";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -15,9 +16,24 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const HOME_TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
+const HOME_DESCRIPTION =
+  "Monte seu roteiro de viagem com atrações visitadas e avaliadas pessoalmente por Rejane Abrantes. Recomendações reais para famílias, sem lista genérica.";
+
 export const metadata: Metadata = {
-  title: "Por Aqui Pelo Mundo",
-  description: "Planejamento de viagens baseado em curadoria humana.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    template: `%s | ${SITE_NAME}`,
+    default: HOME_TITLE,
+  },
+  description: HOME_DESCRIPTION,
+  openGraph: buildOpenGraph({
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  }),
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

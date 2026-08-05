@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useId, useState, type ChangeEvent } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
 export default function CoverImageUploader({
@@ -12,6 +12,7 @@ export default function CoverImageUploader({
   onChange: (url: string | null) => void;
   folder: string;
 }) {
+  const inputId = useId();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,12 +66,19 @@ export default function CoverImageUploader({
         )}
       </div>
       <div>
+        <label
+          htmlFor={inputId}
+          className="inline-block cursor-pointer rounded-full bg-areia px-3 py-1.5 text-sm text-tinta hover:underline"
+        >
+          {value ? "Trocar foto" : "Escolher foto"}
+        </label>
         <input
+          id={inputId}
           type="file"
           accept="image/*"
           onChange={handleFileChange}
           disabled={uploading}
-          className="text-sm text-tinta file:mr-3 file:rounded-full file:border-0 file:bg-areia file:px-3 file:py-1.5 file:text-sm file:text-tinta hover:file:underline"
+          className="sr-only"
         />
         {uploading && <p className="mt-1 text-xs text-oliva">Enviando...</p>}
         {error && <p className="mt-1 text-xs text-terracota">{error}</p>}

@@ -12,8 +12,8 @@ export default function Header() {
   const isHome = pathname === "/";
 
   return (
-    <header className="border-b border-tinta/10 bg-areia px-4 py-4 sm:px-6">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
+    <header className="border-b border-tinta/10 bg-areia px-4 py-4 sm:px-6 lg:px-10">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-1">
           <NavDrawer />
           {!isHome && (

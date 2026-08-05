@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -61,13 +62,12 @@ export default function LoginForm() {
           <label htmlFor="password" className="text-sm text-tinta">
             Senha
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 text-sm text-tinta focus:border-terracota focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 pr-10 text-sm text-tinta focus:border-terracota focus:outline-none"
           />
         </div>
 

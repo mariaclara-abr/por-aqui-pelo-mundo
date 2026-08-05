@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { supabase } from "@/lib/supabase";
 import type { AttractionCategory } from "@/types/database";
 
@@ -11,7 +12,12 @@ export async function getCountries() {
   return data;
 }
 
-export async function getCountryBySlug(countrySlug: string) {
+// Envolvidas em React cache(): tanto generateMetadata quanto o page.tsx da
+// mesma rota chamam essas funções, e cache() garante que rodem só uma vez
+// por request em vez de duas idas ao banco. Só as usadas em Server
+// Components — getCitiesByCountry também é chamada por um Client Component
+// (NavDrawer), então fica de fora.
+export const getCountryBySlug = cache(async (countrySlug: string) => {
   const { data, error } = await supabase
     .from("countries")
     .select("*")
@@ -20,7 +26,7 @@ export async function getCountryBySlug(countrySlug: string) {
 
   if (error) throw error;
   return data;
-}
+});
 
 export async function getCountryById(id: string) {
   const { data, error } = await supabase
@@ -52,7 +58,25 @@ export async function getCitiesByCountry(countrySlug: string) {
   return data;
 }
 
-export async function getCityBySlug(citySlug: string) {
+export async function getCityCountByCountry(countrySlug: string) {
+  const { data: country, error: countryError } = await supabase
+    .from("countries")
+    .select("id")
+    .eq("slug", countrySlug)
+    .single();
+
+  if (countryError) throw countryError;
+
+  const { count, error } = await supabase
+    .from("cities")
+    .select("*", { count: "exact", head: true })
+    .eq("country_id", country.id);
+
+  if (error) throw error;
+  return count ?? 0;
+}
+
+export const getCityBySlug = cache(async (citySlug: string) => {
   const { data, error } = await supabase
     .from("cities")
     .select("*, countries(*)")
@@ -61,7 +85,7 @@ export async function getCityBySlug(citySlug: string) {
 
   if (error) throw error;
   return data;
-}
+});
 
 export async function getCityById(id: string) {
   const { data, error } = await supabase
@@ -195,7 +219,7 @@ export async function getAttractionNamesByCity(citySlug: string) {
   return data;
 }
 
-export async function getAttractionBySlug(attractionSlug: string) {
+export const getAttractionBySlug = cache(async (attractionSlug: string) => {
   const { data, error } = await supabase
     .from("attractions")
     .select(
@@ -206,7 +230,7 @@ export async function getAttractionBySlug(attractionSlug: string) {
 
   if (error) throw error;
   return data;
-}
+});
 
 export async function getAttractionById(id: string) {
   const { data, error } = await supabase
@@ -250,7 +274,7 @@ export interface HeroPhoto {
   alt: string;
 }
 
-export async function getHeroPhotos(limit = 3): Promise<HeroPhoto[]> {
+export const getHeroPhotos = cache(async (limit = 3): Promise<HeroPhoto[]> => {
   const { data: countries, error: countriesError } = await supabase
     .from("countries")
     .select("name, cover_image_url")
@@ -284,7 +308,7 @@ export async function getHeroPhotos(limit = 3): Promise<HeroPhoto[]> {
   }
 
   return photos.slice(0, limit);
-}
+});
 
 export async function getCounts() {
   const [countries, cities, attractions] = await Promise.all([
@@ -303,3 +327,14 @@ export async function getCounts() {
     attractions: attractions.count ?? 0,
   };
 }
+
+export const getAboutPageContent = cache(async () => {
+  const { data, error } = await supabase
+    .from("about_page_content")
+    .select("*")
+    .eq("id", 1)
+    .single();
+
+  if (error) throw error;
+  return data;
+});

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase-server";
 import type { AttractionCategory } from "@/types/database";
 
@@ -25,9 +26,9 @@ export interface SharedItinerary {
 // compartilhamento existir e estiver ativo (is_public = true) — a RLS de
 // `itineraries`/`itinerary_items` também depende dessa mesma condição, então
 // um link desativado já vem bloqueado no banco, não só aqui.
-export async function getSharedItineraryByToken(
+export const getSharedItineraryByToken = cache(async (
   token: string,
-): Promise<SharedItinerary | null> {
+): Promise<SharedItinerary | null> => {
   const supabase = await createClient();
 
   const { data: share, error: shareError } = await supabase
@@ -88,4 +89,4 @@ export async function getSharedItineraryByToken(
     .map((entry) => entry.attraction);
 
   return { title: itinerary.title, authorName, attractions };
-}
+});

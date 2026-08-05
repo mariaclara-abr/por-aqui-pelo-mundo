@@ -20,7 +20,7 @@ export default function HeroSection({
 
   return (
     <section className="bg-areia lg:flex lg:min-h-screen lg:flex-col lg:justify-center">
-      <div className="mx-auto flex max-w-6xl flex-col-reverse lg:flex-row lg:items-center lg:gap-10 lg:px-6 lg:py-14">
+      <div className="mx-auto flex max-w-[1440px] flex-col-reverse lg:flex-row lg:items-center lg:gap-10 lg:px-10 lg:py-14">
         <div className="flex flex-col px-4 pb-10 pt-8 text-center sm:px-6 lg:w-[58%] lg:px-0 lg:pb-0 lg:pt-0 lg:text-left">
           <h1 className="font-serif text-4xl leading-tight tracking-tight text-terracota sm:text-5xl lg:text-[3.4rem] lg:whitespace-nowrap">
             Por Aqui Pelo Mundo

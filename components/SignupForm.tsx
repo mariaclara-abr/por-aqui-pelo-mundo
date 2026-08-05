@@ -3,12 +3,14 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function SignupForm() {
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -17,6 +19,12 @@ export default function SignupForm() {
     event.preventDefault();
     setError(null);
     setMessage(null);
+
+    if (password !== confirmPassword) {
+      setError("As senhas não coincidem.");
+      return;
+    }
+
     setLoading(true);
 
     const supabase = createClient();
@@ -87,14 +95,26 @@ export default function SignupForm() {
           <label htmlFor="password" className="text-sm text-tinta">
             Senha
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             required
             minLength={6}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 text-sm text-tinta focus:border-terracota focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 pr-10 text-sm text-tinta focus:border-terracota focus:outline-none"
+          />
+        </div>
+        <div>
+          <label htmlFor="confirmPassword" className="text-sm text-tinta">
+            Confirmar senha
+          </label>
+          <PasswordInput
+            id="confirmPassword"
+            required
+            minLength={6}
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 pr-10 text-sm text-tinta focus:border-terracota focus:outline-none"
           />
         </div>
 

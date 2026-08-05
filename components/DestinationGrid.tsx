@@ -9,8 +9,8 @@ export default function DestinationGrid({
   countries: Country[];
 }) {
   return (
-    <section id="destinos" className="bg-branco px-4 py-20 sm:px-6 sm:py-24">
-      <div className="mx-auto max-w-5xl">
+    <section id="destinos" className="bg-branco px-4 py-20 sm:px-6 sm:py-24 lg:px-10">
+      <div className="mx-auto max-w-[1440px]">
         <h2 className="text-center font-serif text-3xl text-tinta sm:text-4xl">
           Escolha um destino
         </h2>
@@ -29,7 +29,7 @@ export default function DestinationGrid({
             </p>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {countries.map((country) => (
               <CountryCard key={country.id} country={country} />
             ))}

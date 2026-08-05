@@ -1,64 +1,103 @@
-import { getCountries } from "@/lib/queries";
+import type { Metadata } from "next";
+import { getAboutPageContent, getCountries } from "@/lib/queries";
 import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
+import { buildOpenGraph } from "@/lib/metadata";
+
+const TITLE = "Sobre a autora";
+
+// O campo author_name no banco ainda está com o placeholder "[Nome da
+// autora]" (visível na página, fora do escopo desta tarefa). Para a meta
+// description usamos o nome real por instrução explícita, sem alterar o
+// texto exibido na interface.
+const AUTHOR_NAME_FALLBACK = "Rejane Abrantes";
+const PLACEHOLDER_NAME = "[Nome da autora]";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const about = await getAboutPageContent();
+  const authorName =
+    about.author_name && about.author_name !== PLACEHOLDER_NAME
+      ? about.author_name
+      : AUTHOR_NAME_FALLBACK;
+
+  const description = `${authorName} é mãe, avó e viajante há mais de 20 anos. Conheça quem visita e avalia pessoalmente cada atração recomendada aqui.`;
+
+  const image = about.author_photo_url ?? about.travel_photo_1_url ?? undefined;
+
+  return {
+    title: TITLE,
+    description,
+    alternates: { canonical: "/sobre" },
+    openGraph: buildOpenGraph({
+      title: TITLE,
+      description,
+      images: image ? [image] : undefined,
+    }),
+  };
+}
 
 export default async function SobrePage() {
-  const countries = await getCountries();
+  const [countries, about] = await Promise.all([
+    getCountries(),
+    getAboutPageContent(),
+  ]);
+
+  const bioParagraphs = about.bio
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
 
   return (
     <main className="flex-1">
       <div className="flex aspect-[4/3] w-full items-center justify-center bg-branco sm:aspect-[21/9]">
-        <span className="font-serif text-lg text-oliva">
-          Foto da autora em breve
-        </span>
+        {about.author_photo_url ? (
+          <img
+            src={about.author_photo_url}
+            alt={about.author_name}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span className="font-serif text-lg text-oliva">
+            Foto da autora em breve
+          </span>
+        )}
       </div>
 
-      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <p className="text-xs uppercase tracking-widest text-oliva">
           Sobre a autora
         </p>
         <h1 className="mt-2 font-serif text-3xl text-tinta sm:text-4xl">
-          [Nome da autora]
+          {about.author_name}
         </h1>
 
         <div className="mt-8 flex flex-col gap-5 leading-relaxed text-tinta">
-          <p>
-            Sou mãe, avó e viajante desde muito antes de existir aplicativo de
-            viagem. Ao longo de mais de vinte anos, viajei pelo Brasil e pelo
-            exterior — quase sempre em família, com criança pequena no colo,
-            mala de mão cheia de remédio e paciência para roteiro que precisa
-            mudar em cima da hora.
-          </p>
-          <p>
-            Cada lugar que aparece aqui eu visitei de verdade, ou visitei
-            junto com alguém da família em quem confio. Não é uma lista
-            genérica: é o que eu realmente recomendaria para outra família
-            que está planejando a próxima viagem.
-          </p>
+          {bioParagraphs.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
         </div>
 
         <div className="mt-10 flex aspect-[4/3] w-full items-center justify-center rounded-xl bg-branco">
-          <span className="text-sm text-oliva">Foto de viagem em breve</span>
+          {about.travel_photo_1_url ? (
+            <img
+              src={about.travel_photo_1_url}
+              alt=""
+              className="h-full w-full rounded-xl object-cover"
+            />
+          ) : (
+            <span className="text-sm text-oliva">Foto de viagem em breve</span>
+          )}
         </div>
 
         <div className="mt-10 flex flex-col gap-5 leading-relaxed text-tinta">
           <h2 className="font-serif text-2xl text-tinta">
             Por que esse site existe
           </h2>
-          <p>
-            A maior parte do conteúdo de viagem por aí é feito para
-            mochileiro sozinho ou casal sem filhos — e o que sobra costuma
-            ser só uma nota média de milhares de estranhos, sem contexto
-            nenhum sobre se aquele lugar faz sentido pra sua família. Esse
-            site nasceu pra preencher esse espaço: transformar experiência
-            real de viagem em planejamento fácil, pensado especialmente para
-            famílias.
-          </p>
+          <p>{about.why_site_text}</p>
         </div>
 
         <blockquote className="mt-10 border-l-4 border-terracota pl-5">
           <p className="font-serif text-xl italic text-tinta sm:text-2xl">
-            &ldquo;A IA organiza a viagem. Quem escolhe os lugares é quem
-            realmente esteve lá.&rdquo;
+            &ldquo;{about.quote_text}&rdquo;
           </p>
         </blockquote>
 
@@ -84,7 +123,15 @@ export default async function SobrePage() {
         </div>
 
         <div className="mt-10 flex aspect-[4/3] w-full items-center justify-center rounded-xl bg-branco">
-          <span className="text-sm text-oliva">Foto de viagem em breve</span>
+          {about.travel_photo_2_url ? (
+            <img
+              src={about.travel_photo_2_url}
+              alt=""
+              className="h-full w-full rounded-xl object-cover"
+            />
+          ) : (
+            <span className="text-sm text-oliva">Foto de viagem em breve</span>
+          )}
         </div>
 
         <div className="mt-10">

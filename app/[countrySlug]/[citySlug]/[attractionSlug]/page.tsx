@@ -1,13 +1,84 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAttractionBySlug } from "@/lib/queries";
 import { getAttractionQuestions } from "@/lib/questions";
 import { ATTRACTION_CATEGORIES } from "@/types/database";
+import type { Database } from "@/types/database";
 import CurationRating from "@/components/CurationRating";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AffiliateCallout from "@/components/AffiliateCallout";
+import { buildOpenGraph, truncateToSentence } from "@/lib/metadata";
+
+type AttractionWithRelations = Database["public"]["Tables"]["attractions"]["Row"] & {
+  cities: Database["public"]["Tables"]["cities"]["Row"] & {
+    countries: Database["public"]["Tables"]["countries"]["Row"];
+  };
+};
+
+// Monta a description a partir da descrição curta real da atração (nunca
+// inventada) mais tempo de visita / melhor horário quando existirem,
+// sempre cabendo em 160 caracteres sem cortar frase no meio.
+function buildAttractionDescription(attraction: AttractionWithRelations) {
+  const facts: string[] = [];
+  if (attraction.average_visit_time) {
+    facts.push(`Visita de ${attraction.average_visit_time}`);
+  }
+  if (attraction.best_time_of_day) {
+    facts.push(`melhor horário: ${attraction.best_time_of_day}`);
+  }
+  const factsClause = facts.length > 0 ? ` ${facts.join(", ")}.` : "";
+  const suffix = `${factsClause} Dicas de quem já foi.`;
+
+  const base = attraction.description?.trim();
+  if (base) {
+    const available = 160 - suffix.length;
+    const fittedBase = base.length <= available ? base : truncateToSentence(base, available);
+    return `${fittedBase}${suffix}`.trim();
+  }
+
+  const fallback = `${attraction.name}, em ${attraction.cities.name} (${attraction.cities.countries.name}): recomendação com curadoria pessoal de quem já esteve lá. Confira dicas reais para a sua visita.`;
+  return truncateToSentence(fallback, 160);
+}
+
+export async function generateMetadata(
+  props: PageProps<"/[countrySlug]/[citySlug]/[attractionSlug]">,
+): Promise<Metadata> {
+  const { countrySlug, citySlug, attractionSlug } = await props.params;
+  const attraction = await getAttractionBySlug(attractionSlug).catch(() => null);
+
+  if (
+    !attraction ||
+    attraction.cities.slug !== citySlug ||
+    attraction.cities.countries.slug !== countrySlug
+  ) {
+    notFound();
+  }
+
+  const title = `${attraction.name}, ${attraction.cities.name}: vale a pena?`;
+  const description = buildAttractionDescription(attraction);
+
+  const photos = [...attraction.attraction_photos].sort((a, b) => a.order - b.order);
+  const image =
+    photos[0]?.url ??
+    attraction.cities.cover_image_url ??
+    attraction.cities.countries.cover_image_url ??
+    undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/${countrySlug}/${citySlug}/${attractionSlug}` },
+    openGraph: buildOpenGraph({
+      title,
+      description,
+      images: image ? [image] : undefined,
+      type: "article",
+    }),
+  };
+}
 
 export default async function AttractionPage(
   props: PageProps<"/[countrySlug]/[citySlug]/[attractionSlug]">,
@@ -44,8 +115,8 @@ export default async function AttractionPage(
   ].filter((fact): fact is { label: string; value: string } => !!fact.value);
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14">
-      <div className="mx-auto max-w-3xl">
+    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center gap-1 text-sm text-oliva">
           <Link
             href={`/${countrySlug}`}

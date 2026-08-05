@@ -2,9 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
 import SignupForm from "@/components/SignupForm";
+import { buildOpenGraph } from "@/lib/metadata";
+
+const TITLE = "Criar conta";
+const DESCRIPTION =
+  "Crie sua conta gratuita para guardar roteiros de viagem e receber recomendações sob medida.";
 
 export const metadata: Metadata = {
-  title: "Criar conta — Por Aqui Pelo Mundo",
+  title: TITLE,
+  description: DESCRIPTION,
+  robots: { index: false },
+  alternates: { canonical: "/criar-conta" },
+  openGraph: buildOpenGraph({ title: TITLE, description: DESCRIPTION }),
 };
 
 export default function CriarContaPage() {
