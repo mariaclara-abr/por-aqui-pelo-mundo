@@ -3,8 +3,10 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRoteiro } from "@/lib/roteiro";
 import { useAuth } from "@/lib/auth";
+import { useUserSubscription } from "@/lib/useUserSubscription";
 import CurationRating from "@/components/CurationRating";
 import RelatedContent from "@/components/RelatedContent";
 import AffiliateCallout from "@/components/AffiliateCallout";
@@ -136,6 +138,8 @@ function RoteiroTitle() {
 export default function MeuRoteiroPage() {
   const { items, loading, removeItem, reorder, itineraryId, title } = useRoteiro();
   const { user } = useAuth();
+  const { isPremium, hasRoteiroUnicoFor } = useUserSubscription();
+  const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   // Volta de um checkout do Stripe (sucesso ou cancelado) reabre o modal de
@@ -155,6 +159,16 @@ export default function MeuRoteiroPage() {
     reorder(orderedIds).catch((error) => {
       console.error("Não foi possível reordenar o roteiro:", error);
     });
+  }
+
+  function handleOrganizarClick() {
+    const hasAccess =
+      isPremium || (itineraryId ? hasRoteiroUnicoFor(itineraryId) : false);
+    if (hasAccess) {
+      router.push("/meu-roteiro/organizar-com-ia");
+    } else {
+      setPremiumOpen(true);
+    }
   }
 
   function handleRemove(attractionId: string) {
@@ -211,6 +225,8 @@ export default function MeuRoteiroPage() {
   }
 
   const countryCount = new Set(items.map((item) => item.attraction.countrySlug)).size;
+  const premiumCoverImageUrl =
+    items.find((item) => item.attraction.coverPhotoUrl)?.attraction.coverPhotoUrl ?? null;
 
   const mapPoints: {
     id: string;
@@ -289,6 +305,7 @@ export default function MeuRoteiroPage() {
           <PremiumDialog
             itineraryId={itineraryId}
             countryCount={countryCount}
+            coverImageUrl={premiumCoverImageUrl}
             onClose={() => setPremiumOpen(false)}
           />
         )}
@@ -301,9 +318,10 @@ export default function MeuRoteiroPage() {
           />
         )}
 
-        <Link
-          href="/meu-roteiro/organizar-com-ia"
-          className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-terracota bg-terracota/5 p-4 transition-colors hover:bg-terracota/10"
+        <button
+          type="button"
+          onClick={handleOrganizarClick}
+          className="mt-6 flex w-full flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-terracota bg-terracota/5 p-4 text-left transition-colors hover:bg-terracota/10"
         >
           <div>
             <p className="font-serif text-lg text-tinta">Organizar com IA</p>
@@ -315,7 +333,7 @@ export default function MeuRoteiroPage() {
           <span className="shrink-0 rounded-full bg-terracota px-5 py-2 text-sm font-medium text-white">
             Organizar
           </span>
-        </Link>
+        </button>
 
         {mapPoints.length > 0 && (
           <div className="mt-8">
