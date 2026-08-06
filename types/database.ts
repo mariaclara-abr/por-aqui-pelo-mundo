@@ -7,6 +7,7 @@ export type AttractionCategory =
   | "compras"
   | "passeio"
   | "cafe"
+  | "estacionamentos"
   | "outro";
 
 export const ATTRACTION_CATEGORIES: {
@@ -21,6 +22,7 @@ export const ATTRACTION_CATEGORIES: {
   { value: "compras", label: "Compras" },
   { value: "passeio", label: "Passeio" },
   { value: "cafe", label: "Café" },
+  { value: "estacionamentos", label: "Estacionamento" },
   { value: "outro", label: "Outro" },
 ];
 

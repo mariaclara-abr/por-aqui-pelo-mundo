@@ -43,6 +43,7 @@ const ATTRACTION_GROUPS: { key: keyof AttractionRecommendations; label: string }
   { key: "nearbyRestaurants", label: "Restaurantes próximos" },
   { key: "nearbyHotels", label: "Hotéis próximos" },
   { key: "complementaryTours", label: "Passeios complementares" },
+  { key: "nearbyParking", label: "Estacionamentos próximos" },
 ];
 
 function CarouselArrow({

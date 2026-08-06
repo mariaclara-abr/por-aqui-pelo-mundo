@@ -44,6 +44,7 @@ export interface AttractionRecommendations {
   nearbyRestaurants: RecommendedAttraction[];
   nearbyHotels: RecommendedAttraction[];
   complementaryTours: RecommendedAttraction[];
+  nearbyParking: RecommendedAttraction[];
   nearbyCities: RecommendedCity[];
 }
 
@@ -244,6 +245,7 @@ function buildRecommendations(
     nearbyRestaurants: rankAttractionsByCategory(index, reference, ["restaurante"], excludeIds, limit),
     nearbyHotels: rankAttractionsByCategory(index, reference, ["hotel"], excludeIds, limit),
     complementaryTours: rankAttractionsByCategory(index, reference, ["passeio"], excludeIds, limit),
+    nearbyParking: rankAttractionsByCategory(index, reference, ["estacionamentos"], excludeIds, limit),
     nearbyCities: rankNearbyCities(index, reference, reference.citySlug, NEARBY_CITIES_LIMIT),
   };
 }
