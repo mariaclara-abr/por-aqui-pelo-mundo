@@ -10,6 +10,7 @@ import RelatedContent from "@/components/RelatedContent";
 import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
 import ItinerarySwitcherDialog from "@/components/ItinerarySwitcherDialog";
+import PremiumDialog from "@/components/PremiumDialog";
 import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
 import { humanizeSlug } from "@/lib/affiliates";
 import { exportToGoogleMaps } from "@/lib/export";
@@ -137,6 +138,13 @@ export default function MeuRoteiroPage() {
   const { user } = useAuth();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  // Volta de um checkout do Stripe (sucesso ou cancelado) reabre o modal de
+  // Premium automaticamente, pra mostrar a confirmação do pagamento.
+  const [premiumOpen, setPremiumOpen] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).has("checkout"),
+  );
 
   function moveItem(index: number, direction: -1 | 1) {
     const targetIndex = index + direction;
@@ -202,6 +210,8 @@ export default function MeuRoteiroPage() {
     );
   }
 
+  const countryCount = new Set(items.map((item) => item.attraction.countrySlug)).size;
+
   const mapPoints: {
     id: string;
     name: string;
@@ -256,24 +266,30 @@ export default function MeuRoteiroPage() {
             <button
               type="button"
               onClick={() => setShareOpen(true)}
-              className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border-2 border-terracota px-5 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 sm:self-auto"
+              className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-terracota px-3 py-1 text-xs font-medium text-terracota transition-colors hover:bg-terracota/10 sm:self-auto"
             >
-              Compartilhar
+              Compartilhar roteiro
             </button>
           )}
         </div>
-        <p className="mt-2 text-oliva">
-          {items.length}{" "}
-          {items.length === 1 ? "atração adicionada" : "atrações adicionadas"}
-          .
-        </p>
-
         {shareOpen && user && itineraryId && (
           <ShareItineraryDialog
             itineraryId={itineraryId}
             itineraryTitle={title}
             userId={user.id}
             onClose={() => setShareOpen(false)}
+            onSalvarPDF={() => {
+              setShareOpen(false);
+              setPremiumOpen(true);
+            }}
+          />
+        )}
+
+        {premiumOpen && (
+          <PremiumDialog
+            itineraryId={itineraryId}
+            countryCount={countryCount}
+            onClose={() => setPremiumOpen(false)}
           />
         )}
 
@@ -303,6 +319,9 @@ export default function MeuRoteiroPage() {
 
         {mapPoints.length > 0 && (
           <div className="mt-8">
+            <p className="mb-3 text-sm text-oliva">
+              Escolha a melhor rota para sua viagem visualizando-a no mapa.
+            </p>
             <div className="isolate overflow-hidden rounded-xl">
               <RoteiroMap points={mapPoints} />
             </div>
@@ -321,7 +340,12 @@ export default function MeuRoteiroPage() {
           </div>
         )}
 
-        <div className="mt-8 flex flex-col gap-3">
+        <p className="mt-8 text-lg font-semibold text-terracota">
+          {items.length}{" "}
+          {items.length === 1 ? "atração selecionada" : "atrações selecionadas"}
+        </p>
+
+        <div className="mt-4 flex flex-col gap-3">
           {items.map((item, index) => {
             const categoryLabel =
               ATTRACTION_CATEGORIES.find(

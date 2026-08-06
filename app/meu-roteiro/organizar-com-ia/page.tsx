@@ -62,7 +62,7 @@ export default async function OrganizarComIAPage() {
           A IA organiza a ordem, os dias e os horários das atrações que você já
           escolheu, e pode sugerir outros lugares da curadoria nas mesmas
           cidades. Sugestões vêm marcadas como tal e você pode excluí-las a
-          qualquer momento — o que já está no seu roteiro nunca é removido.
+          qualquer momento; o que já está no seu roteiro nunca é removido.
         </p>
 
         <div className="mt-8">

@@ -32,6 +32,8 @@ export type ItineraryStatus = "planejando" | "concluida";
 
 export type QuestionStatus = "pendente" | "respondida" | "oculta";
 
+export type SiteReviewStatus = "pendente" | "aprovada" | "oculta";
+
 export type PlanType =
   | "roteiro_unico_1pais"
   | "premium_mensal"
@@ -147,6 +149,8 @@ export interface Database {
           slug: string;
           cover_image_url: string | null;
           description: string | null;
+          latitude: number | null;
+          longitude: number | null;
           created_at: string;
         };
         Insert: {
@@ -156,6 +160,8 @@ export interface Database {
           slug: string;
           cover_image_url?: string | null;
           description?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["cities"]["Insert"]>;
@@ -585,6 +591,30 @@ export interface Database {
           },
         ];
       };
+      site_reviews: {
+        Row: {
+          id: string;
+          reviewer_name: string;
+          rating: number;
+          comment: string;
+          order: number;
+          created_at: string;
+          user_id: string | null;
+          status: SiteReviewStatus;
+        };
+        Insert: {
+          id?: string;
+          reviewer_name: string;
+          rating: number;
+          comment: string;
+          order?: number;
+          created_at?: string;
+          user_id?: string | null;
+          status?: SiteReviewStatus;
+        };
+        Update: Partial<Database["public"]["Tables"]["site_reviews"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: {
       public_profiles: {
@@ -609,6 +639,7 @@ export interface Database {
       user_role: UserRole;
       itinerary_status: ItineraryStatus;
       question_status: QuestionStatus;
+      site_review_status: SiteReviewStatus;
       plan_type: PlanType;
     };
     CompositeTypes: Record<string, never>;

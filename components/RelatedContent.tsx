@@ -73,7 +73,7 @@ function CarouselArrow({
   );
 }
 
-function RecommendationGroup({ title, children }: { title: string; children: ReactNode }) {
+function RecommendationGroup({ title, children }: { title?: string; children: ReactNode }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -108,7 +108,7 @@ function RecommendationGroup({ title, children }: { title: string; children: Rea
 
   return (
     <div>
-      <h3 className="font-serif text-lg text-tinta">{title}</h3>
+      {title && <h3 className="font-serif text-lg text-tinta">{title}</h3>}
       <div className="relative mt-3">
         <div
           ref={scrollRef}
@@ -375,13 +375,13 @@ export default function RelatedContent(props: RelatedContentProps) {
     if (!nearbyCities || nearbyCities.length === 0) {
       return (
         <p className="text-oliva">
-          Ainda não há cidades próximas cadastradas — em breve teremos mais
+          Ainda não há cidades próximas cadastradas. Em breve teremos mais
           sugestões.
         </p>
       );
     }
     return (
-      <RecommendationGroup title="Cidades próximas">
+      <RecommendationGroup>
         {nearbyCities.map((city) => (
           <CityRecommendationCard key={city.slug} city={city} />
         ))}
@@ -400,7 +400,7 @@ export default function RelatedContent(props: RelatedContentProps) {
   if (groups.length === 0 && cities.length === 0) {
     return (
       <p className="text-oliva">
-        Ainda não há recomendações para este lugar — em breve teremos mais
+        Ainda não há recomendações para este lugar. Em breve teremos mais
         sugestões.
       </p>
     );

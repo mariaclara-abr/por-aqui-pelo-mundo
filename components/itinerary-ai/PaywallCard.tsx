@@ -132,7 +132,7 @@ export default function PaywallCard({
       {countryCount >= 2 ? (
         <p className="mt-2 text-sm text-oliva">
           Seu roteiro tem atrações em {countryCount} países. O plano avulso só
-          vale para roteiros de até 1 país — assine o Premium para organizar
+          vale para roteiros de até 1 país. Assine o Premium para organizar
           roteiros com múltiplos países, ou divida este roteiro em um roteiro
           por país em{" "}
           <Link href="/meu-roteiro" className="text-terracota hover:underline">

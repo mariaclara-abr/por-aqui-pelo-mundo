@@ -251,5 +251,5 @@ export async function runItineraryChat(
     messages.push({ role: "user", content: toolResults });
   }
 
-  throw new Error("Não consegui concluir esse pedido — tente descrever de outro jeito.");
+  throw new Error("Não consegui concluir esse pedido, tente descrever de outro jeito.");
 }

@@ -12,11 +12,13 @@ export default function ShareItineraryDialog({
   itineraryTitle,
   userId,
   onClose,
+  onSalvarPDF,
 }: {
   itineraryId: string;
   itineraryTitle: string;
   userId: string;
   onClose: () => void;
+  onSalvarPDF: () => void;
 }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -147,6 +149,13 @@ export default function ShareItineraryDialog({
               >
                 E-mail
               </a>
+              <button
+                type="button"
+                onClick={onSalvarPDF}
+                className="rounded-full border-2 border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+              >
+                Salvar em PDF
+              </button>
             </div>
 
             <label className="flex items-center justify-between gap-3 text-sm text-tinta">

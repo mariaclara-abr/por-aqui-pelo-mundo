@@ -338,3 +338,15 @@ export const getAboutPageContent = cache(async () => {
   if (error) throw error;
   return data;
 });
+
+export async function getSiteReviews() {
+  const { data, error } = await supabase
+    .from("site_reviews")
+    .select("*")
+    .order("order")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+

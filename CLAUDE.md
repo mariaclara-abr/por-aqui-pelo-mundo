@@ -1,4 +1,4 @@
-# Por Aqui Pelo Mundo — contexto do projeto
+# Por Aqui Pelo Mundo: contexto do projeto
 
 ## O que é
 Plataforma de planejamento de viagens baseada em curadoria humana (não em avaliações de multidão como TripAdvisor, nem em roteiros genéricos gerados por IA). O conteúdo vem da experiência real de quem visitou cada lugar. A IA (quando existir, em fase futura) organiza a curadoria existente, nunca inventa lugares ou roteiros do zero.
@@ -13,7 +13,7 @@ Público-alvo: famílias e casais que quantidade priorizam qualidade de planejam
 ## Estrutura de dados
 Hierarquia: País > Cidade > Atração. Atrações têm categoria (ponto turístico, restaurante, hotel, museu, natureza, compras, passeio, café, outro) e etiquetas (ex: ideal para famílias, crianças pequenas, alta temporada, gratuito, imperdível, reserva necessária, etc). Cada atração tem uma nota de curadoria própria de 1 a 5 estrelas (não é média de usuários).
 
-## Identidade visual — "Diário de bordo"
+## Identidade visual: "Diário de bordo"
 Tom editorial, atemporal, com cara de revista de viagem bem cuidada. Não deve parecer um site genérico de IA nem um app estilo TripAdvisor.
 
 Paleta de cores:
@@ -33,13 +33,18 @@ Princípios visuais:
 - Cantos arredondados suaves (8-12px) em cards, nada muito quadrado nem muito bolha
 - Sem gradientes, sombras pesadas ou elementos "estilo IA genérica"
 - Estrelas de avaliação da curadoria em terracota, nunca em amarelo/dourado genérico de review de app
-- Mobile-first sempre — a maioria dos usuários vai acessar pelo celular durante a viagem
+- Mobile-first sempre: a maioria dos usuários vai acessar pelo celular durante a viagem
 
 ## Regras gerais
-- Nunca inventar dados de atrações, avaliações ou dicas — todo conteúdo vem da curadoria cadastrada no banco.
+- Nunca inventar dados de atrações, avaliações ou dicas: todo conteúdo vem da curadoria cadastrada no banco.
 - Sempre construir mobile-first.
 - Seguir a paleta e tipografia acima em toda nova página ou componente, sem introduzir cores fora dela sem perguntar.
 - Ao criar componentes de UI, reutilizar componentes já existentes em vez de duplicar estilos.
+- Proibido o uso de travessões (—) em qualquer texto do projeto (código, copy da interface, conteúdo do banco, documentação). Use dois pontos, vírgula ou ponto final no lugar.
+
+## Banco de dados (Supabase)
+- Autorização permanente do usuário: rodar SQL/migrations diretamente no banco Supabase de produção (`SUPABASE_DB_URL` em `.env.local`) sem pedir confirmação antes, usando `npm run sql -- <arquivo.sql>` (script em `scripts/run-sql.mjs`, conecta via `pg`). Não é necessário pausar para perguntar antes desse tipo de execução.
+- Toda alteração de schema deve continuar sendo registrada como um novo arquivo em `supabase/migrations/`, seguindo o padrão de nomenclatura `YYYYMMDDHHMMSS_descricao.sql` já usado no projeto: a autorização acima é sobre não perguntar antes de aplicar, não sobre pular o registro da migration.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

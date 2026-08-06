@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       {
         error:
           access.reason === "needs_premium"
-            ? "Este roteiro tem mais de 1 país — assine o Premium para organizá-lo com IA."
+            ? "Este roteiro tem mais de 1 país. Assine o Premium para organizá-lo com IA."
             : "Organizar com IA é um recurso pago. Escolha um plano para continuar.",
         reason: access.reason,
         countryCount: access.countryCount,

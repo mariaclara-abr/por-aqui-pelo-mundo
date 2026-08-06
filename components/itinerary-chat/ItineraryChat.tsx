@@ -11,7 +11,7 @@ interface ChatMessage {
 const GREETING: ChatMessage = {
   role: "assistant",
   content:
-    "Oi! Posso ajustar seu roteiro por aqui — peça para adicionar, remover ou reordenar atrações, ou mudar o nome do roteiro.",
+    "Oi! Posso ajustar seu roteiro por aqui: peça para adicionar, remover ou reordenar atrações, ou mudar o nome do roteiro.",
 };
 
 function ChatIcon() {

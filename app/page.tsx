@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import { getCountries, getCounts, getHeroPhotos } from "@/lib/queries";
+import {
+  getCountries,
+  getCounts,
+  getHeroPhotos,
+  getSiteReviews,
+} from "@/lib/queries";
 import HeroSection from "@/components/HeroSection";
 import DestinationGrid from "@/components/DestinationGrid";
+import SiteReviewsSection from "@/components/SiteReviewsSection";
 import { buildOpenGraph } from "@/lib/metadata";
 
 const TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
@@ -16,16 +22,18 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [countries, counts, heroPhotos] = await Promise.all([
+  const [countries, counts, heroPhotos, siteReviews] = await Promise.all([
     getCountries(),
     getCounts(),
     getHeroPhotos(),
+    getSiteReviews(),
   ]);
 
   return (
     <main className="flex-1">
       <HeroSection photos={heroPhotos} counts={counts} />
       <DestinationGrid countries={countries} />
+      <SiteReviewsSection reviews={siteReviews} />
     </main>
   );
 }

@@ -25,7 +25,7 @@ function trackClick(program: AffiliateProgram, attractionId?: string, context?: 
 function PoweredByBadge({ program }: { program: AffiliateProgram }) {
   return (
     <p className="mt-2 text-[11px] leading-snug text-oliva/80">
-      🔗 Powered by {program.label} — ganhamos uma comissão sem custo extra
+      🔗 Powered by {program.label}, ganhamos uma comissão sem custo extra
       pra você.
     </p>
   );
@@ -145,8 +145,8 @@ export default function AffiliateCallout({
         })}
       </div>
       <p className="mt-3 text-[11px] leading-snug text-oliva/80">
-        🔗 Links marcados usam programas de afiliado — ganhamos uma comissão
-        sem custo extra pra você.
+        🔗 Links marcados usam programas de afiliado, sem custo extra pra
+        você.
       </p>
     </div>
   );

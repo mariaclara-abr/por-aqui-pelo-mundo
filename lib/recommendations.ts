@@ -5,6 +5,7 @@ const EARTH_RADIUS_KM = 6371;
 const NEARBY_RADIUS_KM = 20;
 const DEFAULT_LIMIT = 6;
 const NEARBY_CITIES_LIMIT = 4;
+const NEARBY_CITIES_MAX_DISTANCE_KM = 1000;
 const WALK_SPEED_KMH = 4.5;
 
 const GENERAL_CATEGORIES: AttractionCategory[] = [
@@ -67,6 +68,8 @@ interface GeoIndexRow {
   cityName: string;
   countrySlug: string;
   cityCoverImageUrl: string | null;
+  cityLatitude: number | null;
+  cityLongitude: number | null;
 }
 
 export function haversineDistanceKm(
@@ -101,7 +104,7 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
   const { data, error } = await supabase
     .from("attractions")
     .select(
-      "id, name, slug, category, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, cover_image_url, countries(slug))",
+      "id, name, slug, category, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, cover_image_url, latitude, longitude, countries(slug))",
     );
 
   if (error) throw error;
@@ -123,6 +126,8 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
       cityName: row.cities!.name,
       countrySlug: row.cities!.countries!.slug,
       cityCoverImageUrl: row.cities!.cover_image_url,
+      cityLatitude: row.cities!.latitude,
+      cityLongitude: row.cities!.longitude,
     }));
 }
 
@@ -163,7 +168,16 @@ function rankAttractionsByCategory(
     .map(({ item, distanceKm }) => ({ ...item, distanceKm }));
 }
 
+// Preferência: coordenadas próprias da cidade (quando cadastradas) sobre o
+// centroide das atrações, já que a cidade pode ter atrações sem lat/lng ainda.
 function computeCityCentroid(index: GeoIndexRow[], citySlug: string) {
+  const cityRow = index.find(
+    (item) => item.citySlug === citySlug && item.cityLatitude !== null && item.cityLongitude !== null,
+  );
+  if (cityRow) {
+    return { latitude: cityRow.cityLatitude as number, longitude: cityRow.cityLongitude as number };
+  }
+
   const points = index.filter(
     (item) => item.citySlug === citySlug && item.latitude !== null && item.longitude !== null,
   );
@@ -192,42 +206,65 @@ function rankNearbyCities(
 
   const centroids = new Map<
     string,
-    { name: string; countrySlug: string; coverImageUrl: string | null; lat: number; lng: number; count: number }
+    {
+      name: string;
+      countrySlug: string;
+      coverImageUrl: string | null;
+      cityLatitude: number | null;
+      cityLongitude: number | null;
+      lat: number;
+      lng: number;
+      count: number;
+    }
   >();
 
   for (const item of index) {
     if (!item.citySlug || item.citySlug === excludeCitySlug) continue;
-    if (item.latitude === null || item.longitude === null) continue;
 
     const entry = centroids.get(item.citySlug);
     if (entry) {
-      entry.lat += item.latitude;
-      entry.lng += item.longitude;
-      entry.count += 1;
+      if (item.latitude !== null && item.longitude !== null) {
+        entry.lat += item.latitude;
+        entry.lng += item.longitude;
+        entry.count += 1;
+      }
     } else {
       centroids.set(item.citySlug, {
         name: item.cityName,
         countrySlug: item.countrySlug,
         coverImageUrl: item.cityCoverImageUrl,
-        lat: item.latitude,
-        lng: item.longitude,
-        count: 1,
+        cityLatitude: item.cityLatitude,
+        cityLongitude: item.cityLongitude,
+        lat: item.latitude ?? 0,
+        lng: item.longitude ?? 0,
+        count: item.latitude !== null && item.longitude !== null ? 1 : 0,
       });
     }
   }
 
   const referencePoint = { latitude: reference.latitude, longitude: reference.longitude };
 
-  const cities: RecommendedCity[] = Array.from(centroids.entries()).map(([slug, entry]) => ({
-    slug,
-    name: entry.name,
-    countrySlug: entry.countrySlug,
-    coverImageUrl: entry.coverImageUrl,
-    distanceKm: haversineDistanceKm(referencePoint, {
-      latitude: entry.lat / entry.count,
-      longitude: entry.lng / entry.count,
-    }),
-  }));
+  const cities: RecommendedCity[] = Array.from(centroids.entries())
+    // Cidade só entra na comparação se tiver coordenadas próprias ou pelo
+    // menos uma atração com lat/lng — sem isso não há ponto para calcular distância.
+    .filter(([, entry]) => (entry.cityLatitude !== null && entry.cityLongitude !== null) || entry.count > 0)
+    .map(([slug, entry]) => {
+      const point =
+        entry.cityLatitude !== null && entry.cityLongitude !== null
+          ? { latitude: entry.cityLatitude, longitude: entry.cityLongitude }
+          : { latitude: entry.lat / entry.count, longitude: entry.lng / entry.count };
+
+      return {
+        slug,
+        name: entry.name,
+        countrySlug: entry.countrySlug,
+        coverImageUrl: entry.coverImageUrl,
+        distanceKm: haversineDistanceKm(referencePoint, point),
+      };
+    })
+    // Cidades muito distantes (ex: outro continente) não contam como "próximas",
+    // mesmo que estejam no mesmo roteiro.
+    .filter((city) => (city.distanceKm as number) <= NEARBY_CITIES_MAX_DISTANCE_KM);
 
   cities.sort((a, b) => (a.distanceKm as number) - (b.distanceKm as number));
 

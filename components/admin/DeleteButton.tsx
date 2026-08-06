@@ -10,7 +10,7 @@ export default function DeleteButton({
   confirmMessage,
   redirectTo,
 }: {
-  table: "countries" | "cities" | "attractions";
+  table: "countries" | "cities" | "attractions" | "site_reviews";
   id: string;
   confirmMessage: string;
   redirectTo?: string;

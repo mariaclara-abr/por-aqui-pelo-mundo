@@ -121,7 +121,7 @@ export default async function AfiliadosPage() {
       </section>
 
       <p className="mt-8 text-xs text-oliva/70">
-        Comissões reais ainda não são exibidas aqui — depende de integrar a
+        Comissões reais ainda não são exibidas aqui: depende de integrar a
         API de cada programa de afiliado no futuro.
       </p>
     </div>

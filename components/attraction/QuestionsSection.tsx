@@ -281,7 +281,7 @@ export default function QuestionsSection({
             <p className="text-xs text-oliva">
               Perguntas e respostas ficam públicas para outros viajantes. Quem
               responde é a autora pessoalmente, então a resposta pode demorar
-              um pouco — obrigada pela compreensão!
+              um pouco, obrigada pela compreensão!
             </p>
             <button
               type="submit"

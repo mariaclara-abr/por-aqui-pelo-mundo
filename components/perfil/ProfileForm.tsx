@@ -155,7 +155,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
             setBio(event.target.value);
             setSaved(false);
           }}
-          placeholder="Opcional — conte um pouco sobre você."
+          placeholder="Opcional: conte um pouco sobre você."
         />
       </div>
 

@@ -106,7 +106,7 @@ export default async function SobrePage() {
             Como funciona a nota da curadoria
           </h2>
           <p>
-            Cada atração recebe de 1 a 5 estrelas — mas não é uma média de
+            Cada atração recebe de 1 a 5 estrelas, mas não é uma média de
             avaliações de usuários, e sim minha opinião pessoal sobre o
             lugar, com base na experiência de quem realmente esteve lá.
           </p>

@@ -27,7 +27,7 @@ export default function CurationRating({
   return (
     <div
       className={`flex flex-col items-start gap-1 ${alignEnd ? "sm:items-end" : ""}`}
-      aria-label={`Avaliação da curadoria: ${rating} de 5 — ${label}`}
+      aria-label={`Avaliação da curadoria: ${rating} de 5, ${label}`}
     >
       <div className="flex items-center gap-0.5" aria-hidden="true">
         {Array.from({ length: 5 }).map((_, index) => (

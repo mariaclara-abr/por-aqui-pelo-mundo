@@ -221,7 +221,7 @@ export default function AttractionForm({
           <option value="">Selecione...</option>
           {cities.map((city) => (
             <option key={city.id} value={city.id}>
-              {city.name} — {city.countries.name}
+              {city.name}, {city.countries.name}
             </option>
           ))}
         </select>
@@ -281,7 +281,7 @@ export default function AttractionForm({
       <FormField
         label="Experiência pessoal"
         htmlFor="personalExperience"
-        helpText="Conte como foi a visita — isso é o coração da curadoria, o que diferencia o site de um guia genérico."
+        helpText="Conte como foi a visita: isso é o coração da curadoria, o que diferencia o site de um guia genérico."
       >
         <textarea
           id="personalExperience"
@@ -426,7 +426,7 @@ export default function AttractionForm({
       <FormField
         label="Nota da curadoria"
         htmlFor="curationRating"
-        helpText="Sua avaliação pessoal do lugar — não é média de avaliações de usuários."
+        helpText="Sua avaliação pessoal do lugar, não é média de avaliações de usuários."
       >
         <div className="flex flex-col gap-2">
           {[5, 4, 3, 2, 1].map((value) => (
@@ -517,7 +517,7 @@ export default function AttractionForm({
       <FormField
         label="Fotos"
         htmlFor="photos"
-        helpText="Envie uma ou mais fotos. A primeira da lista é a foto principal — use as setas para reordenar."
+        helpText="Envie uma ou mais fotos. A primeira da lista é a foto principal, use as setas para reordenar."
       >
         <PhotoUploader photos={photos} onChange={setPhotos} />
       </FormField>

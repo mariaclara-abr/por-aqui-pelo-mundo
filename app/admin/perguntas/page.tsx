@@ -9,7 +9,7 @@ export default async function AdminPerguntasPage() {
       <h1 className="font-serif text-2xl text-tinta">Perguntas pendentes</h1>
       <p className="mt-1 text-sm text-oliva">
         Perguntas feitas pelos viajantes em qualquer atração, aguardando
-        resposta — tudo num só lugar.
+        resposta, tudo num só lugar.
       </p>
 
       <div className="mt-6">

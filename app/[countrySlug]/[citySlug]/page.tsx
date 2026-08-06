@@ -119,7 +119,7 @@ export default async function CityPage(
               Nenhuma atração encontrada
             </p>
             <p className="max-w-sm text-oliva">
-              Tente remover algum filtro, ou volte em breve — novas atrações
+              Tente remover algum filtro, ou volte em breve: novas atrações
               chegam sempre.
             </p>
           </div>
