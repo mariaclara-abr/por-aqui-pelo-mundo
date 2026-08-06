@@ -19,9 +19,16 @@ export default function Header() {
           {!isHome && (
             <Link
               href="/"
-              className="min-w-0 flex-1 truncate font-serif text-xl text-tinta"
+              className="flex min-w-0 flex-1 items-center gap-2 truncate font-serif text-xl text-tinta"
             >
-              Por Aqui Pelo Mundo
+              <img
+                src="/assets/simbolo.svg"
+                alt=""
+                width={20}
+                height={20}
+                className="shrink-0"
+              />
+              <span className="truncate">Por Aqui Pelo Mundo</span>
             </Link>
           )}
         </div>

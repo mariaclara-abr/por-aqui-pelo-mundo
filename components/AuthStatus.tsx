@@ -9,9 +9,22 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 export default function AuthStatus() {
   const { user, profile, isAuthor, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function clearHoverTimeout() {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  }
+
+  useEffect(() => {
+    return () => clearHoverTimeout();
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -19,7 +32,9 @@ export default function AuthStatus() {
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
+        clearHoverTimeout();
         setIsOpen(false);
+        setPinned(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -27,8 +42,35 @@ export default function AuthStatus() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  function handleMouseEnter() {
+    if (pinned) return;
+    clearHoverTimeout();
+    setIsOpen(true);
+  }
+
+  function handleMouseLeave() {
+    if (pinned) return;
+    clearHoverTimeout();
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 2000);
+  }
+
+  function handleAvatarClick() {
+    clearHoverTimeout();
+    if (pinned) {
+      setPinned(false);
+      setIsOpen(false);
+    } else {
+      setPinned(true);
+      setIsOpen(true);
+    }
+  }
+
   function requestSignOut() {
+    clearHoverTimeout();
     setIsOpen(false);
+    setPinned(false);
     setConfirmingSignOut(true);
   }
 
@@ -63,12 +105,12 @@ export default function AuthStatus() {
     <div
       ref={containerRef}
       className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleAvatarClick}
         aria-label="Menu da conta"
         className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-oliva text-sm font-medium text-white"
       >
