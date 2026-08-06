@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCitiesByCountry, getCityCountByCountry, getCountryBySlug } from "@/lib/queries";
 import CityCard from "@/components/CityCard";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
@@ -49,6 +49,12 @@ export default async function CountryPage(
   }
 
   const cities = await getCitiesByCountry(countrySlug);
+
+  // Países com uma única cidade (ex: Mônaco) não precisam da etapa
+  // intermediária de escolher a cidade: vai direto para as atrações.
+  if (cities.length === 1) {
+    redirect(`/${countrySlug}/${cities[0].slug}`);
+  }
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
