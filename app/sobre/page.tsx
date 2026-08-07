@@ -48,29 +48,32 @@ export default async function SobrePage() {
 
   return (
     <main className="flex-1">
-      <div className="flex aspect-[4/3] w-full items-center justify-center bg-branco sm:aspect-[21/9]">
-        {about.author_photo_url ? (
-          <img
-            src={about.author_photo_url}
-            alt={about.author_name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span className="font-serif text-lg text-oliva">
-            Foto da autora em breve
-          </span>
-        )}
-      </div>
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+        <div className="flex flex-col items-center text-center">
+          <div className="h-44 w-44 shrink-0 overflow-hidden rounded-full border-4 border-branco bg-branco shadow-sm sm:h-56 sm:w-56">
+            {about.author_photo_url ? (
+              <img
+                src={about.author_photo_url}
+                alt={about.author_name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <span className="font-serif text-sm text-oliva">
+                  Foto em breve
+                </span>
+              </div>
+            )}
+          </div>
+          <p className="mt-5 text-xs uppercase tracking-widest text-oliva">
+            Sobre a autora
+          </p>
+          <h1 className="mt-2 font-serif text-3xl text-tinta sm:text-4xl">
+            {about.author_name}
+          </h1>
+        </div>
 
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
-        <p className="text-xs uppercase tracking-widest text-oliva">
-          Sobre a autora
-        </p>
-        <h1 className="mt-2 font-serif text-3xl text-tinta sm:text-4xl">
-          {about.author_name}
-        </h1>
-
-        <div className="mt-8 flex flex-col gap-5 leading-relaxed text-tinta">
+        <div className="mt-10 flex flex-col gap-5 leading-relaxed text-tinta">
           {bioParagraphs.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}

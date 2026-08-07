@@ -104,6 +104,7 @@ interface RoteiroContextValue {
   isInRoteiro: (attractionId: string) => boolean;
   addItem: (attraction: RoteiroAttraction) => Promise<void>;
   removeItem: (attractionId: string) => Promise<void>;
+  clearItems: () => Promise<void>;
   reorder: (orderedAttractionIds: string[]) => Promise<void>;
   renameItinerary: (title: string) => Promise<void>;
   refresh: () => Promise<void>;
@@ -120,6 +121,7 @@ const RoteiroContext = createContext<RoteiroContextValue>({
   isInRoteiro: () => false,
   addItem: async () => {},
   removeItem: async () => {},
+  clearItems: async () => {},
   reorder: async () => {},
   renameItinerary: async () => {},
   refresh: async () => {},
@@ -288,6 +290,18 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  async function clearItems() {
+    if (items.length === 0) return;
+
+    if (user) {
+      await Promise.all(items.map((item) => removeAccountItem(item.itemId)));
+    } else {
+      writeLocalIds([]);
+    }
+
+    setItems([]);
+  }
+
   async function reorder(orderedAttractionIds: string[]) {
     const byAttractionId = new Map(
       items.map((item) => [item.attraction.id, item]),
@@ -416,6 +430,7 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
         isInRoteiro,
         addItem,
         removeItem,
+        clearItems,
         reorder,
         renameItinerary,
         refresh,

@@ -13,6 +13,7 @@ import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
 import ItinerarySwitcherDialog from "@/components/ItinerarySwitcherDialog";
 import PremiumDialog from "@/components/PremiumDialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
 import { humanizeSlug } from "@/lib/affiliates";
 import { exportToGoogleMaps } from "@/lib/export";
@@ -136,12 +137,19 @@ function RoteiroTitle() {
 }
 
 export default function MeuRoteiroPage() {
-  const { items, loading, removeItem, reorder, itineraryId, title } = useRoteiro();
+  const { items, loading, removeItem, clearItems, reorder, itineraryId, title } =
+    useRoteiro();
   const { user } = useAuth();
   const { isPremium, hasRoteiroUnicoFor } = useUserSubscription();
   const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [confirmingClear, setConfirmingClear] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const [confirmingRemoveId, setConfirmingRemoveId] = useState<string | null>(
+    null,
+  );
+  const [removing, setRemoving] = useState(false);
   // Volta de um checkout do Stripe (sucesso ou cancelado) reabre o modal de
   // Premium automaticamente, pra mostrar a confirmação do pagamento.
   const [premiumOpen, setPremiumOpen] = useState(
@@ -171,10 +179,28 @@ export default function MeuRoteiroPage() {
     }
   }
 
-  function handleRemove(attractionId: string) {
-    removeItem(attractionId).catch((error) => {
+  async function handleRemove(attractionId: string) {
+    setRemoving(true);
+    try {
+      await removeItem(attractionId);
+      setConfirmingRemoveId(null);
+    } catch (error) {
       console.error("Não foi possível remover o item do roteiro:", error);
-    });
+    } finally {
+      setRemoving(false);
+    }
+  }
+
+  async function handleClearAll() {
+    setClearing(true);
+    try {
+      await clearItems();
+      setConfirmingClear(false);
+    } catch (error) {
+      console.error("Não foi possível limpar o roteiro:", error);
+    } finally {
+      setClearing(false);
+    }
   }
 
   if (loading) {
@@ -358,10 +384,58 @@ export default function MeuRoteiroPage() {
           </div>
         )}
 
-        <p className="mt-8 text-lg font-semibold text-terracota">
-          {items.length}{" "}
-          {items.length === 1 ? "atração selecionada" : "atrações selecionadas"}
-        </p>
+        <div className="mt-8 flex items-center justify-between gap-3">
+          <p className="text-lg font-semibold text-terracota">
+            {items.length}{" "}
+            {items.length === 1
+              ? "atração selecionada"
+              : "atrações selecionadas"}
+          </p>
+          <button
+            type="button"
+            onClick={() => setConfirmingClear(true)}
+            className="shrink-0 text-sm text-oliva transition-colors hover:text-terracota hover:underline"
+          >
+            Limpar atrações
+          </button>
+        </div>
+
+        {confirmingClear && (
+          <ConfirmDialog
+            message="Tem certeza que quer excluir todas as atrações do roteiro? Essa ação não pode ser desfeita."
+            confirmLabel="Sim, excluir"
+            pendingLabel="Excluindo..."
+            pending={clearing}
+            onConfirm={handleClearAll}
+            onCancel={() => setConfirmingClear(false)}
+          />
+        )}
+
+        {confirmingRemoveId &&
+          (() => {
+            const target = items.find(
+              (item) => item.attraction.id === confirmingRemoveId,
+            );
+            if (!target) return null;
+            return (
+              <ConfirmDialog
+                message={
+                  <>
+                    Tem certeza que quer remover{" "}
+                    <span className="font-medium">
+                      {target.attraction.name}
+                    </span>{" "}
+                    do roteiro?
+                  </>
+                }
+                confirmLabel="Sim, remover"
+                pendingLabel="Removendo..."
+                pending={removing}
+                onConfirm={() => handleRemove(target.attraction.id)}
+                onCancel={() => setConfirmingRemoveId(null)}
+              />
+            );
+          })()}
 
         <div className="mt-4 flex flex-col gap-3">
           {items.map((item, index) => {
@@ -482,7 +556,7 @@ export default function MeuRoteiroPage() {
 
                   <button
                     type="button"
-                    onClick={() => handleRemove(item.attraction.id)}
+                    onClick={() => setConfirmingRemoveId(item.attraction.id)}
                     aria-label="Remover do roteiro"
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-oliva transition-colors hover:text-terracota"
                   >

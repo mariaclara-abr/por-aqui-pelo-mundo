@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRoteiro } from "@/lib/roteiro";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
+  deleteItinerary,
   deriveDestination,
   getUserItineraries,
   type ItinerarySummary,
@@ -22,6 +24,10 @@ export default function ItinerarySwitcherDialog({
   const [error, setError] = useState<string | null>(null);
   const [itineraries, setItineraries] = useState<ItinerarySummary[]>([]);
   const [pending, setPending] = useState(false);
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -52,6 +58,29 @@ export default function ItinerarySwitcherDialog({
     } catch {
       setError("Não foi possível trocar de roteiro.");
       setPending(false);
+    }
+  }
+
+  async function handleDelete(itinerary: ItinerarySummary) {
+    setDeleting(true);
+    try {
+      await deleteItinerary(itinerary.id);
+      const remaining = itineraries.filter((it) => it.id !== itinerary.id);
+      setItineraries(remaining);
+      setConfirmingDeleteId(null);
+
+      if (itinerary.id === currentItineraryId) {
+        if (remaining.length > 0) {
+          await switchItinerary(remaining[0].id, remaining[0].title);
+        } else {
+          await createNewItinerary();
+        }
+        onClose();
+      }
+    } catch {
+      setError("Não foi possível excluir o roteiro.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -99,30 +128,44 @@ export default function ItinerarySwitcherDialog({
             {itineraries.map((itinerary) => {
               const active = itinerary.id === currentItineraryId;
               return (
-                <button
+                <div
                   key={itinerary.id}
-                  type="button"
-                  onClick={() => handleSelect(itinerary)}
-                  disabled={pending}
-                  className={`flex flex-col items-start rounded-lg border p-3 text-left transition-colors disabled:opacity-60 ${
+                  className={`flex items-center gap-2 rounded-lg border p-3 transition-colors ${
                     active
                       ? "border-terracota bg-terracota/5"
                       : "border-oliva/20 hover:bg-areia"
                   }`}
                 >
-                  <span className="font-serif text-base text-tinta">
-                    {itinerary.title}
-                    {active && (
-                      <span className="ml-2 text-xs font-medium uppercase tracking-wide text-terracota">
-                        Atual
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-xs text-oliva">
-                    {deriveDestination(itinerary)} · {itinerary.items.length}{" "}
-                    {itinerary.items.length === 1 ? "atração" : "atrações"}
-                  </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(itinerary)}
+                    disabled={pending}
+                    className="flex min-w-0 flex-1 flex-col items-start text-left disabled:opacity-60"
+                  >
+                    <span className="font-serif text-base text-tinta">
+                      {itinerary.title}
+                      {active && (
+                        <span className="ml-2 text-xs font-medium uppercase tracking-wide text-terracota">
+                          Atual
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-xs text-oliva">
+                      {deriveDestination(itinerary)} · {itinerary.items.length}{" "}
+                      {itinerary.items.length === 1 ? "atração" : "atrações"}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingDeleteId(itinerary.id)}
+                    disabled={pending}
+                    aria-label={`Excluir ${itinerary.title}`}
+                    title="Excluir roteiro"
+                    className="shrink-0 rounded-full p-1 text-oliva transition-colors hover:text-terracota disabled:opacity-60"
+                  >
+                    ✕
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -137,6 +180,30 @@ export default function ItinerarySwitcherDialog({
           + Criar novo roteiro
         </button>
       </div>
+
+      {confirmingDeleteId &&
+        (() => {
+          const target = itineraries.find(
+            (it) => it.id === confirmingDeleteId,
+          );
+          if (!target) return null;
+          return (
+            <ConfirmDialog
+              message={
+                <>
+                  Tem certeza que quer excluir{" "}
+                  <span className="font-medium">{target.title}</span>? Essa
+                  ação não pode ser desfeita.
+                </>
+              }
+              confirmLabel="Sim, excluir"
+              pendingLabel="Excluindo..."
+              pending={deleting}
+              onConfirm={() => handleDelete(target)}
+              onCancel={() => setConfirmingDeleteId(null)}
+            />
+          );
+        })()}
     </div>
   );
 }
