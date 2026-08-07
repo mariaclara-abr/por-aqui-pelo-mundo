@@ -42,7 +42,7 @@ export default async function OrganizarComIAPage() {
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-6xl">
         <Link
           href="/meu-roteiro"
           className="text-sm text-oliva transition-colors hover:text-terracota"

@@ -112,22 +112,22 @@ function RoteiroTitle() {
     >
       <h1 className="font-serif text-3xl text-tinta sm:text-4xl">{title}</h1>
       <span className="relative">
-      <svg
-        viewBox="0 0 20 20"
-        className="h-4 w-4 shrink-0 fill-none stroke-current text-oliva opacity-0 transition-opacity group-hover:opacity-100"
-        strokeWidth={1.4}
-      >
-        <path
-          d="M12.9 3.6l3.5 3.5-9 9-4 1 1-4z"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M11.3 5.2l3.5 3.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+        <svg
+          viewBox="0 0 20 20"
+          className="h-4 w-4 shrink-0 fill-none stroke-current text-oliva opacity-0 transition-opacity group-hover:opacity-100"
+          strokeWidth={1.4}
+        >
+          <path
+            d="M12.9 3.6l3.5 3.5-9 9-4 1 1-4z"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M11.3 5.2l3.5 3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <span className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-tinta px-2 py-1 text-xs text-branco opacity-0 transition-opacity duration-150 group-hover:opacity-100">
           Editar título
         </span>
@@ -137,8 +137,15 @@ function RoteiroTitle() {
 }
 
 export default function MeuRoteiroPage() {
-  const { items, loading, removeItem, clearItems, reorder, itineraryId, title } =
-    useRoteiro();
+  const {
+    items,
+    loading,
+    removeItem,
+    clearItems,
+    reorder,
+    itineraryId,
+    title,
+  } = useRoteiro();
   const { user } = useAuth();
   const { isPremium, hasRoteiroUnicoFor } = useUserSubscription();
   const router = useRouter();
@@ -250,9 +257,11 @@ export default function MeuRoteiroPage() {
     );
   }
 
-  const countryCount = new Set(items.map((item) => item.attraction.countrySlug)).size;
+  const countryCount = new Set(items.map((item) => item.attraction.countrySlug))
+    .size;
   const premiumCoverImageUrl =
-    items.find((item) => item.attraction.coverPhotoUrl)?.attraction.coverPhotoUrl ?? null;
+    items.find((item) => item.attraction.coverPhotoUrl)?.attraction
+      .coverPhotoUrl ?? null;
 
   const mapPoints: {
     id: string;
@@ -262,7 +271,10 @@ export default function MeuRoteiroPage() {
     lng: number;
   }[] = [];
   for (const item of items) {
-    if (item.attraction.latitude !== null && item.attraction.longitude !== null) {
+    if (
+      item.attraction.latitude !== null &&
+      item.attraction.longitude !== null
+    ) {
       mapPoints.push({
         id: item.attraction.id,
         name: item.attraction.name,
@@ -275,7 +287,7 @@ export default function MeuRoteiroPage() {
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2">
             <RoteiroTitle />
@@ -373,7 +385,10 @@ export default function MeuRoteiroPage() {
               type="button"
               onClick={() => {
                 const url = exportToGoogleMaps(
-                  mapPoints.map((point) => ({ lat: point.lat, lng: point.lng })),
+                  mapPoints.map((point) => ({
+                    lat: point.lat,
+                    lng: point.lng,
+                  })),
                 );
                 window.open(url, "_blank", "noopener,noreferrer");
               }}
@@ -394,7 +409,7 @@ export default function MeuRoteiroPage() {
           <button
             type="button"
             onClick={() => setConfirmingClear(true)}
-            className="shrink-0 text-sm text-oliva transition-colors hover:text-terracota hover:underline"
+            className="mr-4 shrink-0 text-sm text-oliva transition-colors hover:text-terracota hover:underline"
           >
             Limpar atrações
           </button>

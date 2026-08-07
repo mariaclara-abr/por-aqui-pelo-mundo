@@ -283,7 +283,7 @@ export default function ItineraryHistory({
             Nenhum roteiro em planejamento no momento.
           </p>
         ) : (
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
             {planning.map((itinerary) => (
               <ItineraryCard
                 key={itinerary.id}
@@ -305,7 +305,7 @@ export default function ItineraryHistory({
             Nenhum roteiro concluído ainda.
           </p>
         ) : (
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
             {completed.map((itinerary) => (
               <ItineraryCard
                 key={itinerary.id}

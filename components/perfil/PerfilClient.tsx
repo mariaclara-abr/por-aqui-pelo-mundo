@@ -42,7 +42,7 @@ export default function PerfilClient() {
     <div className="mt-8 flex flex-col gap-12">
       <section>
         <h2 className="font-serif text-xl text-tinta">Dados do perfil</h2>
-        <div className="mt-4">
+        <div className="mt-4 max-w-xl">
           <ProfileForm profile={profile} />
         </div>
       </section>
@@ -51,7 +51,7 @@ export default function PerfilClient() {
         <h2 className="font-serif text-xl text-tinta">
           Preferências de viagem
         </h2>
-        <div className="mt-4">
+        <div className="mt-4 max-w-xl">
           <PreferencesForm
             userId={user.id}
             initialPreferences={profile.preferences}

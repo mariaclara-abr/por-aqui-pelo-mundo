@@ -73,7 +73,7 @@ export default async function SharedItineraryPage(
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-6xl">
         <p className="text-xs font-medium uppercase tracking-wide text-terracota">
           Roteiro compartilhado
         </p>
@@ -89,51 +89,60 @@ export default async function SharedItineraryPage(
           {shared.attractions.length === 1 ? "atração" : "atrações"}
         </p>
 
-        {mapPoints.length > 0 && (
-          <div className="isolate mt-8 overflow-hidden rounded-xl">
-            <SharedItineraryMap points={mapPoints} />
-          </div>
-        )}
+        <div className="mt-8 lg:flex lg:items-start lg:gap-10">
+          {mapPoints.length > 0 && (
+            <div className="isolate overflow-hidden rounded-xl lg:sticky lg:top-8 lg:w-[38%] lg:shrink-0">
+              <SharedItineraryMap points={mapPoints} />
+            </div>
+          )}
 
-        <div className="mt-8 flex flex-col gap-3">
-          {shared.attractions.map((attraction) => {
-            const categoryLabel =
-              ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)
-                ?.label ?? attraction.category;
+          <div
+            className={
+              mapPoints.length > 0
+                ? "mt-8 flex min-w-0 flex-col gap-3 lg:mt-0 lg:flex-1"
+                : "flex min-w-0 flex-col gap-3 lg:flex-1"
+            }
+          >
+            {shared.attractions.map((attraction) => {
+              const categoryLabel =
+                ATTRACTION_CATEGORIES.find(
+                  (c) => c.value === attraction.category,
+                )?.label ?? attraction.category;
 
-            return (
-              <Link
-                key={attraction.id}
-                href={`/${attraction.countrySlug}/${attraction.citySlug}/${attraction.slug}`}
-                className="flex items-center gap-3 rounded-xl bg-branco p-3 shadow-sm transition-colors hover:bg-areia"
-              >
-                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-areia">
-                  {attraction.coverPhotoUrl && (
-                    <img
-                      src={attraction.coverPhotoUrl}
-                      alt={attraction.name}
-                      className="h-full w-full object-cover"
-                    />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-serif text-lg text-tinta">
-                    {attraction.name}
-                  </p>
-                  <p className="text-xs uppercase tracking-wide text-oliva">
-                    {categoryLabel} · {attraction.cityName}
-                  </p>
-                  <div className="mt-1">
-                    <CurationRating
-                      rating={attraction.curationRating}
-                      showLabel={false}
-                      size="sm"
-                    />
+              return (
+                <Link
+                  key={attraction.id}
+                  href={`/${attraction.countrySlug}/${attraction.citySlug}/${attraction.slug}`}
+                  className="flex items-center gap-3 rounded-xl bg-branco p-3 shadow-sm transition-colors hover:bg-areia"
+                >
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-areia">
+                    {attraction.coverPhotoUrl && (
+                      <img
+                        src={attraction.coverPhotoUrl}
+                        alt={attraction.name}
+                        className="h-full w-full object-cover"
+                      />
+                    )}
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-serif text-lg text-tinta">
+                      {attraction.name}
+                    </p>
+                    <p className="text-xs uppercase tracking-wide text-oliva">
+                      {categoryLabel} · {attraction.cityName}
+                    </p>
+                    <div className="mt-1">
+                      <CurationRating
+                        rating={attraction.curationRating}
+                        showLabel={false}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         <div className="mt-12 rounded-xl border-2 border-terracota bg-terracota/5 p-6 text-center">
