@@ -1,10 +1,33 @@
 import Link from "next/link";
-import { getAllAttractions } from "@/lib/queries";
+import { getAllAttractions, getCitiesWithCountry } from "@/lib/queries";
 import { ATTRACTION_CATEGORIES } from "@/types/database";
 import DeleteButton from "@/components/admin/DeleteButton";
+import AttractionCityFilter from "@/components/admin/AttractionCityFilter";
 
-export default async function AdminAtracoesPage() {
-  const attractions = await getAllAttractions();
+function firstValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function AdminAtracoesPage(
+  props: PageProps<"/admin/atracoes">,
+) {
+  const searchParams = await props.searchParams;
+  const [allAttractions, cities] = await Promise.all([
+    getAllAttractions(),
+    getCitiesWithCountry(),
+  ]);
+
+  const cidadesParam = firstValue(searchParams.cidades);
+  const selectedCityIds = cidadesParam
+    ? cidadesParam.split(",").filter(Boolean)
+    : [];
+
+  const attractions =
+    selectedCityIds.length > 0
+      ? allAttractions.filter((attraction) =>
+          selectedCityIds.includes(attraction.city_id),
+        )
+      : allAttractions;
 
   return (
     <div>
@@ -18,8 +41,14 @@ export default async function AdminAtracoesPage() {
         </Link>
       </div>
 
+      <AttractionCityFilter cities={cities} />
+
       {attractions.length === 0 ? (
-        <p className="mt-8 text-oliva">Nenhuma atração cadastrada ainda.</p>
+        <p className="mt-8 text-oliva">
+          {selectedCityIds.length > 0
+            ? "Nenhuma atração encontrada para as cidades selecionadas."
+            : "Nenhuma atração cadastrada ainda."}
+        </p>
       ) : (
         <ul className="mt-6 flex flex-col gap-2">
           {attractions.map((attraction) => {
