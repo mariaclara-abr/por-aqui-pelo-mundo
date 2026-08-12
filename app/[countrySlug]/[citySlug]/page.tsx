@@ -110,7 +110,7 @@ export default async function CityPage(
         </h1>
 
         {city.description && (
-          <p className="mt-2 max-w-2xl text-oliva">{city.description}</p>
+          <p className="mt-2 text-oliva">{city.description}</p>
         )}
 
         <Suspense fallback={null}>
