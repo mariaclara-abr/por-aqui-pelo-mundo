@@ -615,6 +615,24 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["site_reviews"]["Insert"]>;
         Relationships: [];
       };
+      login_attempts: {
+        Row: {
+          id: number;
+          identifier: string;
+          ip: string;
+          success: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          identifier: string;
+          ip: string;
+          success: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["login_attempts"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: {
       public_profiles: {

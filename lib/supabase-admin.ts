@@ -1,10 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 
-// Cliente com a service role key — ignora RLS. Usado só pelo webhook do
-// Stripe (app/api/webhook/stripe/route.ts), que não roda com a sessão de
-// nenhum usuário e por isso precisa escrever em `subscriptions` diretamente.
-// Nunca importar este arquivo de um componente cliente.
+// Cliente com a service role key, ignora RLS. Usado pelo webhook do Stripe
+// (app/api/webhook/stripe/route.ts) e pela rota de login
+// (app/api/auth/login/route.ts), que não rodam com a sessão de nenhum
+// usuário e por isso precisam escrever em `subscriptions`/`login_attempts`
+// diretamente. Nunca importar este arquivo de um componente cliente.
 export function createAdminClient() {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

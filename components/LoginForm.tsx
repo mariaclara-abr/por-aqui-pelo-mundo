@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -17,21 +15,25 @@ export default function LoginForm() {
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
 
-    setLoading(false);
-
-    if (error) {
-      setError("E-mail ou senha incorretos.");
+    if (!response.ok) {
+      const data = (await response.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      setLoading(false);
+      setError(data?.error ?? "Não foi possível entrar. Tente novamente.");
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    // Recarrega a página inteira: a sessão foi criada pelo servidor via
+    // cookies, e um reload garante que o AuthProvider a releia do zero.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.assign("/");
   }
 
   async function handleGoogleLogin() {
