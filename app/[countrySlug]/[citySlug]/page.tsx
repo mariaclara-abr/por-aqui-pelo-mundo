@@ -142,7 +142,7 @@ export default async function CityPage(
 
         <section className="mt-12 border-t border-tinta/10 pt-8">
           <h2 className="font-serif text-xl text-tinta">
-            Outras cidades próximas
+            Cidades próximas
           </h2>
           <div className="mt-4">
             <RelatedContent mode="city" citySlug={citySlug} />
