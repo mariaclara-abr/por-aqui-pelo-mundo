@@ -171,6 +171,16 @@ function WalkTime({ distanceKm }: { distanceKm: number }) {
   );
 }
 
+const MAX_WALK_MINUTES_DISPLAY = 30;
+
+function AttractionDistance({ distanceKm }: { distanceKm: number }) {
+  return estimateWalkMinutes(distanceKm) > MAX_WALK_MINUTES_DISPLAY ? (
+    <CityDistance distanceKm={distanceKm} />
+  ) : (
+    <WalkTime distanceKm={distanceKm} />
+  );
+}
+
 function AddToRoteiroButton({ attraction }: { attraction: RecommendedAttraction }) {
   const { addItem, removeItem, isInRoteiro } = useRoteiro();
   const [pending, setPending] = useState(false);
@@ -250,7 +260,13 @@ function AddToRoteiroButton({ attraction }: { attraction: RecommendedAttraction 
   );
 }
 
-function AttractionRecommendationCard({ attraction }: { attraction: RecommendedAttraction }) {
+function AttractionRecommendationCard({
+  attraction,
+  groupKey,
+}: {
+  attraction: RecommendedAttraction;
+  groupKey: keyof AttractionRecommendations;
+}) {
   const categoryLabel =
     ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)?.label ?? attraction.category;
 
@@ -282,7 +298,11 @@ function AttractionRecommendationCard({ attraction }: { attraction: RecommendedA
         </div>
         {attraction.distanceKm !== null && (
           <div className="mt-1">
-            <WalkTime distanceKm={attraction.distanceKm} />
+            {groupKey === "nearbyAttractions" ? (
+              <AttractionDistance distanceKm={attraction.distanceKm} />
+            ) : (
+              <WalkTime distanceKm={attraction.distanceKm} />
+            )}
           </div>
         )}
       </Link>
@@ -411,7 +431,11 @@ export default function RelatedContent(props: RelatedContentProps) {
       {groups.map((group) => (
         <RecommendationGroup key={group.key} title={group.label}>
           {group.items.map((attraction) => (
-            <AttractionRecommendationCard key={attraction.id} attraction={attraction} />
+            <AttractionRecommendationCard
+              key={attraction.id}
+              attraction={attraction}
+              groupKey={group.key}
+            />
           ))}
         </RecommendationGroup>
       ))}
