@@ -109,6 +109,10 @@ export default async function CityPage(
           {city.name}
         </h1>
 
+        {city.description && (
+          <p className="mt-2 max-w-2xl text-oliva">{city.description}</p>
+        )}
+
         <Suspense fallback={null}>
           <AttractionFilters tags={allTags} />
         </Suspense>
