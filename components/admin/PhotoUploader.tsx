@@ -8,6 +8,24 @@ export interface AdminPhoto {
   url: string;
 }
 
+function sanitizeFileName(name: string) {
+  const lastDot = name.lastIndexOf(".");
+  const base = lastDot > 0 ? name.slice(0, lastDot) : name;
+  const ext = lastDot > 0 ? name.slice(lastDot + 1) : "";
+
+  const cleanBase = base
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-zA-Z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
+
+  const cleanExt = ext.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
+  return cleanExt ? `${cleanBase || "foto"}.${cleanExt}` : cleanBase || "foto";
+}
+
 export default function PhotoUploader({
   photos,
   onChange,
@@ -30,12 +48,13 @@ export default function PhotoUploader({
     let hadError = false;
 
     for (const file of files) {
-      const path = `attractions/${crypto.randomUUID()}-${file.name}`;
+      const path = `attractions/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
       const { error: uploadError } = await supabase.storage
         .from("media")
         .upload(path, file);
 
       if (uploadError) {
+        console.error("Falha ao enviar foto:", file.name, uploadError);
         hadError = true;
         continue;
       }
