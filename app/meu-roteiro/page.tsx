@@ -392,7 +392,7 @@ export default function MeuRoteiroPage() {
                 );
                 window.open(url, "_blank", "noopener,noreferrer");
               }}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+              className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-oliva px-5 py-2 text-sm font-medium text-oliva transition-colors hover:bg-oliva/10"
             >
               Abrir no Google Maps
             </button>
@@ -594,8 +594,16 @@ export default function MeuRoteiroPage() {
         <div className="mt-6 flex justify-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+            className="inline-flex items-center gap-2 text-sm font-medium text-terracota transition-colors hover:text-terracota/80"
           >
+            <svg
+              viewBox="0 0 20 20"
+              className="h-4 w-4 fill-none stroke-current"
+              strokeWidth={2}
+            >
+              <circle cx="9" cy="9" r="6" />
+              <path d="M17 17l-4-4" strokeLinecap="round" />
+            </svg>
             Buscar mais atrações
           </Link>
         </div>

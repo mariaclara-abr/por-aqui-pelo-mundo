@@ -119,7 +119,7 @@ function QuestionCard({
   }
 
   return (
-    <div className="rounded-xl bg-branco p-4">
+    <div className="rounded-xl bg-branco/90 p-4">
       <div className="flex items-start gap-3">
         <ProfileLink profile={question.asker}>
           <Avatar profile={question.asker} />
@@ -148,7 +148,7 @@ function QuestionCard({
               <div>
                 <ProfileLink
                   profile={question.answer.author}
-                  className="rounded-full bg-terracota px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white hover:bg-terracota/90"
+                  className="rounded-full bg-oliva px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white hover:bg-oliva/90"
                 >
                   Resposta da autora
                 </ProfileLink>
@@ -190,7 +190,7 @@ function QuestionCard({
               type="button"
               onClick={handleSubmitAnswer}
               disabled={saving || !answerDraft.trim()}
-              className="rounded-full bg-terracota px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+              className="rounded-full bg-oliva px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-oliva/90 disabled:opacity-60"
             >
               {saving ? "Salvando..." : "Responder"}
             </button>
@@ -290,7 +290,7 @@ export default function QuestionsSection({
       {!authLoading && user ? (
         <form
           onSubmit={handleAsk}
-          className="rounded-xl bg-branco p-4"
+          className="rounded-xl bg-branco/90 p-4"
         >
           <label htmlFor="new-question" className="text-sm font-medium text-tinta">
             Faça uma pergunta
@@ -312,7 +312,7 @@ export default function QuestionsSection({
             <button
               type="submit"
               disabled={submitting || !newQuestion.trim()}
-              className="shrink-0 rounded-full bg-terracota px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+              className="shrink-0 rounded-full bg-oliva px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-oliva/90 disabled:opacity-60"
             >
               {submitting ? "Enviando..." : "Perguntar"}
             </button>
@@ -321,7 +321,7 @@ export default function QuestionsSection({
         </form>
       ) : (
         !authLoading && (
-          <div className="rounded-xl bg-branco p-4 text-sm text-oliva">
+          <div className="rounded-xl bg-branco/90 p-4 text-sm text-oliva">
             <Link href="/entrar" className="font-medium text-terracota hover:underline">
               Entre
             </Link>{" "}

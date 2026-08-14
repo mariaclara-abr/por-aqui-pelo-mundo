@@ -130,20 +130,20 @@ export default function NavDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Menu de navegação"
-        className={`fixed inset-y-0 left-0 z-[1101] flex w-80 max-w-[85vw] flex-col bg-branco shadow-lg transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-[1101] flex w-80 max-w-[85vw] flex-col bg-oliva shadow-lg transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center gap-2 border-b border-oliva/15 px-4 py-4">
+        <div className="flex items-center gap-2 border-b border-branco/15 px-4 py-4">
           <div className="w-8 shrink-0" />
-          <p className="flex-1 truncate text-center font-serif text-lg text-tinta">
+          <p className="flex-1 truncate text-center font-serif text-lg text-branco">
             Menu
           </p>
           <button
             type="button"
             onClick={close}
             aria-label="Fechar menu"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-branco transition-colors hover:text-terracota"
           >
             <svg
               viewBox="0 0 20 20"
@@ -162,7 +162,7 @@ export default function NavDrawer() {
             </MenuItem>
 
             {destinosOpen && (
-              <div className="ml-3 flex flex-col gap-1 border-l border-oliva/15 pl-3">
+              <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
                 {renderList({
                   loading: loadingCountries,
                   items: countries,
@@ -178,7 +178,7 @@ export default function NavDrawer() {
                       </MenuItem>
 
                       {expandedCountrySlug === country.slug && (
-                        <div className="ml-3 flex flex-col gap-1 border-l border-oliva/15 pl-3">
+                        <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
                           {renderList({
                             loading: loadingCities,
                             items: cities,
@@ -216,7 +216,7 @@ export default function NavDrawer() {
             {isAuthor && (
               <MenuItem onClick={() => navigate("/admin")}>Painel</MenuItem>
             )}
-            <div className="my-2 border-t border-oliva/15" />
+            <div className="my-2 border-t border-branco/15" />
             {user ? (
               <MenuItem onClick={() => setConfirmingSignOut(true)}>
                 Sair
@@ -254,11 +254,11 @@ function renderList<T>({
   renderItem: (item: T) => React.ReactNode;
 }) {
   if (loading || !items) {
-    return <p className="px-3 py-2 text-sm text-oliva">Carregando...</p>;
+    return <p className="px-3 py-2 text-sm text-areia/70">Carregando...</p>;
   }
 
   if (items.length === 0) {
-    return <p className="px-3 py-2 text-sm text-oliva">{emptyLabel}</p>;
+    return <p className="px-3 py-2 text-sm text-areia/70">{emptyLabel}</p>;
   }
 
   return <>{items.map(renderItem)}</>;
@@ -279,13 +279,13 @@ function MenuItem({
     <button
       type="button"
       onClick={onClick}
-      className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-areia"
+      className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-branco/10"
     >
       <span
         className={
           chevron && expanded
-            ? "text-tinta transition-colors group-hover:text-terracota group-hover:underline group-hover:underline-offset-2"
-            : "text-tinta"
+            ? "text-branco transition-colors group-hover:text-terracota group-hover:underline group-hover:underline-offset-2"
+            : "text-branco"
         }
       >
         {children}
@@ -293,7 +293,7 @@ function MenuItem({
       {chevron && (
         <svg
           viewBox="0 0 20 20"
-          className={`h-4 w-4 shrink-0 fill-none stroke-current text-oliva transition-transform ${
+          className={`h-4 w-4 shrink-0 fill-none stroke-current text-areia/70 transition-transform ${
             expanded ? "rotate-90" : ""
           }`}
           strokeWidth={2}

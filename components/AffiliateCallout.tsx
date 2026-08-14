@@ -72,9 +72,10 @@ export default function AffiliateCallout({
   }
 
   return (
-    <div className="rounded-xl border-2 border-terracota bg-branco p-5">
-      <h3 className="font-serif text-lg text-tinta">Antes de viajar</h3>
-      <p className="mt-1 text-sm text-oliva">
+    <div className="relative left-1/2 w-screen -translate-x-1/2 bg-oliva">
+      <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-10">
+      <h3 className="font-serif text-lg text-branco">Antes de viajar</h3>
+      <p className="mt-1 text-sm text-areia/80">
         Um checklist rápido pra fechar os últimos detalhes da viagem.
       </p>
       <div className="mt-4 flex flex-col gap-2">
@@ -88,15 +89,15 @@ export default function AffiliateCallout({
               key={program.id}
               className={`flex items-center justify-between gap-3 rounded-lg border p-3 ${
                 href
-                  ? "border-oliva/20 bg-areia"
-                  : "border-dashed border-oliva/20 bg-areia/40"
+                  ? "border-branco/20 bg-branco/10"
+                  : "border-dashed border-branco/20 bg-branco/5"
               }`}
             >
               <div className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
-                    href ? "border-terracota" : "border-oliva/30"
+                    href ? "border-terracota" : "border-branco/30"
                   }`}
                 >
                   {href && (
@@ -114,9 +115,9 @@ export default function AffiliateCallout({
                   )}
                 </span>
                 <div>
-                  <p className="text-sm text-tinta">{program.checklistLabel}</p>
+                  <p className="text-sm text-branco">{program.checklistLabel}</p>
                   {href && (
-                    <p className="text-[11px] text-oliva/80">
+                    <p className="text-[11px] text-areia/80">
                       via {program.label}
                     </p>
                   )}
@@ -136,7 +137,7 @@ export default function AffiliateCallout({
                   Ver opções
                 </a>
               ) : (
-                <span className="shrink-0 text-xs text-oliva/60">
+                <span className="shrink-0 text-xs text-areia/60">
                   Em breve
                 </span>
               )}
@@ -144,10 +145,11 @@ export default function AffiliateCallout({
           );
         })}
       </div>
-      <p className="mt-3 text-[11px] leading-snug text-oliva/80">
+      <p className="mt-3 text-[11px] leading-snug text-areia/80">
         🔗 Links marcados usam programas de afiliado, sem custo extra pra
         você.
       </p>
+      </div>
     </div>
   );
 }

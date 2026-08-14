@@ -76,7 +76,7 @@ export default function SearchBox() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={(event) => event.key === "Escape" && close()}
-          placeholder="Buscar país ou cidade..."
+          placeholder="Buscar destinos..."
           className="w-32 rounded-full border border-oliva/30 bg-branco px-3 py-1.5 text-sm text-tinta placeholder:text-oliva/50 focus:border-terracota focus:outline-none sm:w-64"
         />
       ) : (

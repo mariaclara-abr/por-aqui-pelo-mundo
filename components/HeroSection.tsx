@@ -26,7 +26,7 @@ export default function HeroSection({
           <h1 className="font-serif text-4xl leading-tight tracking-tight text-terracota sm:text-5xl lg:text-[3.4rem] lg:whitespace-nowrap">
             Por Aqui Pelo Mundo
           </h1>
-          <p className="mt-5 text-xl text-tinta sm:text-2xl">
+          <p className="mt-5 font-serif text-xl text-tinta sm:text-2xl">
             Monte seu roteiro de viagens com base na experiência real de quem
             já esteve lá.
           </p>

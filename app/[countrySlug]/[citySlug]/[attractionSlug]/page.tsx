@@ -300,15 +300,17 @@ export default async function AttractionPage(
               attractionId={attraction.id}
             />
 
-            <section className="mt-12 border-t border-tinta/10 pt-8">
-              <h2 className="font-serif text-xl text-tinta">
-                Perguntas sobre este lugar
-              </h2>
-              <div className="mt-4">
-                <QuestionsSection
-                  attractionId={attraction.id}
-                  initialQuestions={questions}
-                />
+            <section className="relative left-1/2 mt-12 w-screen -translate-x-1/2 bg-oliva">
+              <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-10">
+                <h2 className="font-serif text-xl text-branco">
+                  Perguntas sobre este lugar
+                </h2>
+                <div className="mt-4">
+                  <QuestionsSection
+                    attractionId={attraction.id}
+                    initialQuestions={questions}
+                  />
+                </div>
               </div>
             </section>
 
