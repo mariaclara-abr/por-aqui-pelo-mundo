@@ -203,7 +203,7 @@ export default function NavDrawer() {
             )}
 
             <MenuItem onClick={() => navigate("/meu-roteiro")}>
-              Meu Roteiro
+              Meus Roteiros
             </MenuItem>
             <MenuItem onClick={() => navigate("/sobre")}>
               Sobre a autora
