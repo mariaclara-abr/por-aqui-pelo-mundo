@@ -202,136 +202,128 @@ export default async function AttractionPage(
           )}
         </div>
 
-        <div className="mt-8 lg:flex lg:items-start lg:gap-10">
-          {quickFacts.length > 0 && (
-            <aside className="lg:order-2 lg:sticky lg:top-8 lg:w-64 lg:shrink-0">
-              <div className="rounded-xl bg-branco p-5">
-                <h2 className="font-serif text-lg text-tinta">
-                  Detalhes rápidos
-                </h2>
-                <dl className="mt-4 flex flex-col gap-4">
-                  {quickFacts.map((fact) => (
-                    <div key={fact.label}>
-                      <dt className="text-xs uppercase tracking-wide text-oliva">
-                        {fact.label}
-                      </dt>
-                      <dd className="mt-1 text-sm text-tinta">
-                        {fact.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </aside>
+        <div className="mt-8">
+          {attraction.description && (
+            <section>
+              <p className="leading-relaxed text-tinta">
+                {attraction.description}
+              </p>
+            </section>
           )}
 
-          <div className="mt-8 min-w-0 lg:order-1 lg:mt-0 lg:flex-1">
-            <div className="max-w-2xl">
-              {attraction.description && (
-                <section>
-                  <p className="leading-relaxed text-tinta">
-                    {attraction.description}
-                  </p>
-                </section>
-              )}
-
-              {attraction.exclusive_perk_description && (
-                <section className="mt-6 rounded-xl border-2 border-terracota bg-terracota/5 p-5">
-                  <p className="text-xs font-medium uppercase tracking-wide text-terracota">
-                    Exclusivo Por Aqui Pelo Mundo
-                  </p>
-                  <p className="mt-2 leading-relaxed text-tinta">
-                    {attraction.exclusive_perk_description}
-                  </p>
-                  {attraction.exclusive_perk_url && (
-                    <a
-                      href={attraction.exclusive_perk_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-block rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
-                    >
-                      {attraction.exclusive_perk_cta_label ||
-                        "Aproveitar parceria"}
-                    </a>
-                  )}
-                </section>
-              )}
-
-              {attraction.personal_experience && (
-                <section className="mt-6 rounded-xl bg-branco p-5">
-                  <h2 className="font-serif text-lg text-tinta">
-                    Experiência de quem já foi
-                  </h2>
-                  <p className="mt-2 leading-relaxed text-tinta/90">
-                    {attraction.personal_experience}
-                  </p>
-                </section>
-              )}
-
-              {attraction.important_tips && (
-                <section className="mt-6 rounded-xl border border-terracota/30 bg-terracota/5 p-5">
-                  <h2 className="font-serif text-lg text-tinta">
-                    Dicas importantes
-                  </h2>
-                  <p className="mt-2 leading-relaxed text-tinta/90">
-                    {attraction.important_tips}
-                  </p>
-                </section>
-              )}
-
-              {attraction.important_notes && (
-                <section className="mt-6 border-l-2 border-oliva/40 pl-4">
-                  <h2 className="font-serif text-lg text-tinta">
-                    Observações importantes
-                  </h2>
-                  <p className="mt-2 leading-relaxed text-tinta/90">
-                    {attraction.important_notes}
-                  </p>
-                </section>
-              )}
-            </div>
-
-            <AffiliateCallout
-              variant="attraction"
-              location={{
-                cityName: attraction.cities.name,
-                countryName: attraction.cities.countries.name,
-              }}
-              attractionId={attraction.id}
-            />
-
-            <section className="relative left-1/2 mt-12 w-screen -translate-x-1/2 bg-oliva">
-              <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-10">
-                <h2 className="font-serif text-xl text-branco">
-                  Perguntas sobre este lugar
-                </h2>
-                <div className="mt-4">
-                  <QuestionsSection
-                    attractionId={attraction.id}
-                    initialQuestions={questions}
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="mt-12 border-t border-tinta/10 pt-8">
-              <h2 className="font-serif text-xl text-tinta">
-                Recomendações relacionadas
+          {quickFacts.length > 0 && (
+            <div className="mt-6 rounded-xl p-5">
+              <h2 className="font-serif text-lg text-oliva">
+                Detalhes rápidos
               </h2>
-              <div className="mt-4">
-                <RelatedContent
-                  mode="attraction"
-                  attraction={{
-                    id: attraction.id,
-                    citySlug: attraction.cities.slug,
-                    latitude: attraction.latitude,
-                    longitude: attraction.longitude,
-                  }}
-                />
-              </div>
+              <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {quickFacts.map((fact) => (
+                  <div key={fact.label}>
+                    <dt className="text-xs uppercase tracking-wide text-oliva/70">
+                      {fact.label}
+                    </dt>
+                    <dd className="mt-1 text-sm text-oliva">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+
+          {attraction.exclusive_perk_description && (
+            <section className="mt-6 rounded-xl border-2 border-terracota bg-terracota/5 p-5">
+              <p className="text-xs font-medium uppercase tracking-wide text-terracota">
+                Exclusivo Por Aqui Pelo Mundo
+              </p>
+              <p className="mt-2 leading-relaxed text-tinta">
+                {attraction.exclusive_perk_description}
+              </p>
+              {attraction.exclusive_perk_url && (
+                <a
+                  href={attraction.exclusive_perk_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-block rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+                >
+                  {attraction.exclusive_perk_cta_label ||
+                    "Aproveitar parceria"}
+                </a>
+              )}
             </section>
-          </div>
+          )}
+
+          {attraction.personal_experience && (
+            <section className="mt-6 rounded-xl bg-branco p-5">
+              <h2 className="font-serif text-lg text-tinta">
+                Experiência de quem já foi
+              </h2>
+              <p className="mt-2 leading-relaxed text-tinta/90">
+                {attraction.personal_experience}
+              </p>
+            </section>
+          )}
+
+          {attraction.important_tips && (
+            <section className="mt-6 rounded-xl border border-terracota/30 bg-terracota/5 p-5">
+              <h2 className="font-serif text-lg text-tinta">
+                Dicas importantes
+              </h2>
+              <p className="mt-2 leading-relaxed text-tinta/90">
+                {attraction.important_tips}
+              </p>
+            </section>
+          )}
+
+          {attraction.important_notes && (
+            <section className="mt-6 border-l-2 border-oliva/40 pl-4">
+              <h2 className="font-serif text-lg text-tinta">
+                Observações importantes
+              </h2>
+              <p className="mt-2 leading-relaxed text-tinta/90">
+                {attraction.important_notes}
+              </p>
+            </section>
+          )}
         </div>
+
+        <AffiliateCallout
+          variant="attraction"
+          location={{
+            cityName: attraction.cities.name,
+            countryName: attraction.cities.countries.name,
+          }}
+          attractionId={attraction.id}
+        />
+
+        <section className="relative left-1/2 mt-12 w-screen -translate-x-1/2 bg-oliva">
+          <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-10">
+            <h2 className="font-serif text-xl text-branco">
+              Perguntas sobre este lugar
+            </h2>
+            <div className="mt-4">
+              <QuestionsSection
+                attractionId={attraction.id}
+                initialQuestions={questions}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-12 border-t border-tinta/10 pt-8">
+          <h2 className="font-serif text-xl text-tinta">
+            Recomendações relacionadas
+          </h2>
+          <div className="mt-4">
+            <RelatedContent
+              mode="attraction"
+              attraction={{
+                id: attraction.id,
+                citySlug: attraction.cities.slug,
+                latitude: attraction.latitude,
+                longitude: attraction.longitude,
+              }}
+            />
+          </div>
+        </section>
       </div>
     </main>
   );
