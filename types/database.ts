@@ -707,6 +707,22 @@ export interface Database {
         >;
         Relationships: [];
       };
+      about_visited_countries: {
+        Row: {
+          id: string;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["about_visited_countries"]["Insert"]
+        >;
+        Relationships: [];
+      };
       shared_itineraries: {
         Row: {
           id: string;

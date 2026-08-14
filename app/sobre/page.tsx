@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAboutPageContent, getCountries } from "@/lib/queries";
+import { getAboutPageContent, getAboutVisitedCountries } from "@/lib/queries";
 import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
 import { buildOpenGraph } from "@/lib/metadata";
 
@@ -36,8 +36,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SobrePage() {
-  const [countries, about] = await Promise.all([
-    getCountries(),
+  const [visitedCountries, about] = await Promise.all([
+    getAboutVisitedCountries(),
     getAboutPageContent(),
   ]);
 
@@ -146,14 +146,12 @@ export default async function SobrePage() {
             <h2 className="font-serif text-2xl text-tinta">
               Destinos já visitados
             </h2>
-            <p className="mt-2 text-oliva">
-              Alguns dos lugares já cobertos pela curadoria.
-            </p>
-            {countries.length === 0 ? (
+            <p className="mt-2 text-oliva">Lugares que já visitei.</p>
+            {visitedCountries.length === 0 ? (
               <p className="mt-4 text-oliva">Novos destinos em breve.</p>
             ) : (
               <div className="mt-4 flex flex-wrap gap-2">
-                {countries.map((country) => (
+                {visitedCountries.map((country) => (
                   <span
                     key={country.id}
                     className="rounded-full border border-oliva/30 px-4 py-1.5 text-sm text-oliva"

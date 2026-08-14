@@ -339,6 +339,16 @@ export const getAboutPageContent = cache(async () => {
   return data;
 });
 
+export async function getAboutVisitedCountries() {
+  const { data, error } = await supabase
+    .from("about_visited_countries")
+    .select("*")
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getSiteReviews() {
   const { data, error } = await supabase
     .from("site_reviews")
