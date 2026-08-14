@@ -23,6 +23,23 @@ function formatDate(iso: string) {
   });
 }
 
+function ProfileLink({
+  profile,
+  className,
+  children,
+}: {
+  profile: QuestionProfile;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (!profile.username) return <span className={className}>{children}</span>;
+  return (
+    <Link href={`/perfil/${profile.username}`} className={className}>
+      {children}
+    </Link>
+  );
+}
+
 function Avatar({ profile, size = 9 }: { profile: QuestionProfile; size?: 8 | 9 }) {
   const dimension = size === 8 ? "h-8 w-8" : "h-9 w-9";
   return (
@@ -104,12 +121,17 @@ function QuestionCard({
   return (
     <div className="rounded-xl bg-branco p-4">
       <div className="flex items-start gap-3">
-        <Avatar profile={question.asker} />
+        <ProfileLink profile={question.asker}>
+          <Avatar profile={question.asker} />
+        </ProfileLink>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <p className="text-sm font-medium text-tinta">
+            <ProfileLink
+              profile={question.asker}
+              className="text-sm font-medium text-tinta hover:text-terracota hover:underline"
+            >
               {question.asker.displayName}
-            </p>
+            </ProfileLink>
             <p className="text-xs text-oliva">{formatDate(question.createdAt)}</p>
           </div>
           <p className="mt-1 leading-relaxed text-tinta">{question.question}</p>
@@ -120,11 +142,16 @@ function QuestionCard({
         <div className="mt-3 ml-4 rounded-lg border-l-4 border-terracota bg-terracota/5 p-3 sm:ml-12">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Avatar profile={question.answer.author} size={8} />
+              <ProfileLink profile={question.answer.author}>
+                <Avatar profile={question.answer.author} size={8} />
+              </ProfileLink>
               <div>
-                <span className="rounded-full bg-terracota px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white">
+                <ProfileLink
+                  profile={question.answer.author}
+                  className="rounded-full bg-terracota px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-white hover:bg-terracota/90"
+                >
                   Resposta da autora
-                </span>
+                </ProfileLink>
                 <p className="mt-0.5 text-xs text-oliva">
                   {formatDate(question.answer.createdAt)}
                   {wasEdited ? " · editada" : ""}

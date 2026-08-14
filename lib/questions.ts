@@ -6,6 +6,7 @@ type PublicProfile = Database["public"]["Views"]["public_profiles"]["Row"];
 
 export interface QuestionProfile {
   id: string;
+  username: string | null;
   displayName: string;
   avatarUrl: string | null;
 }
@@ -43,6 +44,7 @@ function toProfile(
 ): QuestionProfile {
   return {
     id: fallbackId,
+    username: profile?.username ?? null,
     displayName: profile?.display_name || profile?.username || "Viajante",
     avatarUrl: profile?.avatar_url ?? null,
   };

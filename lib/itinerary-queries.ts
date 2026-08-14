@@ -204,6 +204,7 @@ export interface ItinerarySummary {
   startDate: string | null;
   endDate: string | null;
   status: ItineraryStatus;
+  isPublic: boolean;
   createdAt: string;
   items: ItineraryItemSummary[];
 }
@@ -224,7 +225,7 @@ export async function getUserItineraries(
   const { data, error } = await supabase
     .from("itineraries")
     .select(
-      "id, title, start_date, end_date, status, created_at, itinerary_items(id, order, attractions(id, name, slug, attraction_photos(url, order), cities(name, slug, countries(slug))))",
+      "id, title, start_date, end_date, status, is_public, created_at, itinerary_items(id, order, attractions(id, name, slug, attraction_photos(url, order), cities(name, slug, countries(slug))))",
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
@@ -237,6 +238,7 @@ export async function getUserItineraries(
     startDate: itinerary.start_date,
     endDate: itinerary.end_date,
     status: itinerary.status,
+    isPublic: itinerary.is_public,
     createdAt: itinerary.created_at,
     items: itinerary.itinerary_items
       .map((item): ItineraryItemSummary | null => {
@@ -299,6 +301,28 @@ export async function setItineraryStatus(
   const { error } = await supabase
     .from("itineraries")
     .update({ status })
+    .eq("id", itineraryId);
+  if (error) throw error;
+}
+
+export async function getItineraryPublicStatus(
+  itineraryId: string,
+): Promise<boolean> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("itineraries")
+    .select("is_public")
+    .eq("id", itineraryId)
+    .single();
+  if (error) throw error;
+  return data.is_public;
+}
+
+export async function setItineraryPublic(itineraryId: string, isPublic: boolean) {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("itineraries")
+    .update({ is_public: isPublic })
     .eq("id", itineraryId);
   if (error) throw error;
 }

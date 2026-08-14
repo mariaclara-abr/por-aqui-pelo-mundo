@@ -10,6 +10,7 @@ import {
   deriveDestination,
   duplicateItinerary,
   getUserItineraries,
+  setItineraryPublic,
   setItineraryStatus,
   type ItinerarySummary,
 } from "@/lib/itinerary-queries";
@@ -23,6 +24,52 @@ function formatDateRange(start: string | null, end: string | null) {
   if (start) return `A partir de ${formatDate(start)}`;
   if (end) return `Até ${formatDate(end)}`;
   return null;
+}
+
+function PrivacyToggle({
+  isPublic,
+  pending,
+  onToggle,
+}: {
+  isPublic: boolean;
+  pending: boolean;
+  onToggle: () => void;
+}) {
+  const label = isPublic ? "Tornar privado" : "Tornar público";
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      disabled={pending}
+      aria-label={label}
+      title={label}
+      className="group relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-oliva transition-colors hover:text-terracota disabled:opacity-50"
+    >
+      <svg
+        viewBox="0 0 20 20"
+        className="h-4 w-4 fill-none stroke-current"
+        strokeWidth={1.6}
+      >
+        <rect x="4.5" y="9" width="11" height="7.5" rx="1.5" />
+        {isPublic ? (
+          <path
+            d="M7 9V6.5a3 3 0 0 1 5.8-1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ) : (
+          <path
+            d="M7 9V6.5a3 3 0 0 1 6 0V9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+      </svg>
+      <span className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-tinta px-2 py-1 text-xs text-branco opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+        {label}
+      </span>
+    </button>
+  );
 }
 
 function ItineraryCard({
@@ -72,6 +119,19 @@ function ItineraryCard({
     }
   }
 
+  async function handleTogglePublic() {
+    setPending(true);
+    setError(null);
+    try {
+      await setItineraryPublic(itinerary.id, !itinerary.isPublic);
+      onChanged();
+    } catch {
+      setError("Não foi possível atualizar. Tente novamente.");
+    } finally {
+      setPending(false);
+    }
+  }
+
   async function handleComplete() {
     setPending(true);
     setError(null);
@@ -102,7 +162,14 @@ function ItineraryCard({
     <div className="rounded-xl bg-branco p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="font-serif text-lg text-tinta">{itinerary.title}</h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-serif text-lg text-tinta">{itinerary.title}</h3>
+            <PrivacyToggle
+              isPublic={itinerary.isPublic}
+              pending={pending}
+              onToggle={handleTogglePublic}
+            />
+          </div>
           <p className="text-sm text-oliva">{deriveDestination(itinerary)}</p>
           {dateRange && <p className="text-xs text-oliva">{dateRange}</p>}
           <p className="mt-1 text-xs text-oliva">

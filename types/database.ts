@@ -309,6 +309,7 @@ export interface Database {
           start_date: string | null;
           end_date: string | null;
           status: ItineraryStatus;
+          is_public: boolean;
           created_at: string;
         };
         Insert: {
@@ -319,6 +320,7 @@ export interface Database {
           start_date?: string | null;
           end_date?: string | null;
           status?: ItineraryStatus;
+          is_public?: boolean;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["itineraries"]["Insert"]>;
@@ -583,6 +585,32 @@ export interface Database {
           },
         ];
       };
+      visited_countries: {
+        Row: {
+          id: string;
+          user_id: string;
+          country_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          country_id: string;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["visited_countries"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "visited_countries_country_id_fkey";
+            columns: ["country_id"];
+            isOneToOne: false;
+            referencedRelation: "countries";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       subscriptions: {
         Row: {
           id: string;
@@ -762,6 +790,7 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           role: UserRole;
+          created_at: string;
         };
         Relationships: [];
       };

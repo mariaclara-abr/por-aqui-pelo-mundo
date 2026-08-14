@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import {
+  getItineraryPublicStatus,
   getOrCreateShare,
+  setItineraryPublic,
   setSharePublic,
   setShareShowAuthorName,
 } from "@/lib/itinerary-queries";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function ShareItineraryDialog({
   itineraryId,
@@ -27,6 +30,10 @@ export default function ShareItineraryDialog({
   const [showAuthorName, setShowAuthorName] = useState(true);
   const [copied, setCopied] = useState(false);
 
+  const [profilePublic, setProfilePublic] = useState(false);
+  const [confirmingProfilePublic, setConfirmingProfilePublic] = useState(false);
+  const [togglingProfilePublic, setTogglingProfilePublic] = useState(false);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     function handleKeyDown(event: KeyboardEvent) {
@@ -44,6 +51,10 @@ export default function ShareItineraryDialog({
         setError("Não foi possível gerar o link de compartilhamento."),
       )
       .finally(() => setLoading(false));
+
+    getItineraryPublicStatus(itineraryId)
+      .then(setProfilePublic)
+      .catch(() => {});
 
     return () => {
       document.body.style.overflow = "";
@@ -77,6 +88,28 @@ export default function ShareItineraryDialog({
       await setShareShowAuthorName(itineraryId, next);
     } catch {
       setShowAuthorName(!next);
+    }
+  }
+
+  function handleToggleProfilePublic() {
+    if (profilePublic) {
+      setProfilePublic(false);
+      setItineraryPublic(itineraryId, false).catch(() => setProfilePublic(true));
+    } else {
+      setConfirmingProfilePublic(true);
+    }
+  }
+
+  async function handleConfirmProfilePublic() {
+    setTogglingProfilePublic(true);
+    try {
+      await setItineraryPublic(itineraryId, true);
+      setProfilePublic(true);
+      setConfirmingProfilePublic(false);
+    } catch {
+      setError("Não foi possível tornar o roteiro público. Tente novamente.");
+    } finally {
+      setTogglingProfilePublic(false);
     }
   }
 
@@ -183,9 +216,32 @@ export default function ShareItineraryDialog({
                 enquanto estiver desativado.
               </p>
             )}
+
+            <label className="flex items-center justify-between gap-3 text-sm text-tinta">
+              Tornar roteiro público no meu perfil
+              <input
+                type="checkbox"
+                checked={profilePublic}
+                onChange={handleToggleProfilePublic}
+                disabled={togglingProfilePublic}
+                className="h-4 w-4 accent-terracota"
+              />
+            </label>
           </div>
         )}
       </div>
+
+      {confirmingProfilePublic && (
+        <ConfirmDialog
+          message="Ao tornar este roteiro público, ele vai aparecer no seu perfil, visível para qualquer pessoa que visitá-lo."
+          confirmLabel="Tornar público"
+          cancelLabel="Manter privado"
+          pending={togglingProfilePublic}
+          pendingLabel="Tornando público..."
+          onConfirm={handleConfirmProfilePublic}
+          onCancel={() => setConfirmingProfilePublic(false)}
+        />
+      )}
     </div>
   );
 }
