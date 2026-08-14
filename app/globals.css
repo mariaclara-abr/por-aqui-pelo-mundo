@@ -16,8 +16,10 @@ body {
   color: var(--foreground);
 }
 
-p {
-  text-align: justify;
-  text-justify: inter-word;
-  hyphens: auto;
+@layer base {
+  p {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
 }
