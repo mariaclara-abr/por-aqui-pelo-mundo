@@ -531,8 +531,9 @@ export default function OrganizarComIAClient({
 
                         {travelToNext && (
                           <p className="ml-3 mt-1 border-l-2 border-oliva/20 py-1 pl-4 text-xs text-oliva">
-                            {formatDistanceKm(travelToNext.distanceKm)} até a
-                            próxima · ≈ {travelToNext.walkMinutes} min a pé
+                            {travelToNext.walkMinutes < 30
+                              ? `${formatDistanceKm(travelToNext.distanceKm)} até a próxima · ≈ ${travelToNext.walkMinutes} min a pé`
+                              : `${formatDistanceKm(travelToNext.distanceKm)} até a próxima`}
                           </p>
                         )}
                       </div>

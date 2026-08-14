@@ -483,8 +483,9 @@ export default function MeuRoteiroPage() {
                 const driveMin = Math.round((km / DRIVE_SPEED_KMH) * 60);
                 distanceNode = (
                   <p className="ml-3 mt-1 border-l-2 border-oliva/20 py-1 pl-4 text-xs text-oliva">
-                    {formatDistance(km)} em linha reta até a próxima · ≈{" "}
-                    {walkMin} min a pé ou {driveMin} min de carro
+                    {walkMin < 30
+                      ? `${formatDistance(km)} em linha reta até a próxima · ≈ ${walkMin} min a pé ou ${driveMin} min de carro`
+                      : `${formatDistance(km)} em linha reta até a próxima · ≈ ${driveMin} min de carro`}
                   </p>
                 );
               } else {
@@ -588,6 +589,15 @@ export default function MeuRoteiroPage() {
               </div>
             );
           })}
+        </div>
+
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+          >
+            Buscar mais atrações
+          </Link>
         </div>
 
         <div className="mt-12">

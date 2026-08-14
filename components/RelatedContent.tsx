@@ -262,10 +262,8 @@ function AddToRoteiroButton({ attraction }: { attraction: RecommendedAttraction 
 
 function AttractionRecommendationCard({
   attraction,
-  groupKey,
 }: {
   attraction: RecommendedAttraction;
-  groupKey: keyof AttractionRecommendations;
 }) {
   const categoryLabel =
     ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)?.label ?? attraction.category;
@@ -298,11 +296,7 @@ function AttractionRecommendationCard({
         </div>
         {attraction.distanceKm !== null && (
           <div className="mt-1">
-            {groupKey === "nearbyAttractions" ? (
-              <AttractionDistance distanceKm={attraction.distanceKm} />
-            ) : (
-              <WalkTime distanceKm={attraction.distanceKm} />
-            )}
+            <AttractionDistance distanceKm={attraction.distanceKm} />
           </div>
         )}
       </Link>
@@ -434,7 +428,6 @@ export default function RelatedContent(props: RelatedContentProps) {
             <AttractionRecommendationCard
               key={attraction.id}
               attraction={attraction}
-              groupKey={group.key}
             />
           ))}
         </RecommendationGroup>
