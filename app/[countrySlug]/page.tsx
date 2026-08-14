@@ -59,6 +59,7 @@ export default async function CountryPage(
   }
 
   const questions = await getCountryQuestions(country.id).catch(() => []);
+  const coverImage = country.cover_image_url ?? undefined;
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
@@ -87,15 +88,31 @@ export default async function CountryPage(
           </div>
         )}
 
-        <section className="mt-12 border-t border-tinta/10 pt-8">
-          <h2 className="font-serif text-xl text-tinta">
-            Perguntas sobre {country.name}
-          </h2>
-          <div className="mt-4">
-            <CountryQuestionsSection
-              countryId={country.id}
-              initialQuestions={questions}
-            />
+        <section className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen py-8 sm:py-10">
+          {coverImage && (
+            <>
+              <img
+                src={coverImage}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-tinta/60" />
+            </>
+          )}
+          <div
+            className={`relative mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 ${coverImage ? "" : "border-t border-tinta/10 pt-8"}`}
+          >
+            <h2
+              className={`font-serif text-xl ${coverImage ? "text-white drop-shadow-sm" : "text-tinta"}`}
+            >
+              Perguntas sobre {country.name}
+            </h2>
+            <div className="mt-4">
+              <CountryQuestionsSection
+                countryId={country.id}
+                initialQuestions={questions}
+              />
+            </div>
           </div>
         </section>
       </div>

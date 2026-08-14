@@ -119,7 +119,7 @@ function QuestionCard({
   }
 
   return (
-    <div className="rounded-xl bg-branco p-4">
+    <div className="rounded-xl bg-branco/55 p-4">
       <div className="flex items-start gap-3">
         <ProfileLink profile={question.asker}>
           <Avatar profile={question.asker} />
@@ -132,7 +132,7 @@ function QuestionCard({
             >
               {question.asker.displayName}
             </ProfileLink>
-            <p className="text-xs text-oliva">{formatDate(question.createdAt)}</p>
+            <p className="text-xs text-tinta">{formatDate(question.createdAt)}</p>
           </div>
           <p className="mt-1 leading-relaxed text-tinta">{question.question}</p>
         </div>
@@ -152,7 +152,7 @@ function QuestionCard({
                 >
                   Resposta da autora
                 </ProfileLink>
-                <p className="mt-0.5 text-xs text-oliva">
+                <p className="mt-0.5 text-xs text-tinta">
                   {formatDate(question.answer.createdAt)}
                   {wasEdited ? " · editada" : ""}
                 </p>
@@ -202,7 +202,7 @@ function QuestionCard({
                   setAnswerDraft(question.answer?.answer ?? "");
                 }}
                 disabled={saving}
-                className="rounded-full border border-oliva/30 px-4 py-1.5 text-xs text-oliva transition-colors hover:bg-areia disabled:opacity-60"
+                className="rounded-full border border-oliva/30 px-4 py-1.5 text-xs text-tinta transition-colors hover:bg-areia disabled:opacity-60"
               >
                 Cancelar
               </button>
@@ -212,7 +212,7 @@ function QuestionCard({
       )}
 
       {!question.answer && !isAuthor && (
-        <p className="mt-2 ml-4 text-xs text-oliva sm:ml-12">
+        <p className="mt-2 ml-4 text-xs text-tinta sm:ml-12">
           Aguardando resposta da autora.
         </p>
       )}
@@ -224,7 +224,7 @@ function QuestionCard({
           <button
             type="button"
             onClick={() => setConfirmingHide(true)}
-            className="text-xs text-oliva/70 hover:text-terracota hover:underline"
+            className="text-xs text-tinta/70 hover:text-terracota hover:underline"
           >
             Ocultar pergunta
           </button>
@@ -290,7 +290,7 @@ export default function QuestionsSection({
       {!authLoading && user ? (
         <form
           onSubmit={handleAsk}
-          className="rounded-xl bg-branco p-4"
+          className="rounded-xl bg-branco/55 p-4"
         >
           <label htmlFor="new-country-question" className="text-sm font-medium text-tinta">
             Faça uma pergunta
@@ -305,7 +305,7 @@ export default function QuestionsSection({
             disabled={submitting}
           />
           <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-oliva sm:pr-6">
+            <p className="text-xs text-tinta sm:pr-6">
               Perguntas e respostas ficam públicas para outros viajantes. Quem
               responde é a autora pessoalmente.
             </p>
@@ -321,7 +321,7 @@ export default function QuestionsSection({
         </form>
       ) : (
         !authLoading && (
-          <div className="rounded-xl bg-branco p-4 text-sm text-oliva">
+          <div className="rounded-xl bg-branco/55 p-4 text-sm text-tinta">
             <Link href="/entrar" className="font-medium text-terracota hover:underline">
               Entre
             </Link>{" "}
@@ -331,7 +331,7 @@ export default function QuestionsSection({
       )}
 
       {questions.length === 0 ? (
-        <p className="text-sm text-oliva">
+        <p className="rounded-xl bg-branco/55 p-4 text-sm text-tinta">
           Ainda não há perguntas sobre este país. Seja a primeira pessoa a
           perguntar!
         </p>
