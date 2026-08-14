@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 
-const ICON_SIZE = 22;
+const DEFAULT_ICON_SIZE = 22;
 const LOOP_RADIUS = 150;
+const LOOP_EDGE_BUFFER = 24;
 
 const FLIGHT_DURATION = 6;
 const DASH_APPEAR = 0.1;
@@ -56,57 +57,110 @@ function buildLoop(x0: number, y0: number, r: number, headingDeg: number) {
   return { d: d.trim(), lastC2 };
 }
 
+function clamp(value: number, lo: number, hi: number) {
+  return Math.min(Math.max(value, lo), hi);
+}
+
 function buildFlightPath(x0: number, y0: number, corner: Corner) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
   const overshoot = 120;
   const targets: Record<Corner, { x: number; y: number }> = {
     tl: { x: -overshoot, y: -overshoot },
-    tr: { x: window.innerWidth + overshoot, y: -overshoot },
-    bl: { x: -overshoot, y: window.innerHeight + overshoot },
-    br: { x: window.innerWidth + overshoot, y: window.innerHeight + overshoot },
+    tr: { x: vw + overshoot, y: -overshoot },
+    bl: { x: -overshoot, y: vh + overshoot },
+    br: { x: vw + overshoot, y: vh + overshoot },
   };
   const end = targets[corner];
-  const dx = end.x - x0;
-  const dy = end.y - y0;
+
+  // Heading from the click point straight toward the exit target: used both
+  // to place the loop and to aim the approach segment at it, so the plane
+  // never has to reverse direction going into the loop.
+  const headingDeg = (Math.atan2(end.y - y0, end.x - x0) * 180) / Math.PI;
+  const hx = Math.cos((headingDeg * Math.PI) / 180);
+  const hy = Math.sin((headingDeg * Math.PI) / 180);
+
+  // The click point always sits on the loop circle, so the loop's own
+  // farthest reach from it is the circle's diameter (2r), whichever way it
+  // ends up rotated. Shrinking r so 2r plus a buffer always fits inside the
+  // viewport guarantees the loop itself can never be clipped, even when the
+  // button sits right next to an edge (e.g. the header logo) or the
+  // viewport is a narrow phone screen.
+  const r = Math.max(
+    32,
+    Math.min(
+      LOOP_RADIUS,
+      (vw - LOOP_EDGE_BUFFER * 2) / 4,
+      (vh - LOOP_EDGE_BUFFER * 2) / 4,
+    ),
+  );
+  const margin = 2 * r + LOOP_EDGE_BUFFER;
+
+  // If the click point itself has room, the loop happens right where the
+  // plane was clicked, same as before. If it's too close to an edge for the
+  // loop to fit, slide the loop inland until it clears every edge by
+  // `margin`, and have the plane fly a short approach curve to it first, so
+  // the loop (and the animation's visible middle stretch) always happens
+  // on-screen instead of only the very end of the flight being visible.
+  const loopX = clamp(x0, margin, vw - margin);
+  const loopY = clamp(y0, margin, vh - margin);
+
+  let approach = "";
+  const approachDist = Math.hypot(loopX - x0, loopY - y0);
+  if (approachDist > 1) {
+    const c1x = x0 + (loopX - x0) * 0.35;
+    const c1y = y0 + (loopY - y0) * 0.35;
+    // Arrive at the loop moving along `headingDeg`, matching the loop's own
+    // entry tangent, and keep the handle short enough to stay inside the
+    // safe rect (all four bezier control points in-viewport guarantees the
+    // curve itself never leaves the viewport either, by the convex hull
+    // property).
+    const handleLen = Math.min(Math.max(20, approachDist * 0.35), margin * 0.9);
+    const c2x = loopX - hx * handleLen;
+    const c2y = loopY - hy * handleLen;
+    approach = `C ${c1x},${c1y} ${c2x},${c2y} ${loopX},${loopY} `;
+  }
+
+  const { d: loopD, lastC2 } = buildLoop(loopX, loopY, r, headingDeg);
+  const path = `M ${x0},${y0} ${approach}${loopD}`;
+
+  const dx = end.x - loopX;
+  const dy = end.y - loopY;
   const dist = Math.hypot(dx, dy);
 
-  // Aim the loop's exit heading straight at the corner so the curve that
-  // follows only has to bend gently, never reverse direction.
-  const headingDeg = (Math.atan2(dy, dx) * 180) / Math.PI;
-  const { d: loopD, lastC2 } = buildLoop(x0, y0, LOOP_RADIUS, headingDeg);
-  const loop = `M ${x0},${y0} ${loopD}`;
-
   // Continue smoothly from the loop: same tangent direction as its exit
-  // (mirroring the loop's last control point through (x0, y0), like SVG's
-  // "S" would), but rescaled to the escape curve's own length. Reusing the
-  // loop's short handle as-is would make the curve very tight for an
+  // (mirroring the loop's last control point through the loop center, like
+  // SVG's "S" would), but rescaled to the escape curve's own length. Reusing
+  // the loop's short handle as-is would make the curve very tight for an
   // instant and then go nearly flat right after; a longer handle in the
   // same direction keeps the curvature gentle and continuous instead.
-  const dirLen = Math.hypot(x0 - lastC2.x, y0 - lastC2.y);
-  const dirX = (x0 - lastC2.x) / dirLen;
-  const dirY = (y0 - lastC2.y) / dirLen;
+  const dirLen = Math.hypot(loopX - lastC2.x, loopY - lastC2.y);
+  const dirX = (loopX - lastC2.x) / dirLen;
+  const dirY = (loopY - lastC2.y) / dirLen;
   const handleLen = dist * 0.3;
-  const c1x = x0 + dirX * handleLen;
-  const c1y = y0 + dirY * handleLen;
+  const c1x = loopX + dirX * handleLen;
+  const c1y = loopY + dirY * handleLen;
 
   // A single straight bezier would sometimes read as a flat, ruler-straight
   // stretch. Bow the curve's second control point off to one side so it
   // always keeps a gentle, continuous curvature on the way out. Pick the
   // side that matches where the reflected control point already leans, so
   // both control points bow the same way and the curve never inflects
-  // through a near-zero-curvature (visually straight) patch.
+  // through a near-zero-curvature (visually straight) patch. Kept shallow
+  // so the bow doesn't push the plane past the edge earlier than it has to.
   const ux = dx / dist;
   const uy = dy / dist;
   const side =
-    (c1x - x0) * -uy + (c1y - y0) * ux >= 0 ? 1 : -1;
+    (c1x - loopX) * -uy + (c1y - loopY) * ux >= 0 ? 1 : -1;
   const px = -uy * side;
   const py = ux * side;
-  const bow = dist * 0.4;
-  const c2x = x0 + dx * 0.55 + px * bow;
-  const c2y = y0 + dy * 0.55 + py * bow;
+  const bow = dist * 0.2;
+  const c2x = loopX + dx * 0.55 + px * bow;
+  const c2y = loopY + dy * 0.55 + py * bow;
 
   const flight = `C ${c1x},${c1y} ${c2x},${c2y} ${end.x},${end.y}`;
 
-  return `${loop} ${flight}`;
+  return `${path} ${flight}`;
 }
 
 interface Dash {
@@ -117,7 +171,11 @@ interface Dash {
   frac: number;
 }
 
-export default function PlaneLaunchIcon() {
+export default function PlaneLaunchIcon({
+  size = DEFAULT_ICON_SIZE,
+}: {
+  size?: number;
+}) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const timeoutsRef = useRef<number[]>([]);
@@ -183,8 +241,8 @@ export default function PlaneLaunchIcon() {
         <img
           src="/assets/simbolo.svg"
           alt=""
-          width={ICON_SIZE}
-          height={ICON_SIZE}
+          width={size}
+          height={size}
         />
       </motion.button>
 
@@ -221,8 +279,8 @@ export default function PlaneLaunchIcon() {
           <motion.img
             src="/assets/simbolo.svg"
             alt=""
-            width={ICON_SIZE}
-            height={ICON_SIZE}
+            width={size}
+            height={size}
             className="absolute left-0 top-0"
             style={{
               offsetPath: `path("${flight.d}")`,
