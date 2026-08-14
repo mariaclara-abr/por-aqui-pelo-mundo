@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HeroPhotoStack from "@/components/HeroPhotoStack";
+import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 import type { HeroPhoto } from "@/lib/queries";
 
 interface HeroCounts {
@@ -39,12 +40,15 @@ export default function HeroSection({
             </Link>
             , que compartilha dicas reais e exclusivas.
           </p>
-          <a
-            href="#destinos"
-            className="mt-8 inline-block self-center rounded-lg bg-terracota px-9 py-3.5 text-base font-medium text-white transition-colors hover:bg-terracota/90 lg:self-start"
-          >
-            Explorar destinos
-          </a>
+          <div className="mt-8 flex items-center gap-6 self-center lg:self-start">
+            <a
+              href="#destinos"
+              className="inline-block rounded-lg bg-terracota px-9 py-3.5 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+            >
+              Explorar destinos
+            </a>
+            <PlaneLaunchIcon />
+          </div>
 
           {showCounter && (
             <p className="mt-6 text-sm text-oliva">

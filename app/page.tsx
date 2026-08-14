@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  getAboutPageContent,
   getCountries,
   getCounts,
   getHeroPhotos,
@@ -7,6 +8,7 @@ import {
 } from "@/lib/queries";
 import HeroSection from "@/components/HeroSection";
 import DestinationGrid from "@/components/DestinationGrid";
+import AuthorBand from "@/components/AuthorBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
 import { buildOpenGraph } from "@/lib/metadata";
 
@@ -22,17 +24,23 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [countries, counts, heroPhotos, siteReviews] = await Promise.all([
-    getCountries(),
-    getCounts(),
-    getHeroPhotos(),
-    getSiteReviews(),
-  ]);
+  const [countries, counts, heroPhotos, siteReviews, about] =
+    await Promise.all([
+      getCountries(),
+      getCounts(),
+      getHeroPhotos(),
+      getSiteReviews(),
+      getAboutPageContent(),
+    ]);
 
   return (
     <main className="flex-1">
       <HeroSection photos={heroPhotos} counts={counts} />
       <DestinationGrid countries={countries} />
+      <AuthorBand
+        authorName={about.author_name}
+        authorPhotoUrl={about.author_photo_url}
+      />
       <SiteReviewsSection reviews={siteReviews} />
     </main>
   );
