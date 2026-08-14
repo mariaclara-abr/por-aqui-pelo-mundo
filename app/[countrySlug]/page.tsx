@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getCitiesByCountry, getCityCountByCountry, getCountryBySlug } from "@/lib/queries";
+import { getCountryQuestions } from "@/lib/questions";
 import CityCard from "@/components/CityCard";
+import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
 
 export async function generateMetadata(
@@ -56,6 +58,8 @@ export default async function CountryPage(
     redirect(`/${countrySlug}/${cities[0].slug}`);
   }
 
+  const questions = await getCountryQuestions(country.id).catch(() => []);
+
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-[1440px]">
@@ -82,6 +86,18 @@ export default async function CountryPage(
             ))}
           </div>
         )}
+
+        <section className="mt-12 border-t border-tinta/10 pt-8">
+          <h2 className="font-serif text-xl text-tinta">
+            Perguntas sobre {country.name}
+          </h2>
+          <div className="mt-4">
+            <CountryQuestionsSection
+              countryId={country.id}
+              initialQuestions={questions}
+            />
+          </div>
+        </section>
       </div>
     </main>
   );

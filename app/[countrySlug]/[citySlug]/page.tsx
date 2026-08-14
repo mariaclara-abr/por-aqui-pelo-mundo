@@ -8,11 +8,13 @@ import {
   getCityBySlug,
   getTags,
 } from "@/lib/queries";
+import { getCityQuestions } from "@/lib/questions";
 import { ATTRACTION_CATEGORIES } from "@/types/database";
 import type { AttractionCategory } from "@/types/database";
 import AttractionFilters from "@/components/AttractionFilters";
 import AttractionCard from "@/components/AttractionCard";
 import RelatedContent from "@/components/RelatedContent";
+import CityQuestionsSection from "@/components/city/QuestionsSection";
 import { buildOpenGraph, joinNames } from "@/lib/metadata";
 
 function firstValue(value: string | string[] | undefined) {
@@ -91,9 +93,10 @@ export default async function CityPage(
   const tagsParam = firstValue(searchParams.tags);
   const tags = tagsParam ? tagsParam.split(",").filter(Boolean) : undefined;
 
-  const [attractions, allTags] = await Promise.all([
+  const [attractions, allTags, questions] = await Promise.all([
     getAttractionsByCity(citySlug, { categories, tags }),
     getTags(),
+    getCityQuestions(city.id).catch(() => []),
   ]);
 
   return (
@@ -146,6 +149,15 @@ export default async function CityPage(
           </h2>
           <div className="mt-4">
             <RelatedContent mode="city" citySlug={citySlug} />
+          </div>
+        </section>
+
+        <section className="mt-12 border-t border-tinta/10 pt-8">
+          <h2 className="font-serif text-xl text-tinta">
+            Perguntas sobre {city.name}
+          </h2>
+          <div className="mt-4">
+            <CityQuestionsSection cityId={city.id} initialQuestions={questions} />
           </div>
         </section>
       </div>

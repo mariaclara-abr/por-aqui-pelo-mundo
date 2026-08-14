@@ -6,12 +6,12 @@ import { useAuth } from "@/lib/auth";
 import { inputClass } from "@/components/admin/FormField";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import {
-  askQuestion,
-  getAttractionQuestions,
-  hideQuestion,
-  submitAnswer,
-  editAnswer,
-  type AttractionQuestion,
+  askCityQuestion,
+  getCityQuestions,
+  hideCityQuestion,
+  submitCityAnswer,
+  editCityAnswer,
+  type CityQuestion,
   type QuestionProfile,
 } from "@/lib/questions";
 
@@ -50,7 +50,7 @@ function QuestionCard({
   authorProfileId,
   onChanged,
 }: {
-  question: AttractionQuestion;
+  question: CityQuestion;
   isAuthor: boolean;
   authorProfileId: string | undefined;
   onChanged: () => void;
@@ -75,9 +75,9 @@ function QuestionCard({
     setError(null);
     try {
       if (question.answer) {
-        await editAnswer(question.answer.id, trimmed);
+        await editCityAnswer(question.answer.id, trimmed);
       } else {
-        await submitAnswer(question.id, authorProfileId!, trimmed);
+        await submitCityAnswer(question.id, authorProfileId!, trimmed);
       }
       setEditing(false);
       onChanged();
@@ -92,7 +92,7 @@ function QuestionCard({
     setHiding(true);
     setError(null);
     try {
-      await hideQuestion(question.id);
+      await hideCityQuestion(question.id);
       onChanged();
     } catch {
       setError("Não foi possível ocultar a pergunta. Tente novamente.");
@@ -219,11 +219,11 @@ function QuestionCard({
 }
 
 export default function QuestionsSection({
-  attractionId,
+  cityId,
   initialQuestions,
 }: {
-  attractionId: string;
-  initialQuestions: AttractionQuestion[];
+  cityId: string;
+  initialQuestions: CityQuestion[];
 }) {
   const { user, profile, isAuthor, loading: authLoading } = useAuth();
   const [questions, setQuestions] = useState(initialQuestions);
@@ -233,7 +233,7 @@ export default function QuestionsSection({
 
   async function refresh() {
     try {
-      const data = await getAttractionQuestions(attractionId);
+      const data = await getCityQuestions(cityId);
       setQuestions(data);
     } catch (err) {
       console.error("Não foi possível atualizar as perguntas:", err);
@@ -248,7 +248,7 @@ export default function QuestionsSection({
     setSubmitting(true);
     setError(null);
     try {
-      await askQuestion(attractionId, user.id, trimmed);
+      await askCityQuestion(cityId, user.id, trimmed);
       setNewQuestion("");
       await refresh();
     } catch {
@@ -265,15 +265,15 @@ export default function QuestionsSection({
           onSubmit={handleAsk}
           className="rounded-xl bg-branco p-4"
         >
-          <label htmlFor="new-question" className="text-sm font-medium text-tinta">
+          <label htmlFor="new-city-question" className="text-sm font-medium text-tinta">
             Faça uma pergunta
           </label>
           <textarea
-            id="new-question"
+            id="new-city-question"
             rows={2}
             value={newQuestion}
             onChange={(event) => setNewQuestion(event.target.value)}
-            placeholder="Pergunte algo sobre este lugar..."
+            placeholder="Pergunte algo sobre esta cidade..."
             className={`${inputClass} mt-1`}
             disabled={submitting}
           />
@@ -298,14 +298,14 @@ export default function QuestionsSection({
             <Link href="/entrar" className="font-medium text-terracota hover:underline">
               Entre
             </Link>{" "}
-            para fazer uma pergunta sobre este lugar.
+            para fazer uma pergunta sobre esta cidade.
           </div>
         )
       )}
 
       {questions.length === 0 ? (
         <p className="text-sm text-oliva">
-          Ainda não há perguntas sobre este lugar. Seja a primeira pessoa a
+          Ainda não há perguntas sobre esta cidade. Seja a primeira pessoa a
           perguntar!
         </p>
       ) : (

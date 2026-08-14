@@ -16,12 +16,12 @@ export const ATTRACTION_CATEGORIES: {
 }[] = [
   { value: "ponto_turistico", label: "Ponto turístico" },
   { value: "restaurante", label: "Restaurante" },
+  { value: "cafe", label: "Café" },
   { value: "hotel", label: "Hotel" },
   { value: "museu", label: "Museu" },
   { value: "natureza", label: "Natureza" },
   { value: "compras", label: "Compras" },
   { value: "passeio", label: "Passeio" },
-  { value: "cafe", label: "Café" },
   { value: "estacionamentos", label: "Estacionamento" },
   { value: "outro", label: "Outro" },
 ];
@@ -459,6 +459,126 @@ export interface Database {
             columns: ["question_id"];
             isOneToOne: true;
             referencedRelation: "attraction_questions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      city_questions: {
+        Row: {
+          id: string;
+          city_id: string;
+          user_id: string;
+          question: string;
+          status: QuestionStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          city_id: string;
+          user_id: string;
+          question: string;
+          status?: QuestionStatus;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["city_questions"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "city_questions_city_id_fkey";
+            columns: ["city_id"];
+            isOneToOne: false;
+            referencedRelation: "cities";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      city_answers: {
+        Row: {
+          id: string;
+          question_id: string;
+          author_id: string;
+          answer: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          question_id: string;
+          author_id: string;
+          answer: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["city_answers"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "city_answers_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: true;
+            referencedRelation: "city_questions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      country_questions: {
+        Row: {
+          id: string;
+          country_id: string;
+          user_id: string;
+          question: string;
+          status: QuestionStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          country_id: string;
+          user_id: string;
+          question: string;
+          status?: QuestionStatus;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["country_questions"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "country_questions_country_id_fkey";
+            columns: ["country_id"];
+            isOneToOne: false;
+            referencedRelation: "countries";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      country_answers: {
+        Row: {
+          id: string;
+          question_id: string;
+          author_id: string;
+          answer: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          question_id: string;
+          author_id: string;
+          answer: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["country_answers"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "country_answers_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: true;
+            referencedRelation: "country_questions";
             referencedColumns: ["id"];
           },
         ];
