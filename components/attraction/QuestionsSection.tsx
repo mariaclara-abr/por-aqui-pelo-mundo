@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { inputClass } from "@/components/admin/FormField";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { linkify } from "@/components/Linkify";
 import {
   askQuestion,
   getAttractionQuestions,
@@ -171,7 +172,7 @@ function QuestionCard({
               </button>
             )}
           </div>
-          <p className="mt-2 leading-relaxed text-tinta">{question.answer.answer}</p>
+          <p className="mt-2 leading-relaxed text-tinta">{linkify(question.answer.answer)}</p>
         </div>
       )}
 

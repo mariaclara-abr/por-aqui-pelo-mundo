@@ -324,8 +324,8 @@ export default function PremiumDialog({
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="text-sm font-medium text-tinta">{title}</p>
-                    <p className="mt-0.5 text-xs text-oliva">{detail}</p>
+                    <p className="text-center text-sm font-medium text-tinta">{title}</p>
+                    <p className="mt-0.5 text-center text-xs text-oliva">{detail}</p>
                   </div>
                 </div>
               );
@@ -420,9 +420,9 @@ export default function PremiumDialog({
                               : info.detail}
                           </p>
                         </div>
-                        <div className="shrink-0 text-right">
+                        <div className="shrink-0 text-center">
                           <p
-                            className={`text-base font-semibold ${isLocked ? "text-oliva" : isAnnual ? "text-terracota" : "text-tinta"}`}
+                            className={`text-center text-base font-semibold ${isLocked ? "text-oliva" : isAnnual ? "text-terracota" : "text-tinta"}`}
                           >
                             {info.price}
                             {info.priceSuffix && (
@@ -432,7 +432,7 @@ export default function PremiumDialog({
                             )}
                           </p>
                           {info.belowPriceNote && !isLocked && (
-                            <p className="text-xs font-medium text-oliva">
+                            <p className="text-center text-xs font-medium text-oliva">
                               {info.belowPriceNote}
                             </p>
                           )}

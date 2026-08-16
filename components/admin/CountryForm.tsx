@@ -13,6 +13,7 @@ type Country = Database["public"]["Tables"]["countries"]["Row"];
 export default function CountryForm({ country }: { country?: Country }) {
   const router = useRouter();
   const [name, setName] = useState(country?.name ?? "");
+  const [description, setDescription] = useState(country?.description ?? "");
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
     country?.cover_image_url ?? null,
   );
@@ -27,7 +28,12 @@ export default function CountryForm({ country }: { country?: Country }) {
     setSaving(true);
 
     const supabase = createClient();
-    const payload = { name, slug, cover_image_url: coverImageUrl };
+    const payload = {
+      name,
+      slug,
+      description: description || null,
+      cover_image_url: coverImageUrl,
+    };
 
     const { error } = country
       ? await supabase.from("countries").update(payload).eq("id", country.id)
@@ -65,6 +71,20 @@ export default function CountryForm({ country }: { country?: Country }) {
       </FormField>
 
       {name && <p className="-mt-3 text-xs text-oliva">Endereço: /{slug}</p>}
+
+      <FormField
+        label="Descrição"
+        htmlFor="description"
+        helpText="Um resumo curto sobre o país (opcional)."
+      >
+        <textarea
+          id="description"
+          className={inputClass}
+          rows={3}
+          value={description ?? ""}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+      </FormField>
 
       <FormField
         label="Foto de capa"

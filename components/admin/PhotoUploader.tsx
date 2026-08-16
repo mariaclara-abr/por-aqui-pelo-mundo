@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase-browser";
 export interface AdminPhoto {
   id: string;
   url: string;
+  caption?: string | null;
 }
 
 function sanitizeFileName(name: string) {
@@ -93,6 +94,12 @@ export default function PhotoUploader({
     onChange(photos.filter((_, i) => i !== index));
   }
 
+  function setCaption(index: number, caption: string) {
+    const next = [...photos];
+    next[index] = { ...next[index], caption: caption || null };
+    onChange(next);
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <input
@@ -111,43 +118,52 @@ export default function PhotoUploader({
           {photos.map((photo, index) => (
             <li
               key={photo.id}
-              className="flex items-center gap-3 rounded-lg border border-oliva/20 p-2"
+              className="flex flex-col gap-2 rounded-lg border border-oliva/20 p-2"
             >
-              <img
-                src={photo.url}
-                alt=""
-                className="h-16 w-24 rounded object-cover"
-              />
-              <span className="text-xs text-oliva">
-                {index === 0 ? "Foto principal" : `Foto ${index + 1}`}
-              </span>
-              <div className="ml-auto flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => moveUp(index)}
-                  disabled={index === 0}
-                  aria-label="Mover para cima"
-                  className="text-tinta disabled:opacity-30"
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => moveDown(index)}
-                  disabled={index === photos.length - 1}
-                  aria-label="Mover para baixo"
-                  className="text-tinta disabled:opacity-30"
-                >
-                  ↓
-                </button>
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="text-xs text-terracota hover:underline"
-                >
-                  Remover
-                </button>
+              <div className="flex items-center gap-3">
+                <img
+                  src={photo.url}
+                  alt=""
+                  className="h-16 w-24 rounded object-cover"
+                />
+                <span className="text-xs text-oliva">
+                  {index === 0 ? "Foto principal" : `Foto ${index + 1}`}
+                </span>
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => moveUp(index)}
+                    disabled={index === 0}
+                    aria-label="Mover para cima"
+                    className="text-tinta disabled:opacity-30"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveDown(index)}
+                    disabled={index === photos.length - 1}
+                    aria-label="Mover para baixo"
+                    className="text-tinta disabled:opacity-30"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="text-xs text-terracota hover:underline"
+                  >
+                    Remover
+                  </button>
+                </div>
               </div>
+              <input
+                type="text"
+                value={photo.caption ?? ""}
+                onChange={(event) => setCaption(index, event.target.value)}
+                placeholder="Legenda (opcional)"
+                className="rounded-md border border-oliva/25 bg-branco px-2.5 py-1.5 text-xs text-tinta placeholder:text-oliva/50 focus:border-terracota focus:outline-none"
+              />
             </li>
           ))}
         </ul>

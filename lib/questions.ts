@@ -152,6 +152,54 @@ export async function getAllPendingQuestions() {
   }));
 }
 
+export async function getAllAnsweredQuestions() {
+  const { data, error } = await supabase
+    .from("attraction_questions")
+    .select(
+      "id, question, created_at, user_id, attractions(id, name, slug, cities(name, slug, countries(slug))), attraction_answers(id, answer, created_at, updated_at, author_id)",
+    )
+    .eq("status", "respondida")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  const profileIds = new Set<string>();
+  for (const question of data) {
+    profileIds.add(question.user_id);
+    if (question.attraction_answers) {
+      profileIds.add(question.attraction_answers.author_id);
+    }
+  }
+
+  const { data: profiles, error: profilesError } =
+    profileIds.size === 0
+      ? { data: [] as PublicProfile[], error: null }
+      : await supabase.from("public_profiles").select("*").in("id", [...profileIds]);
+
+  if (profilesError) throw profilesError;
+  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
+
+  return data.map((question) => {
+    const answer = question.attraction_answers;
+    return {
+      id: question.id,
+      question: question.question,
+      createdAt: question.created_at,
+      asker: toProfile(profileById.get(question.user_id), question.user_id),
+      attraction: question.attractions,
+      answer: answer
+        ? {
+            id: answer.id,
+            answer: answer.answer,
+            createdAt: answer.created_at,
+            updatedAt: answer.updated_at,
+            author: toProfile(profileById.get(answer.author_id), answer.author_id),
+          }
+        : null,
+    };
+  });
+}
+
 export async function getPendingQuestionsCount() {
   const { count, error } = await supabase
     .from("attraction_questions")

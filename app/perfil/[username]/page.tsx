@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getPublicItineraries,
@@ -47,7 +48,7 @@ export default async function PublicProfilePage(
   }
 
   const [itineraries, visitedCountries] = await Promise.all([
-    getPublicItineraries(profile.id).catch(() => []),
+    profile.isAuthor ? Promise.resolve([]) : getPublicItineraries(profile.id).catch(() => []),
     getVisitedCountries(profile.id).catch(() => []),
   ]);
 
@@ -73,9 +74,21 @@ export default async function PublicProfilePage(
               {profile.displayName}
             </h1>
             <p className="text-oliva">@{profile.username}</p>
-            <p className="mt-1 text-sm text-oliva">
-              {formatMemberSince(profile.memberSince)}
-            </p>
+            {profile.isAuthor ? (
+              <div className="mt-1">
+                <p className="text-sm text-oliva">Autora do Por Aqui Pelo Mundo.</p>
+                <Link
+                  href="/sobre"
+                  className="mt-1 inline-block text-sm font-medium text-terracota hover:underline"
+                >
+                  Conheça a história dela
+                </Link>
+              </div>
+            ) : (
+              <p className="mt-1 text-sm text-oliva">
+                {formatMemberSince(profile.memberSince)}
+              </p>
+            )}
           </div>
         </div>
 
@@ -97,12 +110,14 @@ export default async function PublicProfilePage(
           </section>
         )}
 
-        <section className="mt-10 border-t border-tinta/10 pt-8">
-          <h2 className="font-serif text-xl text-tinta">Roteiros</h2>
-          <div className="mt-4">
-            <PublicItineraryList itineraries={itineraries} />
-          </div>
-        </section>
+        {!profile.isAuthor && (
+          <section className="mt-10 border-t border-tinta/10 pt-8">
+            <h2 className="font-serif text-xl text-tinta">Roteiros</h2>
+            <div className="mt-4">
+              <PublicItineraryList itineraries={itineraries} />
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );

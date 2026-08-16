@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAboutPageContent, getAboutVisitedCountries } from "@/lib/queries";
 import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
+import { linkify } from "@/components/Linkify";
 import { buildOpenGraph } from "@/lib/metadata";
 
 const TITLE = "Sobre a autora";
@@ -76,7 +77,7 @@ export default async function SobrePage() {
         <div className="mx-auto mt-10 max-w-2xl">
           <div className="flex flex-col gap-5 text-left leading-relaxed text-tinta">
             {bioParagraphs.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
+              <p key={index}>{linkify(paragraph)}</p>
             ))}
           </div>
         </div>
@@ -98,12 +99,12 @@ export default async function SobrePage() {
             <h2 className="font-serif text-2xl text-tinta">
               Por que esse site existe
             </h2>
-            <p>{about.why_site_text}</p>
+            <p>{linkify(about.why_site_text)}</p>
           </div>
 
           <blockquote className="mt-10 border-l-4 border-terracota pl-5 text-left">
             <p className="font-serif text-xl italic text-tinta sm:text-2xl">
-              &ldquo;{about.quote_text}&rdquo;
+              &ldquo;{linkify(about.quote_text)}&rdquo;
             </p>
           </blockquote>
 

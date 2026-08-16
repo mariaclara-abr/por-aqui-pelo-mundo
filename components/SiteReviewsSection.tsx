@@ -1,5 +1,6 @@
 import type { Database } from "@/types/database";
 import SiteReviewSubmitForm from "@/components/SiteReviewSubmitForm";
+import { linkify } from "@/components/Linkify";
 
 type SiteReview = Database["public"]["Tables"]["site_reviews"]["Row"];
 
@@ -45,7 +46,7 @@ export default function SiteReviewsSection({
                 <span className="sr-only">{`Avaliação: ${review.rating} de 5 estrelas`}</span>
 
                 <blockquote className="flex-1 text-sm leading-relaxed text-tinta">
-                  &ldquo;{review.comment}&rdquo;
+                  &ldquo;{linkify(review.comment)}&rdquo;
                 </blockquote>
 
                 <figcaption className="font-serif text-base text-tinta">

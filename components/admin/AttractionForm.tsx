@@ -83,7 +83,7 @@ export default function AttractionForm({
   const [photos, setPhotos] = useState<AdminPhoto[]>(
     [...(attraction?.attraction_photos ?? [])]
       .sort((a, b) => a.order - b.order)
-      .map((photo) => ({ id: photo.id, url: photo.url })),
+      .map((photo) => ({ id: photo.id, url: photo.url, caption: photo.caption })),
   );
 
   const [error, setError] = useState<string | null>(null);
@@ -186,6 +186,7 @@ export default function AttractionForm({
               attraction_id: attractionId,
               url: photo.url,
               order: index,
+              caption: photo.caption || null,
             })),
           );
         if (insertPhotosError) throw insertPhotosError;

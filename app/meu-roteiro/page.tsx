@@ -392,7 +392,7 @@ export default function MeuRoteiroPage() {
                 );
                 window.open(url, "_blank", "noopener,noreferrer");
               }}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-oliva px-5 py-2 text-sm font-medium text-oliva transition-colors hover:bg-oliva/10"
+              className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-oliva transition-colors hover:text-terracota"
             >
               Abrir no Google Maps
             </button>
@@ -618,14 +618,14 @@ export default function MeuRoteiroPage() {
           />
         </div>
 
-        <section className="mt-12 border-t border-tinta/10 pt-8">
-          <h2 className="font-serif text-xl text-tinta">
+        <section className="mt-12 rounded-2xl bg-branco p-6 shadow-sm sm:p-8">
+          <h2 className="font-serif text-2xl text-tinta sm:text-3xl">
             Complete seu roteiro
           </h2>
-          <p className="mt-1 text-oliva">
+          <p className="mt-2 text-base text-oliva">
             Sugestões com base no que você já adicionou.
           </p>
-          <div className="mt-4">
+          <div className="mt-6">
             <RelatedContent mode="itinerary" />
           </div>
         </section>

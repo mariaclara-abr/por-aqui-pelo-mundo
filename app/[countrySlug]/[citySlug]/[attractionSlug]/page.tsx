@@ -9,7 +9,9 @@ import CurationRating from "@/components/CurationRating";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
+import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import AffiliateCallout from "@/components/AffiliateCallout";
+import { linkify } from "@/components/Linkify";
 import { buildOpenGraph, truncateToSentence } from "@/lib/metadata";
 
 type AttractionWithRelations = Database["public"]["Tables"]["attractions"]["Row"] & {
@@ -167,46 +169,14 @@ export default async function AttractionPage(
         )}
 
         <div className="mt-8">
-          {photos.length > 0 ? (
-            <div className="flex flex-col gap-2">
-              <div className="aspect-[16/9] w-full overflow-hidden rounded-xl bg-branco">
-                <img
-                  src={photos[0].url}
-                  alt={attraction.name}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {photos.length > 1 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {photos.slice(1).map((photo) => (
-                    <div
-                      key={photo.id}
-                      className="aspect-[4/3] overflow-hidden rounded-lg bg-branco"
-                    >
-                      <img
-                        src={photo.url}
-                        alt={attraction.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
-              <span className="font-serif text-lg text-oliva">
-                {attraction.name}
-              </span>
-            </div>
-          )}
+          <AttractionPhotos photos={photos} attractionName={attraction.name} />
         </div>
 
         <div className="mt-8">
           {attraction.description && (
             <section>
               <p className="leading-relaxed text-tinta">
-                {attraction.description}
+                {linkify(attraction.description)}
               </p>
             </section>
           )}
@@ -235,7 +205,7 @@ export default async function AttractionPage(
                 Exclusivo Por Aqui Pelo Mundo
               </p>
               <p className="mt-2 leading-relaxed text-tinta">
-                {attraction.exclusive_perk_description}
+                {linkify(attraction.exclusive_perk_description)}
               </p>
               {attraction.exclusive_perk_url && (
                 <a
@@ -257,7 +227,7 @@ export default async function AttractionPage(
                 Experiência de quem já foi
               </h2>
               <p className="mt-2 leading-relaxed text-tinta/90">
-                {attraction.personal_experience}
+                {linkify(attraction.personal_experience)}
               </p>
             </section>
           )}
@@ -268,7 +238,7 @@ export default async function AttractionPage(
                 Dicas importantes
               </h2>
               <p className="mt-2 leading-relaxed text-tinta/90">
-                {attraction.important_tips}
+                {linkify(attraction.important_tips)}
               </p>
             </section>
           )}
@@ -279,7 +249,7 @@ export default async function AttractionPage(
                 Observações importantes
               </h2>
               <p className="mt-2 leading-relaxed text-tinta/90">
-                {attraction.important_notes}
+                {linkify(attraction.important_notes)}
               </p>
             </section>
           )}

@@ -73,12 +73,14 @@ function buildFlightPath(x0: number, y0: number, corner: Corner) {
   };
   const end = targets[corner];
 
-  // Heading from the click point straight toward the exit target: used both
-  // to place the loop and to aim the approach segment at it, so the plane
-  // never has to reverse direction going into the loop.
+  // Heading from the click point straight toward the exit target. Only used
+  // to orient the loop when there's no approach segment (loop sits right on
+  // the click point, see `entryHeadingDeg` below) — reusing it whenever an
+  // approach segment exists would aim that segment's arrival at the exit
+  // corner instead of at the loop it's actually flying into, which can point
+  // in a completely different (even near-opposite) direction and forces a
+  // sharp last-second turn right at the loop's entrance.
   const headingDeg = (Math.atan2(end.y - y0, end.x - x0) * 180) / Math.PI;
-  const hx = Math.cos((headingDeg * Math.PI) / 180);
-  const hy = Math.sin((headingDeg * Math.PI) / 180);
 
   // The click point always sits on the loop circle, so the loop's own
   // farthest reach from it is the circle's diameter (2r), whichever way it
@@ -107,11 +109,25 @@ function buildFlightPath(x0: number, y0: number, corner: Corner) {
 
   let approach = "";
   const approachDist = Math.hypot(loopX - x0, loopY - y0);
+  // The loop is oriented to enter (and, since it's a closed loop, exit)
+  // along this heading. When there's a real approach segment, that heading
+  // must be the direction the plane is actually already travelling in — the
+  // straight line from the click point to the loop — so the approach curve
+  // arrives with a matching tangent instead of swerving into some unrelated
+  // direction right before the loop. Only when the loop sits on the click
+  // point itself (no approach) is there no such constraint, so it's free to
+  // face the exit corner instead.
+  const entryHeadingDeg =
+    approachDist > 1
+      ? (Math.atan2(loopY - y0, loopX - x0) * 180) / Math.PI
+      : headingDeg;
+  const hx = Math.cos((entryHeadingDeg * Math.PI) / 180);
+  const hy = Math.sin((entryHeadingDeg * Math.PI) / 180);
   if (approachDist > 1) {
     const c1x = x0 + (loopX - x0) * 0.35;
     const c1y = y0 + (loopY - y0) * 0.35;
-    // Arrive at the loop moving along `headingDeg`, matching the loop's own
-    // entry tangent, and keep the handle short enough to stay inside the
+    // Arrive at the loop moving along `entryHeadingDeg`, matching the loop's
+    // own entry tangent, and keep the handle short enough to stay inside the
     // safe rect (all four bezier control points in-viewport guarantees the
     // curve itself never leaves the viewport either, by the convex hull
     // property).
@@ -121,7 +137,7 @@ function buildFlightPath(x0: number, y0: number, corner: Corner) {
     approach = `C ${c1x},${c1y} ${c2x},${c2y} ${loopX},${loopY} `;
   }
 
-  const { d: loopD, lastC2 } = buildLoop(loopX, loopY, r, headingDeg);
+  const { d: loopD, lastC2 } = buildLoop(loopX, loopY, r, entryHeadingDeg);
   const path = `M ${x0},${y0} ${approach}${loopD}`;
 
   const dx = end.x - loopX;
@@ -198,7 +214,15 @@ export default function PlaneLaunchIcon({
     const rect = el.getBoundingClientRect();
     const x0 = rect.left + rect.width / 2;
     const y0 = rect.top + rect.height / 2;
-    const corners: Corner[] = ["tl", "tr", "bl", "br"];
+    // Exclude the corner the plane already started in front of: flying out
+    // toward it would mean doubling back the way it came, which forces a
+    // sharp turn onto the escape curve to still land there in one smooth
+    // piece. Every other corner keeps the exit roughly ahead of the plane.
+    const ownCorner = ((y0 < window.innerHeight / 2 ? "t" : "b") +
+      (x0 < window.innerWidth / 2 ? "l" : "r")) as Corner;
+    const corners = (["tl", "tr", "bl", "br"] as Corner[]).filter(
+      (c) => c !== ownCorner,
+    );
     const corner = corners[Math.floor(Math.random() * corners.length)];
     const d = buildFlightPath(x0, y0, corner);
 

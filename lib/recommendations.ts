@@ -8,12 +8,16 @@ const NEARBY_CITIES_LIMIT = 4;
 const NEARBY_CITIES_MAX_DISTANCE_KM = 1000;
 const WALK_SPEED_KMH = 4.5;
 
-const GENERAL_CATEGORIES: AttractionCategory[] = [
+const ALL_CATEGORIES: AttractionCategory[] = [
   "ponto_turistico",
+  "restaurante",
+  "hotel",
   "museu",
   "natureza",
   "compras",
+  "passeio",
   "cafe",
+  "estacionamentos",
   "outro",
 ];
 
@@ -42,10 +46,6 @@ export interface RecommendedCity {
 
 export interface AttractionRecommendations {
   nearbyAttractions: RecommendedAttraction[];
-  nearbyRestaurants: RecommendedAttraction[];
-  nearbyHotels: RecommendedAttraction[];
-  complementaryTours: RecommendedAttraction[];
-  nearbyParking: RecommendedAttraction[];
   nearbyCities: RecommendedCity[];
 }
 
@@ -131,6 +131,8 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
     }));
 }
 
+// Ordena por proximidade (atrações sem coordenadas ficam por último,
+// desempatando por nota de curadoria).
 function rankAttractionsByCategory(
   index: GeoIndexRow[],
   reference: GeoReference,
@@ -156,13 +158,13 @@ function rankAttractionsByCategory(
       hasCoords ? distanceKm !== null && distanceKm <= NEARBY_RADIUS_KM : item.citySlug === reference.citySlug,
     )
     .sort((a, b) => {
-      if (b.item.curationRating !== a.item.curationRating) {
+      if (a.distanceKm === null && b.distanceKm === null) {
         return b.item.curationRating - a.item.curationRating;
       }
-      if (a.distanceKm === null && b.distanceKm === null) return 0;
       if (a.distanceKm === null) return 1;
       if (b.distanceKm === null) return -1;
-      return a.distanceKm - b.distanceKm;
+      if (a.distanceKm !== b.distanceKm) return a.distanceKm - b.distanceKm;
+      return b.item.curationRating - a.item.curationRating;
     })
     .slice(0, limit)
     .map(({ item, distanceKm }) => ({ ...item, distanceKm }));
@@ -271,6 +273,9 @@ function rankNearbyCities(
   return cities.slice(0, limit);
 }
 
+// Junta todas as categorias em uma única lista ordenada por proximidade
+// (mesma lógica usada em "Atrações próximas" do /meu-roteiro), em vez de
+// separar por restaurante/hotel/passeio/estacionamento.
 function buildRecommendations(
   index: GeoIndexRow[],
   reference: GeoReference,
@@ -278,18 +283,14 @@ function buildRecommendations(
   limit: number,
 ): AttractionRecommendations {
   return {
-    nearbyAttractions: rankAttractionsByCategory(index, reference, GENERAL_CATEGORIES, excludeIds, limit),
-    nearbyRestaurants: rankAttractionsByCategory(index, reference, ["restaurante"], excludeIds, limit),
-    nearbyHotels: rankAttractionsByCategory(index, reference, ["hotel"], excludeIds, limit),
-    complementaryTours: rankAttractionsByCategory(index, reference, ["passeio"], excludeIds, limit),
-    nearbyParking: rankAttractionsByCategory(index, reference, ["estacionamentos"], excludeIds, limit),
+    nearbyAttractions: rankAttractionsByCategory(index, reference, ALL_CATEGORIES, excludeIds, limit),
     nearbyCities: rankNearbyCities(index, reference, reference.citySlug, NEARBY_CITIES_LIMIT),
   };
 }
 
-// Recomendações a partir de uma atração específica: prioriza nota de
-// curadoria e proximidade geográfica (raio de ~20km); quando a atração não
-// tem coordenadas cadastradas, cai para "mesma cidade" como aproximação.
+// Recomendações a partir de uma atração específica: prioriza proximidade
+// geográfica (raio de ~20km); quando a atração não tem coordenadas
+// cadastradas, cai para "mesma cidade" como aproximação.
 export async function getAttractionRecommendations(
   attraction: { id: string; citySlug: string; latitude: number | null; longitude: number | null },
   options?: { excludeAttractionIds?: string[]; limit?: number },
@@ -354,5 +355,7 @@ export async function getItineraryRecommendations(
     }
   }
 
-  return buildRecommendations(index, { latitude, longitude, citySlug }, excludeIds, options?.limit ?? DEFAULT_LIMIT);
+  const reference: GeoReference = { latitude, longitude, citySlug };
+
+  return buildRecommendations(index, reference, excludeIds, options?.limit ?? DEFAULT_LIMIT);
 }

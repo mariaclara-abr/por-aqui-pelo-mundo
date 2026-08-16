@@ -4,6 +4,7 @@ import { getCitiesByCountry, getCityCountByCountry, getCountryBySlug } from "@/l
 import { getCountryQuestions } from "@/lib/questions";
 import CityCard from "@/components/CityCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
+import ExpandableText from "@/components/ExpandableText";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
 
 export async function generateMetadata(
@@ -67,9 +68,16 @@ export default async function CountryPage(
         <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
           {country.name}
         </h1>
-        <p className="mt-2 max-w-xl text-oliva">
-          Escolha uma cidade para ver as atrações com curadoria.
-        </p>
+        {country.description ? (
+          <ExpandableText
+            text={country.description}
+            className="mt-2 max-w-xl text-oliva"
+          />
+        ) : (
+          <p className="mt-2 max-w-xl text-oliva">
+            Escolha uma cidade para ver as atrações com curadoria.
+          </p>
+        )}
 
         {cities.length === 0 ? (
           <div className="mt-16 flex flex-col items-center gap-2 py-16 text-center">

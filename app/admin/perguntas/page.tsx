@@ -1,19 +1,25 @@
-import { getAllPendingQuestions } from "@/lib/questions";
-import PendingQuestionsList from "@/components/admin/PendingQuestionsList";
+import { getAllAnsweredQuestions, getAllPendingQuestions } from "@/lib/questions";
+import QuestionsPanel from "@/components/admin/QuestionsPanel";
 
 export default async function AdminPerguntasPage() {
-  const questions = await getAllPendingQuestions();
+  const [pendingQuestions, answeredQuestions] = await Promise.all([
+    getAllPendingQuestions(),
+    getAllAnsweredQuestions(),
+  ]);
 
   return (
     <div>
-      <h1 className="font-serif text-2xl text-tinta">Perguntas pendentes</h1>
+      <h1 className="font-serif text-2xl text-tinta">Perguntas</h1>
       <p className="mt-1 text-sm text-oliva">
-        Perguntas feitas pelos viajantes em qualquer atração, aguardando
-        resposta, tudo num só lugar.
+        Perguntas feitas pelos viajantes em qualquer atração, tudo num só
+        lugar.
       </p>
 
       <div className="mt-6">
-        <PendingQuestionsList initialQuestions={questions} />
+        <QuestionsPanel
+          initialPending={pendingQuestions}
+          initialAnswered={answeredQuestions}
+        />
       </div>
     </div>
   );

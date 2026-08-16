@@ -8,6 +8,7 @@ export interface PublicProfile {
   displayName: string;
   avatarUrl: string | null;
   memberSince: string;
+  isAuthor: boolean;
 }
 
 export async function getPublicProfileByUsername(
@@ -15,7 +16,7 @@ export async function getPublicProfileByUsername(
 ): Promise<PublicProfile | null> {
   const { data, error } = await supabase
     .from("public_profiles")
-    .select("id, username, display_name, avatar_url, created_at")
+    .select("id, username, display_name, avatar_url, created_at, role")
     .eq("username", username)
     .maybeSingle();
 
@@ -28,6 +29,7 @@ export async function getPublicProfileByUsername(
     displayName: data.display_name || data.username,
     avatarUrl: data.avatar_url,
     memberSince: data.created_at,
+    isAuthor: data.role === "author",
   };
 }
 

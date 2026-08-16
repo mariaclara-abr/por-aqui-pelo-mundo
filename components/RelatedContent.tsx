@@ -38,13 +38,11 @@ type RelatedContentProps =
   | { mode: "city"; citySlug: string }
   | { mode: "itinerary" };
 
-const ATTRACTION_GROUPS: { key: keyof AttractionRecommendations; label: string }[] = [
-  { key: "nearbyAttractions", label: "Atrações próximas" },
-  { key: "nearbyRestaurants", label: "Restaurantes próximos" },
-  { key: "nearbyHotels", label: "Hotéis próximos" },
-  { key: "complementaryTours", label: "Passeios complementares" },
-  { key: "nearbyParking", label: "Estacionamentos próximos" },
-];
+// Antes cada categoria (restaurante, hotel, passeio...) tinha seu próprio
+// carrossel com DEFAULT_LIMIT itens; agora que tudo entra junto em
+// "Atrações próximas", o limite precisa ser maior para manter a mesma
+// quantidade de sugestões disponíveis.
+const COMBINED_RECOMMENDATIONS_LIMIT = 18;
 
 function CarouselArrow({
   direction,
@@ -347,7 +345,9 @@ export default function RelatedContent(props: RelatedContentProps) {
       setLoading(true);
       try {
         if (props.mode === "attraction") {
-          const data = await getAttractionRecommendations(props.attraction);
+          const data = await getAttractionRecommendations(props.attraction, {
+            limit: COMBINED_RECOMMENDATIONS_LIMIT,
+          });
           if (!cancelled) setRecommendations(data);
         } else if (props.mode === "city") {
           const data = await getNearbyCities(props.citySlug);
@@ -360,6 +360,7 @@ export default function RelatedContent(props: RelatedContentProps) {
               latitude: item.attraction.latitude,
               longitude: item.attraction.longitude,
             })),
+            { limit: COMBINED_RECOMMENDATIONS_LIMIT },
           );
           if (!cancelled) setRecommendations(data);
         }
@@ -403,15 +404,10 @@ export default function RelatedContent(props: RelatedContentProps) {
     );
   }
 
-  const groups = ATTRACTION_GROUPS.map(({ key, label }) => ({
-    key,
-    label,
-    items: (recommendations?.[key] ?? []) as RecommendedAttraction[],
-  })).filter((group) => group.items.length > 0);
-
+  const attractions = recommendations?.nearbyAttractions ?? [];
   const cities = recommendations?.nearbyCities ?? [];
 
-  if (groups.length === 0 && cities.length === 0) {
+  if (attractions.length === 0 && cities.length === 0) {
     return (
       <p className="text-oliva">
         Ainda não há recomendações para este lugar. Em breve teremos mais
@@ -422,16 +418,16 @@ export default function RelatedContent(props: RelatedContentProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      {groups.map((group) => (
-        <RecommendationGroup key={group.key} title={group.label}>
-          {group.items.map((attraction) => (
+      {attractions.length > 0 && (
+        <RecommendationGroup title="Atrações próximas">
+          {attractions.map((attraction) => (
             <AttractionRecommendationCard
               key={attraction.id}
               attraction={attraction}
             />
           ))}
         </RecommendationGroup>
-      ))}
+      )}
       {cities.length > 0 && (
         <RecommendationGroup title="Cidades próximas">
           {cities.map((city) => (

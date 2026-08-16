@@ -14,6 +14,7 @@ import type { AttractionCategory } from "@/types/database";
 import AttractionFilters from "@/components/AttractionFilters";
 import AttractionCard from "@/components/AttractionCard";
 import RelatedContent from "@/components/RelatedContent";
+import ExpandableText from "@/components/ExpandableText";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
 import { buildOpenGraph, joinNames } from "@/lib/metadata";
 
@@ -111,11 +112,11 @@ export default async function CityPage(
           {city.countries.name}
         </Link>
         <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
-          {city.name}
+          Atrações em {city.name}
         </h1>
 
         {city.description && (
-          <p className="mt-2 text-oliva">{city.description}</p>
+          <ExpandableText text={city.description} className="mt-2 text-oliva" />
         )}
 
         <Suspense fallback={null}>

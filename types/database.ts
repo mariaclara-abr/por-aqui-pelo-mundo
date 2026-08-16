@@ -129,6 +129,7 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url: string | null;
+          description: string | null;
           created_at: string;
         };
         Insert: {
@@ -136,6 +137,7 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url?: string | null;
+          description?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["countries"]["Insert"]>;
@@ -237,12 +239,14 @@ export interface Database {
           attraction_id: string;
           url: string;
           order: number;
+          caption: string | null;
         };
         Insert: {
           id?: string;
           attraction_id: string;
           url: string;
           order?: number;
+          caption?: string | null;
         };
         Update: Partial<
           Database["public"]["Tables"]["attraction_photos"]["Insert"]
