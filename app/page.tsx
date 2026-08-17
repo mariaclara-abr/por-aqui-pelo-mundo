@@ -7,8 +7,11 @@ import {
 } from "@/lib/queries";
 import HeroSection from "@/components/HeroSection";
 import DestinationGrid from "@/components/DestinationGrid";
+import WelcomeMarquee from "@/components/WelcomeMarquee";
 import AuthorBand from "@/components/AuthorBand";
+import AIRoteiroBand from "@/components/AIRoteiroBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
+import HomeFooterBand from "@/components/HomeFooterBand";
 import { buildOpenGraph } from "@/lib/metadata";
 
 const TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
@@ -34,11 +37,14 @@ export default async function Home() {
     <main className="flex-1">
       <HeroSection counts={counts} />
       <DestinationGrid countries={countries} />
+      <AIRoteiroBand />
+      <WelcomeMarquee />
       <AuthorBand
         authorName={about.author_name}
         authorPhotoUrl={about.author_photo_url}
       />
       <SiteReviewsSection reviews={siteReviews} />
+      <HomeFooterBand />
     </main>
   );
 }
