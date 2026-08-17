@@ -3,7 +3,6 @@ import {
   getAboutPageContent,
   getCountries,
   getCounts,
-  getHeroPhotos,
   getSiteReviews,
 } from "@/lib/queries";
 import HeroSection from "@/components/HeroSection";
@@ -24,18 +23,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [countries, counts, heroPhotos, siteReviews, about] =
-    await Promise.all([
-      getCountries(),
-      getCounts(),
-      getHeroPhotos(),
-      getSiteReviews(),
-      getAboutPageContent(),
-    ]);
+  const [countries, counts, siteReviews, about] = await Promise.all([
+    getCountries(),
+    getCounts(),
+    getSiteReviews(),
+    getAboutPageContent(),
+  ]);
 
   return (
     <main className="flex-1">
-      <HeroSection photos={heroPhotos} counts={counts} />
+      <HeroSection counts={counts} />
       <DestinationGrid countries={countries} />
       <AuthorBand
         authorName={about.author_name}

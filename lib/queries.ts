@@ -269,47 +269,6 @@ export async function getAttractionsSummaryByIds(ids: string[]) {
   return data;
 }
 
-export interface HeroPhoto {
-  url: string;
-  alt: string;
-}
-
-export const getHeroPhotos = cache(async (limit = 3): Promise<HeroPhoto[]> => {
-  const { data: countries, error: countriesError } = await supabase
-    .from("countries")
-    .select("name, cover_image_url")
-    .not("cover_image_url", "is", null)
-    .order("name")
-    .limit(limit);
-
-  if (countriesError) throw countriesError;
-
-  const photos: HeroPhoto[] = (countries ?? []).map((country) => ({
-    url: country.cover_image_url as string,
-    alt: country.name,
-  }));
-
-  if (photos.length < limit) {
-    const { data: cities, error: citiesError } = await supabase
-      .from("cities")
-      .select("name, cover_image_url")
-      .not("cover_image_url", "is", null)
-      .order("name")
-      .limit(limit - photos.length);
-
-    if (citiesError) throw citiesError;
-
-    photos.push(
-      ...(cities ?? []).map((city) => ({
-        url: city.cover_image_url as string,
-        alt: city.name,
-      })),
-    );
-  }
-
-  return photos.slice(0, limit);
-});
-
 export async function getCounts() {
   const [countries, cities, attractions] = await Promise.all([
     supabase.from("countries").select("*", { count: "exact", head: true }),
