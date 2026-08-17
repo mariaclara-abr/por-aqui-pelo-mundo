@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "motion/react";
 
 const DEFAULT_ICON_SIZE = 22;
@@ -270,53 +271,55 @@ export default function PlaneLaunchIcon({
         />
       </motion.button>
 
-      {flight && (
-        <div className="pointer-events-none fixed inset-0 z-[999] overflow-hidden">
-          <svg className="h-full w-full">
-            <path ref={pathRef} d={flight.d} fill="none" stroke="none" />
-            {flight.dashes.map((dash, i) => (
-              <motion.line
-                key={i}
-                x1={dash.x1}
-                y1={dash.y1}
-                x2={dash.x2}
-                y2={dash.y2}
-                stroke="#C1653A"
-                strokeWidth={2.5}
-                strokeLinecap="round"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 1, 0] }}
-                transition={{
-                  duration: DASH_CYCLE,
-                  times: [
-                    0,
-                    DASH_APPEAR / DASH_CYCLE,
-                    (DASH_APPEAR + DASH_HOLD) / DASH_CYCLE,
-                    1,
-                  ],
-                  delay: dash.frac * FLIGHT_DURATION + DASH_GAP_DELAY,
-                  ease: "easeOut",
-                }}
-              />
-            ))}
-          </svg>
-          <motion.img
-            src="/assets/simbolo.svg"
-            alt=""
-            width={size}
-            height={size}
-            className="absolute left-0 top-0"
-            style={{
-              offsetPath: `path("${flight.d}")`,
-              offsetRotate: "auto 70deg",
-              offsetAnchor: "50% 50%",
-            }}
-            initial={{ offsetDistance: "0%" }}
-            animate={{ offsetDistance: "100%" }}
-            transition={{ duration: FLIGHT_DURATION, ease: "linear" }}
-          />
-        </div>
-      )}
+      {flight &&
+        createPortal(
+          <div className="pointer-events-none fixed inset-0 z-[999] overflow-hidden">
+            <svg className="h-full w-full">
+              <path ref={pathRef} d={flight.d} fill="none" stroke="none" />
+              {flight.dashes.map((dash, i) => (
+                <motion.line
+                  key={i}
+                  x1={dash.x1}
+                  y1={dash.y1}
+                  x2={dash.x2}
+                  y2={dash.y2}
+                  stroke="#C1653A"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 1, 1, 0] }}
+                  transition={{
+                    duration: DASH_CYCLE,
+                    times: [
+                      0,
+                      DASH_APPEAR / DASH_CYCLE,
+                      (DASH_APPEAR + DASH_HOLD) / DASH_CYCLE,
+                      1,
+                    ],
+                    delay: dash.frac * FLIGHT_DURATION + DASH_GAP_DELAY,
+                    ease: "easeOut",
+                  }}
+                />
+              ))}
+            </svg>
+            <motion.img
+              src="/assets/simbolo.svg"
+              alt=""
+              width={size}
+              height={size}
+              className="absolute left-0 top-0"
+              style={{
+                offsetPath: `path("${flight.d}")`,
+                offsetRotate: "auto 70deg",
+                offsetAnchor: "50% 50%",
+              }}
+              initial={{ offsetDistance: "0%" }}
+              animate={{ offsetDistance: "100%" }}
+              transition={{ duration: FLIGHT_DURATION, ease: "linear" }}
+            />
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

@@ -25,11 +25,10 @@ export default function AuthorBand({
             idades, testados na prática antes de virarem recomendação aqui no
             site.
           </p>
-          <blockquote className="mt-6 border-l-4 border-terracota pl-4">
+          <blockquote className="mt-6 max-w-xl border-l-4 border-terracota pl-4">
             <p className="font-serif text-lg italic text-branco sm:text-xl">
               &ldquo;Eu não vendo viagens. Eu ensino você a viajar com
-              planejamento, segurança e a aproveitar cada minuto do seu
-              destino.&rdquo;
+              planejamento e a aproveitar cada minuto do seu destino.&rdquo;
             </p>
           </blockquote>
           <Link
