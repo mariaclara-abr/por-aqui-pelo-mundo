@@ -40,12 +40,25 @@ function PlaneGlyph({ className }: { className?: string }) {
   );
 }
 
+// Símbolo oficial do Por Aqui Pelo Mundo (o mesmo do favicon e da imagem de
+// compartilhamento de link), usado aqui em vez do PlaneGlyph genérico.
+function BrandPlaneGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+      <path
+        d="M21,16V14L13,9V3.5C13,2.67 12.33,2 11.5,2C10.67,2 10,2.67 10,3.5V9L2,14V16L10,13.5V19L7.5,20.5V22L11.5,21L15.5,22V20.5L13,19V13.5L21,16Z"
+        transform="rotate(20 11.5 12)"
+      />
+    </svg>
+  );
+}
+
 function ItineraryCard() {
   return (
     <div className="relative mx-auto w-full max-w-sm -rotate-2 rounded-2xl border border-tinta/10 bg-areia p-6 shadow-sm sm:p-7">
       <div className="flex items-center gap-3 border-b border-tinta/10 pb-4">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-terracota text-branco">
-          <PlaneGlyph className="h-4 w-4" />
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-terracota text-areia">
+          <BrandPlaneGlyph className="h-4 w-4" />
         </span>
         <div>
           <p className="font-serif text-base text-tinta">Roteiro em Paris</p>

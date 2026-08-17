@@ -1,11 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import PremiumDialog from "@/components/PremiumDialog";
 
 const LINKS = [
   { label: "Meus roteiros", href: "/meu-roteiro" },
   { label: "Avisos", href: "/notificacoes" },
   { label: "Sobre a autora", href: "/sobre" },
   { label: "Destinos", href: "#destinos" },
-  { label: "Roteiros completos com IA", href: "/meu-roteiro/organizar-com-ia" },
 ];
 
 function InstagramIcon() {
@@ -24,6 +27,8 @@ function InstagramIcon() {
 }
 
 export default function HomeFooterBand() {
+  const [showPremium, setShowPremium] = useState(false);
+
   return (
     <section className="bg-tinta px-4 py-12 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-between">
@@ -50,8 +55,23 @@ export default function HomeFooterBand() {
               {link.label}
             </Link>
           ))}
+          <button
+            type="button"
+            onClick={() => setShowPremium(true)}
+            className="text-sm text-areia/80 transition-colors hover:text-terracota"
+          >
+            Roteiros completos com IA
+          </button>
         </nav>
       </div>
+
+      {showPremium && (
+        <PremiumDialog
+          itineraryId={null}
+          countryCount={0}
+          onClose={() => setShowPremium(false)}
+        />
+      )}
     </section>
   );
 }

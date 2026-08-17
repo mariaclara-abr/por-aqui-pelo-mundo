@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactElement } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useUserSubscription } from "@/lib/useUserSubscription";
 import type { PlanType } from "@/types/database";
@@ -43,15 +44,6 @@ function TagIcon({ className }: { className?: string }) {
   );
 }
 
-function CompassIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth={1.3}>
-      <circle cx="10" cy="10" r="7.5" />
-      <path d="M12.5 7.5l-1.7 4-4 1.7 1.7-4 4-1.7z" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 const HERO_BENEFITS: {
   icon: (props: { className?: string }) => ReactElement;
   title: string;
@@ -76,8 +68,8 @@ const HERO_BENEFITS: {
 
 const COMPACT_BENEFITS = [
   "Roteiro sob medida: montado com base no seu estilo e ritmo de viagem, não um modelo genérico",
+  "A IA sugere atrações além das que você escolheu, alinhadas ao seu perfil",
   "Roteiro completo, dia a dia: sem lacunas, sem inventar na hora",
-  "A IA descobre o que você ainda não sabe que quer: sugere atrações além das que você escolheu, alinhadas ao seu perfil",
   "Dicas exclusivas do destino: informação que não está em blog nenhum",
   "Suporte prioritário: resposta rápida quando você precisar",
   "Você pode fazer as alterações que quiser nos roteiros montados por IA",
@@ -149,14 +141,13 @@ function readCheckoutStatus() {
 export default function PremiumDialog({
   itineraryId,
   countryCount,
-  coverImageUrl,
   onClose,
 }: {
   itineraryId: string | null;
   countryCount: number;
-  coverImageUrl?: string | null;
   onClose: () => void;
 }) {
+  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { isPremium, refresh } = useUserSubscription();
   const [checkoutStatus] = useState(readCheckoutStatus);
@@ -202,6 +193,22 @@ export default function PremiumDialog({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [requestClose]);
+
+  // Fecha o modal na hora (sem animação) e rola até a seção de destinos.
+  // Um Link comum não funciona aqui porque, quando o pop-up já está aberto
+  // na própria home, o Next não dispara o scroll até a hash numa navegação
+  // para a mesma página: rolamos manualmente quando a seção já existe no
+  // DOM, e navegamos normalmente quando ela está em outra página.
+  const goToDestinos = useCallback(() => {
+    document.body.style.overflow = "";
+    onClose();
+    const target = document.getElementById("destinos");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      router.push("/#destinos");
+    }
+  }, [onClose, router]);
 
   useEffect(() => {
     if (checkoutStatus !== "success") return;
@@ -255,10 +262,6 @@ export default function PremiumDialog({
     }
   }
 
-  const plansToShow: PlanType[] = itineraryId
-    ? PLAN_ORDER
-    : PLAN_ORDER.filter((plan) => plan !== "roteiro_unico_1pais");
-
   const entered = phase === "entered";
 
   return (
@@ -282,14 +285,11 @@ export default function PremiumDialog({
         }`}
       >
         <div className="relative h-36 shrink-0 sm:h-44">
-          {coverImageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={coverImageUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-terracota/10">
-              <CompassIcon className="h-12 w-12 text-terracota/40" />
-            </div>
-          )}
+          <img
+            src="/hero-por-do-sol.jpeg"
+            alt="Pôr do sol visto pela janela do avião, com nuvens douradas acima da asa"
+            className="h-full w-full object-cover object-[50%_65%]"
+          />
           <button
             type="button"
             onClick={requestClose}
@@ -384,9 +384,11 @@ export default function PremiumDialog({
                     Pagamento cancelado. Tente novamente quando quiser.
                   </p>
                 )}
-                {plansToShow.map((plan) => {
+                {PLAN_ORDER.map((plan) => {
                   const info = PLAN_INFO[plan];
                   const isAnnual = plan === "premium_anual";
+                  const noItinerary =
+                    plan === "roteiro_unico_1pais" && !itineraryId;
                   const isLocked =
                     plan === "roteiro_unico_1pais" && countryCount >= 2;
                   const isLoading = loadingPlan === plan;
@@ -408,16 +410,18 @@ export default function PremiumDialog({
                         </span>
                       )}
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="min-w-0 pr-3">
                           <p
                             className={`font-serif text-base ${isLocked ? "text-oliva" : "text-tinta"}`}
                           >
                             {info.title}
                           </p>
                           <p className="mt-1 whitespace-pre-line text-xs text-oliva">
-                            {isLocked
-                              ? `${LOCKED_ROTEIRO_UNICO_DETAIL}: seu roteiro atual tem atrações em ${countryCount} países.`
-                              : info.detail}
+                            {noItinerary
+                              ? "Monte seu roteiro escolhendo destinos para desbloquear este plano."
+                              : isLocked
+                                ? `${LOCKED_ROTEIRO_UNICO_DETAIL}: seu roteiro atual tem atrações em ${countryCount} países.`
+                                : info.detail}
                           </p>
                         </div>
                         <div className="shrink-0 text-center">
@@ -443,24 +447,34 @@ export default function PremiumDialog({
                           {ANNUAL_SAVINGS_LABEL}
                         </p>
                       )}
-                      <button
-                        type="button"
-                        onClick={isLocked ? undefined : () => handleCheckout(plan)}
-                        disabled={isLocked || loadingPlan !== null}
-                        className={
-                          isLocked
-                            ? "mt-3 w-full cursor-not-allowed rounded-full border border-oliva/25 py-2.5 text-sm font-medium text-oliva/60"
-                            : isAnnual
-                              ? "mt-3 w-full rounded-full bg-terracota py-2.5 text-sm font-semibold text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
-                              : "mt-3 w-full rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 disabled:opacity-60"
-                        }
-                      >
-                        {isLocked
-                          ? "Indisponível para múltiplos países"
-                          : isLoading
-                            ? "Aguarde..."
-                            : "Desbloquear meu roteiro"}
-                      </button>
+                      {noItinerary ? (
+                        <button
+                          type="button"
+                          onClick={goToDestinos}
+                          className="mt-3 flex w-full items-center justify-center rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+                        >
+                          Montar meu roteiro
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={isLocked ? undefined : () => handleCheckout(plan)}
+                          disabled={isLocked || loadingPlan !== null}
+                          className={
+                            isLocked
+                              ? "mt-3 w-full cursor-not-allowed rounded-full border border-oliva/25 py-2.5 text-sm font-medium text-oliva/60"
+                              : isAnnual
+                                ? "mt-3 w-full rounded-full bg-terracota py-2.5 text-sm font-semibold text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+                                : "mt-3 w-full rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 disabled:opacity-60"
+                          }
+                        >
+                          {isLocked
+                            ? "Indisponível para múltiplos países"
+                            : isLoading
+                              ? "Aguarde..."
+                              : "Desbloquear meu roteiro"}
+                        </button>
+                      )}
                     </div>
                   );
                 })}

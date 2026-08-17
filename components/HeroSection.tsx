@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
 import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
 interface HeroCounts {
@@ -8,6 +11,7 @@ interface HeroCounts {
 }
 
 export default function HeroSection({ counts }: { counts: HeroCounts }) {
+  const prefersReducedMotion = useReducedMotion();
   const showCounter =
     counts.countries > 0 && counts.cities > 0 && counts.attractions > 0;
 
@@ -39,12 +43,24 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
           , que compartilha dicas reais e exclusivas.
         </p>
         <div className="relative mt-8 self-center lg:self-start">
-          <a
-            href="#destinos"
-            className="inline-block rounded-lg bg-terracota px-9 py-3.5 text-base font-medium text-white transition-colors hover:bg-terracota/90"
-          >
-            Explorar destinos
-          </a>
+          <div className="relative inline-flex w-fit">
+            <motion.span
+              aria-hidden="true"
+              className="absolute inset-0 rounded-lg bg-terracota"
+              animate={
+                prefersReducedMotion
+                  ? undefined
+                  : { opacity: [0.35, 0, 0.35], scale: [1, 1.12, 1] }
+              }
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <a
+              href="#destinos"
+              className="relative inline-block rounded-lg bg-terracota px-9 py-3.5 text-base font-medium text-white transition hover:scale-105 hover:bg-terracota/90 active:scale-95"
+            >
+              Explorar destinos
+            </a>
+          </div>
           <span className="absolute left-full top-1/2 ml-6 h-[22px] w-[22px] -translate-y-1/2">
             <PlaneLaunchIcon />
           </span>

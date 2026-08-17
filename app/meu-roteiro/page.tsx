@@ -235,6 +235,13 @@ export default function MeuRoteiroPage() {
           >
             Explorar destinos
           </Link>
+          <button
+            type="button"
+            onClick={() => setPremiumOpen(true)}
+            className="text-sm text-terracota hover:underline"
+          >
+            Comprar roteiro avulso
+          </button>
           {user && (
             <button
               type="button"
@@ -245,6 +252,13 @@ export default function MeuRoteiroPage() {
             </button>
           )}
         </div>
+        {premiumOpen && (
+          <PremiumDialog
+            itineraryId={itineraryId}
+            countryCount={0}
+            onClose={() => setPremiumOpen(false)}
+          />
+        )}
         {switcherOpen && user && (
           <ItinerarySwitcherDialog
             userId={user.id}
@@ -259,9 +273,6 @@ export default function MeuRoteiroPage() {
 
   const countryCount = new Set(items.map((item) => item.attraction.countrySlug))
     .size;
-  const premiumCoverImageUrl =
-    items.find((item) => item.attraction.coverPhotoUrl)?.attraction
-      .coverPhotoUrl ?? null;
 
   const mapPoints: {
     id: string;
@@ -343,7 +354,6 @@ export default function MeuRoteiroPage() {
           <PremiumDialog
             itineraryId={itineraryId}
             countryCount={countryCount}
-            coverImageUrl={premiumCoverImageUrl}
             onClose={() => setPremiumOpen(false)}
           />
         )}
