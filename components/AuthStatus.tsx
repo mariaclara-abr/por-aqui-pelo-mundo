@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-browser";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -112,13 +113,16 @@ export default function AuthStatus() {
         type="button"
         onClick={handleAvatarClick}
         aria-label="Menu da conta"
-        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-oliva text-sm font-medium text-white"
+        className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-oliva text-sm font-medium text-white"
       >
         {profile?.avatar_url ? (
-          <img
+          <Image
             src={profile.avatar_url}
             alt=""
-            className="h-full w-full object-cover"
+            fill
+            unoptimized
+            sizes="36px"
+            className="object-cover"
           />
         ) : (
           initial

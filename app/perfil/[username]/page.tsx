@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -56,12 +57,15 @@ export default async function PublicProfilePage(
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center gap-4">
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-oliva text-2xl font-medium text-white">
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-oliva text-2xl font-medium text-white">
             {profile.avatarUrl ? (
-              <img
+              <Image
                 src={profile.avatarUrl}
                 alt=""
-                className="h-full w-full object-cover"
+                fill
+                unoptimized
+                sizes="80px"
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">

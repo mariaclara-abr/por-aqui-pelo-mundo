@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type MouseEvent } from "react";
+import Image from "next/image";
 import type { Database } from "@/types/database";
 import { linkify } from "@/components/Linkify";
 
@@ -105,12 +106,14 @@ function PhotoGalleryOverlay({
                   type="button"
                   onClick={() => setFocusedIndex(index)}
                   aria-label={photo.caption ?? `Foto ${index + 1}`}
-                  className="group aspect-square overflow-hidden bg-areia"
+                  className="group relative aspect-square overflow-hidden bg-areia"
                 >
-                  <img
+                  <Image
                     src={photo.url}
                     alt={photo.caption ?? ""}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    sizes="50vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </button>
               ))}
@@ -161,11 +164,13 @@ function PhotoGalleryOverlay({
                 </button>
               </>
             )}
-            <img
+            <Image
               src={focusedPhoto.url}
               alt={focusedPhoto.caption ?? attractionName}
               onClick={(event) => event.stopPropagation()}
-              className="max-h-full max-w-full rounded-lg object-contain"
+              fill
+              sizes="100vw"
+              className="rounded-lg object-contain"
             />
           </div>
           {focusedPhoto.caption && (
@@ -205,11 +210,14 @@ export default function AttractionPhotos({
   return (
     <>
       <div className="flex flex-col gap-2">
-        <div className="aspect-[16/9] w-full overflow-hidden rounded-xl bg-branco">
-          <img
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-branco">
+          <Image
             src={photos[0].url}
             alt={attractionName}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            preload
+            className="object-cover"
           />
         </div>
         {rest.length > 0 && (
@@ -224,10 +232,12 @@ export default function AttractionPhotos({
                   aria-label="Ver todas as fotos"
                   className="group relative aspect-[4/3] overflow-hidden rounded-lg bg-branco"
                 >
-                  <img
+                  <Image
                     src={photo.url}
                     alt=""
-                    className="h-full w-full object-cover brightness-[0.2] transition-[filter] group-hover:brightness-[0.15]"
+                    fill
+                    sizes="33vw"
+                    className="object-cover brightness-[0.2] transition-[filter] group-hover:brightness-[0.15]"
                   />
                   <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white">
                     Ver mais
@@ -236,12 +246,14 @@ export default function AttractionPhotos({
               ) : (
                 <div
                   key={photo.id}
-                  className="aspect-[4/3] overflow-hidden rounded-lg bg-branco"
+                  className="relative aspect-[4/3] overflow-hidden rounded-lg bg-branco"
                 >
-                  <img
+                  <Image
                     src={photo.url}
                     alt={attractionName}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="33vw"
+                    className="object-cover"
                   />
                 </div>
               );

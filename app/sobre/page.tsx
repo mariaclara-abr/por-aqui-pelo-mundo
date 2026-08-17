@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getAboutPageContent, getAboutVisitedCountries } from "@/lib/queries";
 import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
 import { linkify } from "@/components/Linkify";
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ? about.author_name
       : AUTHOR_NAME_FALLBACK;
 
-  const description = `${authorName} é mãe, avó e viajante há mais de 20 anos. Conheça quem visita e avalia pessoalmente cada atração recomendada aqui.`;
+  const description = `${authorName} é mãe e viajante há quase 10 anos. Conheça quem visita e avalia pessoalmente cada atração recomendada aqui.`;
 
   const image = about.author_photo_url ?? about.travel_photo_1_url ?? undefined;
 
@@ -51,12 +52,14 @@ export default async function SobrePage() {
     <main className="flex-1">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="flex flex-col items-center text-center">
-          <div className="h-44 w-44 shrink-0 overflow-hidden rounded-full border-4 border-branco bg-branco shadow-sm sm:h-56 sm:w-56">
+          <div className="relative h-44 w-44 shrink-0 overflow-hidden rounded-full border-4 border-branco bg-branco shadow-sm sm:h-56 sm:w-56">
             {about.author_photo_url ? (
-              <img
+              <Image
                 src={about.author_photo_url}
                 alt={about.author_name}
-                className="h-full w-full object-cover"
+                fill
+                sizes="224px"
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -82,12 +85,14 @@ export default async function SobrePage() {
           </div>
         </div>
 
-        <div className="mt-10 flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
+        <div className="relative mt-10 flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
           {about.travel_photo_1_url ? (
-            <img
+            <Image
               src={about.travel_photo_1_url}
               alt=""
-              className="h-full w-full rounded-xl object-cover"
+              fill
+              sizes="(min-width: 1024px) 1152px, 100vw"
+              className="rounded-xl object-cover"
             />
           ) : (
             <span className="text-sm text-oliva">Foto de viagem em breve</span>
@@ -130,12 +135,14 @@ export default async function SobrePage() {
           </div>
         </div>
 
-        <div className="mt-10 flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
+        <div className="relative mt-10 flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
           {about.travel_photo_2_url ? (
-            <img
+            <Image
               src={about.travel_photo_2_url}
               alt=""
-              className="h-full w-full rounded-xl object-cover"
+              fill
+              sizes="(min-width: 1024px) 1152px, 100vw"
+              className="rounded-xl object-cover"
             />
           ) : (
             <span className="text-sm text-oliva">Foto de viagem em breve</span>

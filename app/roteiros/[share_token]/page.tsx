@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSharedItineraryByToken } from "@/lib/shared-itinerary";
@@ -115,12 +116,14 @@ export default async function SharedItineraryPage(
                   href={`/${attraction.countrySlug}/${attraction.citySlug}/${attraction.slug}`}
                   className="flex items-center gap-3 rounded-xl bg-branco p-3 shadow-sm transition-colors hover:bg-areia"
                 >
-                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-areia">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-areia">
                     {attraction.coverPhotoUrl && (
-                      <img
+                      <Image
                         src={attraction.coverPhotoUrl}
                         alt={attraction.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="64px"
+                        className="object-cover"
                       />
                     )}
                   </div>

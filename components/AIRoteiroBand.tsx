@@ -144,8 +144,8 @@ export default function AIRoteiroBand() {
             Nossa IA monta o roteiro ideal para você!
           </h2>
           <p className="mt-5 text-areia/90">
-            Cruzamos a curadoria real da Rejane com inteligência artificial:
-            em poucos minutos você recebe um roteiro dia a dia sob medida
+            A junção da curadoria real da Rejane com inteligência artificial:
+            em poucos minutos você recebe um roteiro detalhado sob medida
             para sua viagem.
           </p>
 

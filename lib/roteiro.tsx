@@ -25,6 +25,7 @@ import {
 import { canAddCountryToItinerary } from "@/lib/itinerary-country-limit";
 import { humanizeSlug } from "@/lib/affiliates";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import PremiumDialog from "@/components/PremiumDialog";
 import type { AttractionCategory } from "@/types/database";
 
 const STORAGE_KEY = "roteiro-local-v1";
@@ -157,6 +158,7 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
   } | null>(null);
   const [creatingConflictItinerary, setCreatingConflictItinerary] =
     useState(false);
+  const [premiumOpen, setPremiumOpen] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -395,6 +397,11 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
     setCountryConflict(null);
   }
 
+  function openPremiumFromCountryConflict() {
+    setCountryConflict(null);
+    setPremiumOpen(true);
+  }
+
   // Cria um roteiro novo pra atração que não coube no atual por causa do
   // limite de 1 país, e já adiciona ela lá.
   async function createItineraryForConflict() {
@@ -419,6 +426,9 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const countryCount = new Set(items.map((item) => item.attraction.countrySlug))
+    .size;
+
   return (
     <RoteiroContext.Provider
       value={{
@@ -441,18 +451,31 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
       {children}
       {countryConflict && (
         <ConfirmDialog
+          wide
           message={
             <>
-              Esse roteiro já tem atrações de{" "}
-              <span className="font-medium">
-                {humanizeSlug(items[0]?.attraction.countrySlug ?? "")}
+              <span className="mb-1 block font-serif text-lg text-tinta">
+                Um roteiro, um país
               </span>
-              . Pra adicionar atrações de{" "}
-              <span className="font-medium">
-                {humanizeSlug(countryConflict.attraction.countrySlug)}
+              <span className="text-oliva">
+                Esse roteiro já tem atrações de{" "}
+                <span className="font-medium text-tinta">
+                  {humanizeSlug(items[0]?.attraction.countrySlug ?? "")}
+                </span>
+                . Pra adicionar atrações de{" "}
+                <span className="font-medium text-tinta">
+                  {humanizeSlug(countryConflict.attraction.countrySlug)}
+                </span>
+                , crie um novo roteiro ou assine o{" "}
+                <button
+                  type="button"
+                  onClick={openPremiumFromCountryConflict}
+                  className="font-medium text-terracota underline decoration-terracota/40 underline-offset-2 transition-colors hover:decoration-terracota"
+                >
+                  Premium
+                </button>{" "}
+                pra ter roteiros com vários países.
               </span>
-              , crie um novo roteiro (ou assine o Premium pra ter roteiros
-              com vários países).
             </>
           }
           confirmLabel="Criar novo roteiro"
@@ -461,6 +484,13 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
           pendingLabel="Criando..."
           onConfirm={createItineraryForConflict}
           onCancel={cancelCountryConflict}
+        />
+      )}
+      {premiumOpen && (
+        <PremiumDialog
+          itineraryId={itineraryId}
+          countryCount={countryCount}
+          onClose={() => setPremiumOpen(false)}
         />
       )}
     </RoteiroContext.Provider>

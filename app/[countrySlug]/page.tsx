@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { getCitiesByCountry, getCityCountByCountry, getCountryBySlug } from "@/lib/queries";
 import { getCountryQuestions } from "@/lib/questions";
@@ -99,10 +100,12 @@ export default async function CountryPage(
         <section className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen py-8 sm:py-10">
           {coverImage && (
             <>
-              <img
+              <Image
                 src={coverImage}
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                sizes="100vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-tinta/60" />
             </>

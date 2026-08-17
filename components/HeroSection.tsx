@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
@@ -17,10 +18,13 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
 
   return (
     <section className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden">
-      <img
+      <Image
         src="/hero-por-do-sol.jpeg"
         alt="Pôr do sol visto pela janela do avião, com nuvens douradas acima da asa"
-        className="absolute inset-0 h-full w-full object-cover brightness-[0.55]"
+        fill
+        preload
+        sizes="100vw"
+        className="object-cover brightness-[0.55]"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-tinta/70 via-tinta/25 to-tinta/40" />
 

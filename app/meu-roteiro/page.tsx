@@ -4,10 +4,10 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, useReducedMotion } from "motion/react";
 import { useRoteiro } from "@/lib/roteiro";
 import { useAuth } from "@/lib/auth";
 import { useUserSubscription } from "@/lib/useUserSubscription";
-import CurationRating from "@/components/CurationRating";
 import RelatedContent from "@/components/RelatedContent";
 import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
@@ -149,6 +149,7 @@ export default function MeuRoteiroPage() {
   const { user } = useAuth();
   const { isPremium, hasRoteiroUnicoFor } = useUserSubscription();
   const router = useRouter();
+  const prefersReducedMotion = useReducedMotion();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
@@ -331,8 +332,21 @@ export default function MeuRoteiroPage() {
             <button
               type="button"
               onClick={() => setShareOpen(true)}
-              className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-terracota px-3 py-1 text-xs font-medium text-terracota transition-colors hover:bg-terracota/10 sm:self-auto"
+              className="inline-flex shrink-0 items-center gap-2 self-start rounded-full px-3 py-1 text-xs font-medium text-terracota transition-colors hover:bg-terracota/10 sm:self-auto"
             >
+              <svg
+                viewBox="0 0 20 20"
+                className="h-4 w-4 fill-none stroke-current"
+                strokeWidth={1.75}
+              >
+                <circle cx="15" cy="5" r="2.25" />
+                <circle cx="5" cy="10" r="2.25" />
+                <circle cx="15" cy="15" r="2.25" />
+                <path
+                  d="M7 8.8l6-2.6M7 11.2l6 2.6"
+                  strokeLinecap="round"
+                />
+              </svg>
               Compartilhar roteiro
             </button>
           )}
@@ -366,22 +380,61 @@ export default function MeuRoteiroPage() {
           />
         )}
 
-        <button
-          type="button"
-          onClick={handleOrganizarClick}
-          className="mt-6 flex w-full flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-terracota bg-terracota/5 p-4 text-left transition-colors hover:bg-terracota/10"
-        >
-          <div>
-            <p className="font-serif text-lg text-tinta">Organizar com IA</p>
-            <p className="text-sm text-oliva">
-              Deixe a IA sugerir a ordem, os dias e os horários das suas
-              atrações.
-            </p>
-          </div>
-          <span className="shrink-0 rounded-full bg-terracota px-5 py-2 text-sm font-medium text-white">
-            Organizar
-          </span>
-        </button>
+        <div className="relative left-1/2 mt-6 w-screen -translate-x-1/2 overflow-hidden bg-terracota">
+          <div
+            aria-hidden="true"
+            className="shine-sweep pointer-events-none absolute inset-0"
+          />
+
+          <motion.img
+            src="/assets/simbolo.svg"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-4 -top-5 h-20 w-20 opacity-10 sm:h-24 sm:w-24"
+            animate={
+              prefersReducedMotion
+                ? undefined
+                : { y: [0, -8, 0], rotate: [-8, -2, -8] }
+            }
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <button
+            type="button"
+            onClick={handleOrganizarClick}
+            className="relative mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-left sm:px-6 sm:py-5 lg:px-10"
+          >
+            <div className="max-w-md sm:max-w-none">
+              <p className="font-serif text-xl text-branco sm:text-2xl">
+                Organize seu roteiro com IA
+              </p>
+              <p className="mt-1.5 text-sm text-areia/90 sm:whitespace-nowrap">
+                Em poucos minutos você recebe um roteiro detalhado e sob
+                medida para sua viagem.
+              </p>
+            </div>
+
+            <span className="relative inline-flex shrink-0">
+              <motion.span
+                aria-hidden="true"
+                className="absolute inset-0 rounded-full bg-branco"
+                animate={
+                  prefersReducedMotion
+                    ? undefined
+                    : { opacity: [0.35, 0, 0.35], scale: [1, 1.12, 1] }
+                }
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+              <span className="relative rounded-full bg-branco px-6 py-2 text-sm font-medium text-terracota transition-transform hover:scale-105 active:scale-95">
+                Organizar com IA
+              </span>
+            </span>
+          </button>
+        </div>
 
         {mapPoints.length > 0 && (
           <div className="mt-8">
@@ -509,7 +562,7 @@ export default function MeuRoteiroPage() {
 
             return (
               <div key={item.attraction.id}>
-                <div className="flex items-center gap-3 rounded-xl bg-branco p-3 shadow-sm">
+                <div className="flex items-center gap-3 rounded-xl bg-branco p-3 shadow-sm transition-all duration-200 hover:scale-[1.02] hover:shadow-lg">
                   <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-areia">
                     {item.attraction.coverPhotoUrl && (
                       <img
@@ -530,13 +583,6 @@ export default function MeuRoteiroPage() {
                     <p className="text-xs uppercase tracking-wide text-oliva">
                       {categoryLabel}
                     </p>
-                    <div className="mt-1">
-                      <CurationRating
-                        rating={item.attraction.curationRating}
-                        showLabel={false}
-                        size="sm"
-                      />
-                    </div>
                   </div>
 
                   <div className="flex flex-col items-center gap-1">

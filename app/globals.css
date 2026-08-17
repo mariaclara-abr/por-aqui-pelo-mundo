@@ -47,3 +47,28 @@ body {
     animation-play-state: paused;
   }
 }
+
+@keyframes shine-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(200%);
+  }
+}
+
+.shine-sweep {
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 80%
+  );
+  animation: shine-sweep 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shine-sweep {
+    animation: none;
+  }
+}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { deriveDestination, type ItinerarySummary } from "@/lib/itinerary-queries";
 
 export default function PublicItineraryList({
@@ -45,12 +46,12 @@ export default function PublicItineraryList({
               {photos.length > 0 && (
                 <div className="flex -space-x-3">
                   {photos.map((url, index) => (
-                    <img
+                    <div
                       key={index}
-                      src={url}
-                      alt=""
-                      className="h-12 w-12 rounded-full border-2 border-branco object-cover"
-                    />
+                      className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-branco"
+                    >
+                      <Image src={url} alt="" fill sizes="48px" className="object-cover" />
+                    </div>
                   ))}
                 </div>
               )}
@@ -63,12 +64,14 @@ export default function PublicItineraryList({
                     href={`/${item.attraction.countrySlug}/${item.attraction.citySlug}/${item.attraction.slug}`}
                     className="flex items-center gap-3 rounded-lg p-1 transition-colors hover:bg-areia"
                   >
-                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-areia">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-areia">
                       {item.attraction.coverPhotoUrl && (
-                        <img
+                        <Image
                           src={item.attraction.coverPhotoUrl}
                           alt=""
-                          className="h-full w-full object-cover"
+                          fill
+                          sizes="48px"
+                          className="object-cover"
                         />
                       )}
                     </div>

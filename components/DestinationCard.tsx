@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function DestinationCard({
   href,
@@ -16,10 +17,12 @@ export default function DestinationCard({
     >
       {imageUrl ? (
         <>
-          <img
+          <Image
             src={imageUrl}
             alt={name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
           <h2 className="absolute bottom-4 left-4 font-serif text-xl text-white transition-colors group-hover:text-terracota">

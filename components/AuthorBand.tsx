@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AuthorBand({
   authorName,
@@ -40,12 +41,14 @@ export default function AuthorBand({
         </div>
 
         <div className="mx-auto w-full max-w-sm shrink-0 overflow-hidden rounded-2xl border-4 border-branco/15 shadow-sm lg:mx-0 lg:w-2/5">
-          <div className="aspect-[9/10]">
+          <div className="relative aspect-[9/10]">
             {authorPhotoUrl ? (
-              <img
+              <Image
                 src={authorPhotoUrl}
                 alt={authorName}
-                className="h-full w-full object-cover"
+                fill
+                sizes="(min-width: 1024px) 40vw, 384px"
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-oliva/80">

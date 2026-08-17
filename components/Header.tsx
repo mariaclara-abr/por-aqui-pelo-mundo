@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import SearchBox from "@/components/SearchBox";
 import AuthStatus from "@/components/AuthStatus";
 import NavDrawer from "@/components/NavDrawer";
 import NotificationBell from "@/components/NotificationBell";
 import RoteiroIndicator from "@/components/RoteiroIndicator";
-import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
+
+const PlaneLaunchIcon = dynamic(() => import("@/components/PlaneLaunchIcon"), {
+  ssr: false,
+  loading: () => <img src="/assets/simbolo.svg" alt="" width={20} height={20} />,
+});
 
 export default function Header() {
   const pathname = usePathname();

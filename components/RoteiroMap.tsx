@@ -86,7 +86,7 @@ export default function RoteiroMap({
         center={coords[0]}
         zoom={13}
         scrollWheelZoom={false}
-        className="h-80 w-full rounded-xl"
+        className="h-80 w-full rounded-xl border-2 border-oliva"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

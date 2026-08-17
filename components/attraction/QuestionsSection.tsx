@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { inputClass } from "@/components/admin/FormField";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -45,13 +46,16 @@ function Avatar({ profile, size = 9 }: { profile: QuestionProfile; size?: 8 | 9 
   const dimension = size === 8 ? "h-8 w-8" : "h-9 w-9";
   return (
     <div
-      className={`${dimension} shrink-0 overflow-hidden rounded-full bg-oliva text-xs font-medium text-white`}
+      className={`relative ${dimension} shrink-0 overflow-hidden rounded-full bg-oliva text-xs font-medium text-white`}
     >
       {profile.avatarUrl ? (
-        <img
+        <Image
           src={profile.avatarUrl}
           alt=""
-          className="h-full w-full object-cover"
+          fill
+          unoptimized
+          sizes="36px"
+          className="object-cover"
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center">
