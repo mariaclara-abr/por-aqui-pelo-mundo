@@ -147,7 +147,6 @@ export default async function SobrePage() {
             <h2 className="font-serif text-2xl text-tinta">
               Destinos já visitados
             </h2>
-            <p className="mt-2 text-oliva">Lugares que já visitei.</p>
             {visitedCountries.length === 0 ? (
               <p className="mt-4 text-oliva">Novos destinos em breve.</p>
             ) : (
