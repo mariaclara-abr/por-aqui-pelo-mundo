@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase-browser";
 import { slugify } from "@/lib/slugify";
 import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
+import PreviewModal from "@/components/admin/PreviewModal";
+import CityPreview from "@/components/admin/previews/CityPreview";
 import type { Database } from "@/types/database";
 
 type City = Database["public"]["Tables"]["cities"]["Row"];
@@ -27,8 +29,11 @@ export default function CityForm({
   );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const slug = slugify(name);
+  const selectedCountryName =
+    countries.find((country) => country.id === countryId)?.name ?? "";
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -138,6 +143,13 @@ export default function CityForm({
 
       <div className="flex gap-3">
         <button
+          type="button"
+          onClick={() => setShowPreview(true)}
+          className="rounded-full border border-oliva/30 px-6 py-2.5 text-sm font-medium text-oliva transition-colors hover:bg-areia"
+        >
+          Visualizar
+        </button>
+        <button
           type="submit"
           disabled={saving}
           className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
@@ -145,6 +157,17 @@ export default function CityForm({
           {saving ? "Salvando..." : "Salvar"}
         </button>
       </div>
+
+      {showPreview && (
+        <PreviewModal onClose={() => setShowPreview(false)}>
+          <CityPreview
+            countryName={selectedCountryName}
+            name={name}
+            description={description || null}
+            coverImageUrl={coverImageUrl}
+          />
+        </PreviewModal>
+      )}
     </form>
   );
 }

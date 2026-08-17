@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase-browser";
 import { slugify } from "@/lib/slugify";
 import FormField, { inputClass } from "@/components/admin/FormField";
 import PhotoUploader, { type AdminPhoto } from "@/components/admin/PhotoUploader";
+import PreviewModal from "@/components/admin/PreviewModal";
+import AttractionPreview from "@/components/admin/previews/AttractionPreview";
 import { RATING_LABELS } from "@/components/CurationRating";
 import { ATTRACTION_CATEGORIES } from "@/types/database";
 import type { Database } from "@/types/database";
@@ -88,8 +90,14 @@ export default function AttractionForm({
 
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const slug = slugify(name);
+  const selectedCity = cities.find((city) => city.id === cityId);
+  const categoryLabel =
+    ATTRACTION_CATEGORIES.find((option) => option.value === category)
+      ?.label ?? category;
+  const selectedTags = tags.filter((tag) => selectedTagIds.includes(tag.id));
 
   function toggleTag(tagId: string) {
     setSelectedTagIds((prev) =>
@@ -527,6 +535,13 @@ export default function AttractionForm({
 
       <div className="flex gap-3">
         <button
+          type="button"
+          onClick={() => setShowPreview(true)}
+          className="rounded-full border border-oliva/30 px-6 py-2.5 text-sm font-medium text-oliva transition-colors hover:bg-areia"
+        >
+          Visualizar
+        </button>
+        <button
           type="submit"
           disabled={saving}
           className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
@@ -534,6 +549,31 @@ export default function AttractionForm({
           {saving ? "Salvando..." : "Salvar"}
         </button>
       </div>
+
+      {showPreview && (
+        <PreviewModal onClose={() => setShowPreview(false)}>
+          <AttractionPreview
+            name={name}
+            categoryLabel={categoryLabel}
+            cityName={selectedCity?.name ?? ""}
+            countryName={selectedCity?.countries.name ?? ""}
+            curationRating={curationRating}
+            tags={selectedTags}
+            photos={photos}
+            description={description}
+            personalExperience={personalExperience}
+            importantTips={importantTips}
+            importantNotes={importantNotes}
+            averageVisitTime={averageVisitTime}
+            bestTimeOfDay={bestTimeOfDay}
+            bestSeason={bestSeason}
+            recommendedAudience={recommendedAudience}
+            exclusivePerkDescription={exclusivePerkDescription}
+            exclusivePerkUrl={exclusivePerkUrl}
+            exclusivePerkCtaLabel={exclusivePerkCtaLabel}
+          />
+        </PreviewModal>
+      )}
     </form>
   );
 }

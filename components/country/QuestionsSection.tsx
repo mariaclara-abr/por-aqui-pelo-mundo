@@ -120,7 +120,7 @@ function QuestionCard({
   }
 
   return (
-    <div className="rounded-xl bg-branco/55 p-4">
+    <div id={`question-${question.id}`} className="scroll-mt-24 rounded-xl bg-branco/55 p-4">
       <div className="flex items-start gap-3">
         <ProfileLink profile={question.asker}>
           <Avatar profile={question.asker} />

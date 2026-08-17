@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import SearchBox from "@/components/SearchBox";
 import AuthStatus from "@/components/AuthStatus";
 import NavDrawer from "@/components/NavDrawer";
+import NotificationBell from "@/components/NotificationBell";
 import RoteiroIndicator from "@/components/RoteiroIndicator";
 import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
@@ -36,6 +37,7 @@ export default function Header() {
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <SearchBox />
+          <NotificationBell />
           <RoteiroIndicator />
           <AuthStatus />
         </div>

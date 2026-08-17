@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase-browser";
 import { slugify } from "@/lib/slugify";
 import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
+import PreviewModal from "@/components/admin/PreviewModal";
+import CountryPreview from "@/components/admin/previews/CountryPreview";
 import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
@@ -19,6 +21,7 @@ export default function CountryForm({ country }: { country?: Country }) {
   );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const slug = slugify(name);
 
@@ -102,6 +105,13 @@ export default function CountryForm({ country }: { country?: Country }) {
 
       <div className="flex gap-3">
         <button
+          type="button"
+          onClick={() => setShowPreview(true)}
+          className="rounded-full border border-oliva/30 px-6 py-2.5 text-sm font-medium text-oliva transition-colors hover:bg-areia"
+        >
+          Visualizar
+        </button>
+        <button
           type="submit"
           disabled={saving}
           className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
@@ -109,6 +119,16 @@ export default function CountryForm({ country }: { country?: Country }) {
           {saving ? "Salvando..." : "Salvar"}
         </button>
       </div>
+
+      {showPreview && (
+        <PreviewModal onClose={() => setShowPreview(false)}>
+          <CountryPreview
+            name={name}
+            description={description || null}
+            coverImageUrl={coverImageUrl}
+          />
+        </PreviewModal>
+      )}
     </form>
   );
 }

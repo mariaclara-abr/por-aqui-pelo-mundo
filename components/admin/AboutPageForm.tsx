@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
+import PreviewModal from "@/components/admin/PreviewModal";
+import AboutPreview from "@/components/admin/previews/AboutPreview";
 import type { Database } from "@/types/database";
 
 type AboutPageContent = Database["public"]["Tables"]["about_page_content"]["Row"];
@@ -27,6 +29,7 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -163,6 +166,13 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
 
       <div className="flex gap-3">
         <button
+          type="button"
+          onClick={() => setShowPreview(true)}
+          className="rounded-full border border-oliva/30 px-6 py-2.5 text-sm font-medium text-oliva transition-colors hover:bg-areia"
+        >
+          Visualizar
+        </button>
+        <button
           type="submit"
           disabled={saving}
           className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
@@ -170,6 +180,20 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
           {saving ? "Salvando..." : "Salvar"}
         </button>
       </div>
+
+      {showPreview && (
+        <PreviewModal onClose={() => setShowPreview(false)}>
+          <AboutPreview
+            authorName={authorName}
+            authorPhotoUrl={authorPhotoUrl}
+            bio={bio}
+            whySiteText={whySiteText}
+            quoteText={quoteText}
+            travelPhoto1Url={travelPhoto1Url}
+            travelPhoto2Url={travelPhoto2Url}
+          />
+        </PreviewModal>
+      )}
     </form>
   );
 }

@@ -34,6 +34,8 @@ export type QuestionStatus = "pendente" | "respondida" | "oculta";
 
 export type SiteReviewStatus = "pendente" | "aprovada" | "oculta";
 
+export type NotificationType = "bem_vindo" | "pergunta_respondida" | "novo_destino";
+
 export type PlanType =
   | "roteiro_unico_1pais"
   | "premium_mensal"
@@ -801,6 +803,52 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["login_attempts"]["Insert"]>;
         Relationships: [];
       };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          type: NotificationType;
+          title: string;
+          message: string;
+          link: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          type: NotificationType;
+          title: string;
+          message: string;
+          link?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["notifications"]["Insert"]>;
+        Relationships: [];
+      };
+      notification_reads: {
+        Row: {
+          notification_id: string;
+          user_id: string;
+          read_at: string;
+        };
+        Insert: {
+          notification_id: string;
+          user_id: string;
+          read_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["notification_reads"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_notification_id_fkey";
+            columns: ["notification_id"];
+            isOneToOne: false;
+            referencedRelation: "notifications";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       public_profiles: {
@@ -828,6 +876,7 @@ export interface Database {
       question_status: QuestionStatus;
       site_review_status: SiteReviewStatus;
       plan_type: PlanType;
+      notification_type: NotificationType;
     };
     CompositeTypes: Record<string, never>;
   };

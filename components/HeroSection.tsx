@@ -26,11 +26,11 @@ export default function HeroSection({
           <h1 className="font-serif text-4xl leading-tight tracking-tight text-terracota sm:text-5xl lg:text-[3.4rem] lg:whitespace-nowrap">
             Por Aqui Pelo Mundo
           </h1>
-          <p className="mt-5 font-serif text-xl text-tinta sm:text-2xl">
+          <p className="mt-5 text-center font-serif text-xl text-tinta sm:text-2xl lg:text-left">
             Monte seu roteiro de viagens com base na experiência real de quem
             já esteve lá.
           </p>
-          <p className="mt-3 text-sm text-oliva/80 sm:text-base">
+          <p className="mt-3 text-center text-sm text-oliva/80 sm:text-base lg:text-left">
             Atrações diversas, recomendadas e avaliadas pela viajante{" "}
             <Link
               href="/sobre"
@@ -40,18 +40,20 @@ export default function HeroSection({
             </Link>
             , que compartilha dicas reais e exclusivas.
           </p>
-          <div className="mt-8 flex items-center gap-6 self-center lg:self-start">
+          <div className="relative mt-8 self-center lg:self-start">
             <a
               href="#destinos"
               className="inline-block rounded-lg bg-terracota px-9 py-3.5 text-base font-medium text-white transition-colors hover:bg-terracota/90"
             >
               Explorar destinos
             </a>
-            <PlaneLaunchIcon />
+            <span className="absolute left-full top-1/2 ml-6 h-[22px] w-[22px] -translate-y-1/2">
+              <PlaneLaunchIcon />
+            </span>
           </div>
 
           {showCounter && (
-            <p className="mt-6 text-sm text-oliva">
+            <p className="mt-6 text-center text-sm text-oliva lg:text-left">
               <span className="font-serif text-base text-tinta">
                 {counts.countries}
               </span>{" "}
