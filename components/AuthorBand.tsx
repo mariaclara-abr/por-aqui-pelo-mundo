@@ -10,7 +10,7 @@ export default function AuthorBand({
 }) {
   return (
     <section className="bg-oliva">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-4 py-14 sm:px-6 sm:py-16 lg:flex-row lg:items-center lg:gap-14 lg:px-10 lg:py-20">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 py-12 sm:gap-10 sm:px-6 sm:py-16 lg:flex-row lg:items-center lg:gap-14 lg:px-10 lg:py-20">
         <div className="flex flex-col justify-center lg:w-3/5">
           <p className="text-xs uppercase tracking-widest text-areia/70">
             Quem está por trás da curadoria
@@ -18,7 +18,7 @@ export default function AuthorBand({
           <h2 className="mt-2 font-serif text-3xl text-branco sm:text-4xl">
             {authorName}
           </h2>
-          <p className="mt-5 max-w-xl leading-relaxed text-areia/90">
+          <p className="mt-4 max-w-xl text-left text-sm leading-relaxed text-areia/90 sm:mt-5 sm:text-base">
             Há quase 10 anos, é a responsável por planejar cada detalhe das
             viagens da própria família: passagens, seguro, hospedagem,
             transporte e roteiro dia a dia. Formada em Administração, mãe de

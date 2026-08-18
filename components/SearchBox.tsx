@@ -13,8 +13,15 @@ type SearchResults = {
   }[];
 };
 
-export default function SearchBox() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function SearchBox({
+  variant = "header",
+  onNavigate,
+}: {
+  variant?: "header" | "drawer";
+  onNavigate?: () => void;
+}) {
+  const inDrawer = variant === "drawer";
+  const [isOpen, setIsOpen] = useState(inDrawer);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResults | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,6 +29,8 @@ export default function SearchBox() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (inDrawer) return;
+
     function handleClickOutside(event: MouseEvent) {
       if (
         containerRef.current &&
@@ -33,7 +42,7 @@ export default function SearchBox() {
     document.addEventListener("mousedown", handleClickOutside);
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [inDrawer]);
 
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
@@ -41,14 +50,10 @@ export default function SearchBox() {
 
   useEffect(() => {
     const trimmed = query.trim();
-    if (!trimmed) {
-      setResults(null);
-      setLoading(false);
-      return;
-    }
+    if (!trimmed) return;
 
-    setLoading(true);
     const timeout = setTimeout(() => {
+      setLoading(true);
       fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
         .then((response) => response.json())
         .then((data: SearchResults) => setResults(data))
@@ -59,9 +64,10 @@ export default function SearchBox() {
   }, [query]);
 
   function close() {
-    setIsOpen(false);
+    if (!inDrawer) setIsOpen(false);
     setQuery("");
     setResults(null);
+    onNavigate?.();
   }
 
   const hasResults =
@@ -77,7 +83,12 @@ export default function SearchBox() {
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={(event) => event.key === "Escape" && close()}
           placeholder="Buscar destinos..."
-          className="w-32 rounded-full border border-oliva/30 bg-branco px-3 py-1.5 text-sm text-tinta placeholder:text-oliva/50 focus:border-terracota focus:outline-none sm:w-64"
+          aria-label="Buscar destinos"
+          className={
+            inDrawer
+              ? "w-full rounded-lg border border-branco/20 bg-branco/10 px-3 py-2.5 text-sm text-branco placeholder:text-areia/70 focus:border-terracota focus:outline-none"
+              : "w-32 rounded-full border border-oliva/30 bg-branco px-3 py-1.5 text-sm text-tinta placeholder:text-oliva/50 focus:border-terracota focus:outline-none sm:w-64"
+          }
         />
       ) : (
         <button
@@ -98,7 +109,13 @@ export default function SearchBox() {
       )}
 
       {isOpen && query.trim() && (
-        <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-oliva/15 bg-branco p-2 shadow-md">
+        <div
+          className={
+            inDrawer
+              ? "mt-2 w-full rounded-xl border border-branco/15 bg-branco p-2 shadow-md"
+              : "absolute right-0 z-50 mt-2 w-72 rounded-xl border border-oliva/15 bg-branco p-2 shadow-md"
+          }
+        >
           {loading ? (
             <p className="px-3 py-2 text-sm text-oliva">Buscando...</p>
           ) : hasResults ? (

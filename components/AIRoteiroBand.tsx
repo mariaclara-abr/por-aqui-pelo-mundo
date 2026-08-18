@@ -115,7 +115,7 @@ export default function AIRoteiroBand() {
   const [showPremium, setShowPremium] = useState(false);
 
   return (
-    <section className="relative overflow-hidden bg-terracota px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
+    <section className="relative overflow-hidden bg-terracota px-4 py-12 sm:px-6 sm:py-20 lg:px-10">
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute -right-4 top-6 text-branco/15 sm:right-8 sm:top-10"

@@ -11,8 +11,7 @@
   --color-foreground: var(--foreground);
 }
 
-html,
-body {
+html {
   overflow-x: hidden;
 }
 

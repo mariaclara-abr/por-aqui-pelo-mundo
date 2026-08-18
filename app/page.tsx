@@ -37,12 +37,12 @@ export default async function Home() {
     <main className="flex-1">
       <HeroSection counts={counts} />
       <DestinationGrid countries={countries} />
-      <AIRoteiroBand />
-      <WelcomeMarquee />
       <AuthorBand
         authorName={about.author_name}
         authorPhotoUrl={about.author_photo_url}
       />
+      <WelcomeMarquee />
+      <AIRoteiroBand />
       <SiteReviewsSection reviews={siteReviews} />
       <HomeFooterBand />
     </main>

@@ -300,7 +300,47 @@ export default function MeuRoteiroPage() {
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative left-1/2 -mt-10 w-screen -translate-x-1/2 overflow-hidden bg-terracota sm:-mt-14">
+          <div
+            aria-hidden="true"
+            className="shine-sweep pointer-events-none absolute inset-0"
+          />
+
+          <motion.img
+            src="/assets/simbolo.svg"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-4 -top-5 h-20 w-20 opacity-10 sm:h-24 sm:w-24"
+            animate={
+              prefersReducedMotion
+                ? undefined
+                : { y: [0, -8, 0], rotate: [-8, -2, -8] }
+            }
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <button
+            type="button"
+            onClick={handleOrganizarClick}
+            className="relative mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-left sm:px-6 sm:py-5 lg:px-10"
+          >
+            <div className="max-w-md sm:max-w-none">
+              <p className="font-serif text-xl text-branco sm:text-2xl">
+                Organize seu roteiro com IA
+              </p>
+              <p className="mt-1.5 text-sm text-areia/90 sm:whitespace-nowrap">
+                Em poucos minutos você recebe um roteiro detalhado e sob
+                medida para sua viagem.
+              </p>
+            </div>
+
+            <span className="relative rounded-full bg-branco px-6 py-2 text-sm font-medium text-terracota transition-transform hover:scale-105 active:scale-95">
+              Organizar com IA
+            </span>
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2">
             <RoteiroTitle />
             {user && itineraryId && (
@@ -379,62 +419,6 @@ export default function MeuRoteiroPage() {
             onClose={() => setSwitcherOpen(false)}
           />
         )}
-
-        <div className="relative left-1/2 mt-6 w-screen -translate-x-1/2 overflow-hidden bg-terracota">
-          <div
-            aria-hidden="true"
-            className="shine-sweep pointer-events-none absolute inset-0"
-          />
-
-          <motion.img
-            src="/assets/simbolo.svg"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-4 -top-5 h-20 w-20 opacity-10 sm:h-24 sm:w-24"
-            animate={
-              prefersReducedMotion
-                ? undefined
-                : { y: [0, -8, 0], rotate: [-8, -2, -8] }
-            }
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-
-          <button
-            type="button"
-            onClick={handleOrganizarClick}
-            className="relative mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-left sm:px-6 sm:py-5 lg:px-10"
-          >
-            <div className="max-w-md sm:max-w-none">
-              <p className="font-serif text-xl text-branco sm:text-2xl">
-                Organize seu roteiro com IA
-              </p>
-              <p className="mt-1.5 text-sm text-areia/90 sm:whitespace-nowrap">
-                Em poucos minutos você recebe um roteiro detalhado e sob
-                medida para sua viagem.
-              </p>
-            </div>
-
-            <span className="relative inline-flex shrink-0">
-              <motion.span
-                aria-hidden="true"
-                className="absolute inset-0 rounded-full bg-branco"
-                animate={
-                  prefersReducedMotion
-                    ? undefined
-                    : { opacity: [0.35, 0, 0.35], scale: [1, 1.12, 1] }
-                }
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-              <span className="relative rounded-full bg-branco px-6 py-2 text-sm font-medium text-terracota transition-transform hover:scale-105 active:scale-95">
-                Organizar com IA
-              </span>
-            </span>
-          </button>
-        </div>
 
         {mapPoints.length > 0 && (
           <div className="mt-8">

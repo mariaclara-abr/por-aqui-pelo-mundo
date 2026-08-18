@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-browser";
 import { getCitiesByCountry, getCountries } from "@/lib/queries";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import SearchBox from "@/components/SearchBox";
 
 type CountryItem = { id: string; name: string; slug: string };
 type CityItem = { id: string; name: string; slug: string };
@@ -28,24 +29,7 @@ export default function NavDrawer() {
   const [cities, setCities] = useState<CityItem[] | null>(null);
   const [loadingCities, setLoadingCities] = useState(false);
 
-  useEffect(() => {
-    if (!destinosOpen) return;
-    setLoadingCountries(true);
-    setCountries(null);
-    getCountries()
-      .then(setCountries)
-      .finally(() => setLoadingCountries(false));
-  }, [destinosOpen]);
-
   const expandedCountrySlug = expandedCountry?.slug ?? null;
-  useEffect(() => {
-    if (!expandedCountrySlug) return;
-    setLoadingCities(true);
-    setCities(null);
-    getCitiesByCountry(expandedCountrySlug)
-      .then(setCities)
-      .finally(() => setLoadingCities(false));
-  }, [expandedCountrySlug]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -90,7 +74,14 @@ export default function NavDrawer() {
     if (!next) {
       setExpandedCountry(null);
       setCities(null);
+      return;
     }
+
+    setLoadingCountries(true);
+    setCountries(null);
+    getCountries()
+      .then(setCountries)
+      .finally(() => setLoadingCountries(false));
   }
 
   function handleCountryClick(country: CountryItem) {
@@ -99,6 +90,11 @@ export default function NavDrawer() {
       return;
     }
     setExpandedCountry(country);
+    setLoadingCities(true);
+    setCities(null);
+    getCitiesByCountry(country.slug)
+      .then(setCities)
+      .finally(() => setLoadingCities(false));
   }
 
   return (
@@ -107,7 +103,7 @@ export default function NavDrawer() {
         type="button"
         onClick={() => setIsOpen(true)}
         aria-label="Abrir menu"
-        className="flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota"
+        className="flex h-11 w-11 items-center justify-center rounded-full text-tinta transition-colors hover:bg-tinta/5 hover:text-terracota sm:h-9 sm:w-9"
       >
         <svg
           viewBox="0 0 20 20"
@@ -156,6 +152,9 @@ export default function NavDrawer() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-3">
+          <div className="mb-3 md:hidden">
+            <SearchBox variant="drawer" onNavigate={close} />
+          </div>
           <nav className="flex flex-col gap-1">
             <MenuItem chevron expanded={destinosOpen} onClick={toggleDestinos}>
               Destinos
@@ -204,6 +203,9 @@ export default function NavDrawer() {
 
             <MenuItem onClick={() => navigate("/meu-roteiro")}>
               Meus Roteiros
+            </MenuItem>
+            <MenuItem onClick={() => navigate("/notificacoes")}>
+              Avisos
             </MenuItem>
             <MenuItem onClick={() => navigate("/sobre")}>
               Sobre a autora

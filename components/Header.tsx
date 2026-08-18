@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
 import SearchBox from "@/components/SearchBox";
 import AuthStatus from "@/components/AuthStatus";
 import NavDrawer from "@/components/NavDrawer";
@@ -11,40 +11,46 @@ import RoteiroIndicator from "@/components/RoteiroIndicator";
 
 const PlaneLaunchIcon = dynamic(() => import("@/components/PlaneLaunchIcon"), {
   ssr: false,
-  loading: () => <img src="/assets/simbolo.svg" alt="" width={20} height={20} />,
+  loading: () => (
+    <Image src="/assets/simbolo.svg" alt="" width={20} height={20} />
+  ),
 });
 
 export default function Header() {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
-
   return (
-    <header className="border-b border-tinta/10 bg-areia px-4 py-4 sm:px-6 lg:px-10">
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
-        <div className="flex min-w-0 flex-1 items-center gap-1">
+    <header className="sticky top-0 z-50 border-b border-tinta/5 bg-areia/80 px-2.5 py-2.5 shadow-[0_2px_16px_-4px_rgba(43,38,32,0.08)] backdrop-blur-md sm:px-6 sm:py-4 lg:px-10">
+      <div className="relative mx-auto flex max-w-[1440px] items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <NavDrawer />
-          {!isHome && (
-            <div className="flex min-w-0 flex-1 items-center gap-2 font-serif text-xl text-tinta">
-              <PlaneLaunchIcon size={20} />
-              <Link
-                href="/"
-                aria-label="Voltar para o início"
-                title="Voltar para o início"
-                className="group relative flex min-w-0 items-center"
-              >
-                <span className="truncate">Por Aqui Pelo Mundo</span>
-                <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-tinta px-2 py-1 text-xs text-branco opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                  Voltar para o início
-                </span>
-              </Link>
-            </div>
-          )}
+          <Link
+            href="/"
+            aria-label="Por Aqui Pelo Mundo: início"
+            className="hidden min-w-0 items-center gap-2 font-serif text-xl text-tinta transition-colors hover:text-terracota md:flex"
+          >
+            <PlaneLaunchIcon size={20} />
+            <span className="truncate">Por Aqui Pelo Mundo</span>
+          </Link>
         </div>
+
+        <Link
+          href="/"
+          aria-label="Por Aqui Pelo Mundo: início"
+          className="absolute left-1/2 flex max-w-[calc(100%-112px)] -translate-x-1/2 items-center gap-1.5 whitespace-nowrap font-serif text-base text-tinta md:hidden"
+        >
+          <PlaneLaunchIcon size={18} />
+          <span className="hidden min-[390px]:inline">Por Aqui Pelo Mundo</span>
+          <span className="min-[390px]:hidden">Por Aqui</span>
+        </Link>
+
         <div className="flex shrink-0 items-center gap-3">
-          <SearchBox />
-          <NotificationBell />
+          <div className="hidden items-center gap-3 md:flex">
+            <SearchBox />
+            <NotificationBell />
+          </div>
           <RoteiroIndicator />
-          <AuthStatus />
+          <div className="hidden md:block">
+            <AuthStatus />
+          </div>
         </div>
       </div>
     </header>

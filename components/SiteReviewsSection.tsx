@@ -10,7 +10,7 @@ export default function SiteReviewsSection({
   reviews: SiteReview[];
 }) {
   return (
-    <section id="avaliacoes" className="bg-areia px-4 py-20 sm:px-6 sm:py-24 lg:px-10">
+    <section id="avaliacoes" className="bg-areia px-4 py-14 sm:px-6 sm:py-24 lg:px-10">
       <div className="mx-auto max-w-[1440px]">
         <h2 className="text-center font-serif text-3xl text-tinta sm:text-4xl">
           Quem usou, aprova
@@ -24,7 +24,7 @@ export default function SiteReviewsSection({
         </div>
 
         {reviews.length > 0 && (
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {reviews.map((review) => (
               <figure
                 key={review.id}
