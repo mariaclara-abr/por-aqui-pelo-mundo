@@ -26,9 +26,9 @@ export default async function Image() {
           background: "#F0E6D2",
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={planeBadgeDataUri}
+          alt=""
           width={340}
           height={340}
           style={{ display: "flex" }}

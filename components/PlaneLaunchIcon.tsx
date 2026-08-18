@@ -202,8 +202,9 @@ export default function PlaneLaunchIcon({
   const [iconHidden, setIconHidden] = useState(false);
 
   useEffect(() => {
+    const timeoutIds = timeoutsRef.current;
     return () => {
-      timeoutsRef.current.forEach((id) => window.clearTimeout(id));
+      timeoutIds.forEach((id) => window.clearTimeout(id));
     };
   }, []);
 

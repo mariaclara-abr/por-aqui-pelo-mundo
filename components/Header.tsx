@@ -1,20 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import dynamic from "next/dynamic";
 import SearchBox from "@/components/SearchBox";
 import AuthStatus from "@/components/AuthStatus";
 import NavDrawer from "@/components/NavDrawer";
 import NotificationBell from "@/components/NotificationBell";
 import RoteiroIndicator from "@/components/RoteiroIndicator";
-
-const PlaneLaunchIcon = dynamic(() => import("@/components/PlaneLaunchIcon"), {
-  ssr: false,
-  loading: () => (
-    <Image src="/assets/simbolo.svg" alt="" width={20} height={20} />
-  ),
-});
+import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
 export default function Header() {
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-browser";
@@ -16,6 +17,7 @@ export default function NavDrawer() {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -30,6 +32,10 @@ export default function NavDrawer() {
   const [loadingCities, setLoadingCities] = useState(false);
 
   const expandedCountrySlug = expandedCountry?.slug ?? null;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -114,121 +120,141 @@ export default function NavDrawer() {
         </svg>
       </button>
 
-      <div
-        onClick={close}
-        aria-hidden="true"
-        className={`fixed inset-0 z-[1100] bg-tinta/50 transition-opacity duration-300 ${
-          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      />
+      {mounted &&
+        createPortal(
+          <>
+            <div
+              onClick={close}
+              aria-hidden="true"
+              className={`fixed inset-0 z-[1100] bg-tinta/50 transition-opacity duration-300 ${
+                isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+            />
 
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu de navegação"
-        className={`fixed inset-y-0 left-0 z-[1101] flex w-80 max-w-[85vw] flex-col bg-oliva shadow-lg transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex items-center gap-2 border-b border-branco/15 px-4 py-4">
-          <div className="w-8 shrink-0" />
-          <p className="flex-1 truncate text-center font-serif text-lg text-branco">
-            Menu
-          </p>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Fechar menu"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-branco transition-colors hover:text-terracota"
-          >
-            <svg
-              viewBox="0 0 20 20"
-              className="h-5 w-5 fill-none stroke-current"
-              strokeWidth={2}
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu de navegação"
+              className={`fixed inset-y-0 left-0 z-[1101] flex w-80 max-w-[85vw] flex-col bg-oliva shadow-lg transition-transform duration-300 ${
+                isOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
             >
-              <path d="M5 5l10 10M15 5L5 15" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-3">
-          <div className="mb-3 md:hidden">
-            <SearchBox variant="drawer" onNavigate={close} />
-          </div>
-          <nav className="flex flex-col gap-1">
-            <MenuItem chevron expanded={destinosOpen} onClick={toggleDestinos}>
-              Destinos
-            </MenuItem>
-
-            {destinosOpen && (
-              <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
-                {renderList({
-                  loading: loadingCountries,
-                  items: countries,
-                  emptyLabel: "Nenhum destino cadastrado ainda.",
-                  renderItem: (country) => (
-                    <div key={country.id} className="flex flex-col gap-1">
-                      <MenuItem
-                        chevron
-                        expanded={expandedCountrySlug === country.slug}
-                        onClick={() => handleCountryClick(country)}
-                      >
-                        {country.name}
-                      </MenuItem>
-
-                      {expandedCountrySlug === country.slug && (
-                        <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
-                          {renderList({
-                            loading: loadingCities,
-                            items: cities,
-                            emptyLabel: "Nenhuma cidade cadastrada ainda.",
-                            renderItem: (city) => (
-                              <MenuItem
-                                key={city.id}
-                                onClick={() =>
-                                  navigate(`/${country.slug}/${city.slug}`)
-                                }
-                              >
-                                {city.name}
-                              </MenuItem>
-                            ),
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ),
-                })}
+              <div className="flex items-center gap-2 border-b border-branco/15 px-4 py-4">
+                <div className="w-8 shrink-0" />
+                <p className="flex-1 truncate text-center font-serif text-lg text-branco">
+                  Menu
+                </p>
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label="Fechar menu"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-branco transition-colors hover:text-terracota"
+                >
+                  <svg
+                    viewBox="0 0 20 20"
+                    className="h-5 w-5 fill-none stroke-current"
+                    strokeWidth={2}
+                  >
+                    <path d="M5 5l10 10M15 5L5 15" strokeLinecap="round" />
+                  </svg>
+                </button>
               </div>
-            )}
 
-            <MenuItem onClick={() => navigate("/meu-roteiro")}>
-              Meus Roteiros
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/notificacoes")}>
-              Avisos
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/sobre")}>
-              Sobre a autora
-            </MenuItem>
-            {user && (
-              <MenuItem onClick={() => navigate("/perfil")}>
-                Meu Perfil
-              </MenuItem>
-            )}
-            {isAuthor && (
-              <MenuItem onClick={() => navigate("/admin")}>Painel</MenuItem>
-            )}
-            <div className="my-2 border-t border-branco/15" />
-            {user ? (
-              <MenuItem onClick={() => setConfirmingSignOut(true)}>
-                Sair
-              </MenuItem>
-            ) : (
-              <MenuItem onClick={() => navigate("/entrar")}>Entrar</MenuItem>
-            )}
-          </nav>
-        </div>
-      </div>
+              <div className="flex-1 overflow-y-auto p-3">
+                <div className="mb-3 md:hidden">
+                  <SearchBox variant="drawer" onNavigate={close} />
+                </div>
+                <nav className="flex flex-col gap-1">
+                  <MenuItem
+                    chevron
+                    expanded={destinosOpen}
+                    onClick={toggleDestinos}
+                  >
+                    Destinos
+                  </MenuItem>
+
+                  {destinosOpen && (
+                    <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
+                      {renderList({
+                        loading: loadingCountries,
+                        items: countries,
+                        emptyLabel: "Nenhum destino cadastrado ainda.",
+                        renderItem: (country) => (
+                          <div
+                            key={country.id}
+                            className="flex flex-col gap-1"
+                          >
+                            <MenuItem
+                              chevron
+                              expanded={expandedCountrySlug === country.slug}
+                              onClick={() => handleCountryClick(country)}
+                            >
+                              {country.name}
+                            </MenuItem>
+
+                            {expandedCountrySlug === country.slug && (
+                              <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
+                                {renderList({
+                                  loading: loadingCities,
+                                  items: cities,
+                                  emptyLabel:
+                                    "Nenhuma cidade cadastrada ainda.",
+                                  renderItem: (city) => (
+                                    <MenuItem
+                                      key={city.id}
+                                      onClick={() =>
+                                        navigate(
+                                          `/${country.slug}/${city.slug}`,
+                                        )
+                                      }
+                                    >
+                                      {city.name}
+                                    </MenuItem>
+                                  ),
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        ),
+                      })}
+                    </div>
+                  )}
+
+                  <MenuItem onClick={() => navigate("/meu-roteiro")}>
+                    Meus Roteiros
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/notificacoes")}>
+                    Avisos
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/sobre")}>
+                    Sobre a autora
+                  </MenuItem>
+                  {user && (
+                    <MenuItem onClick={() => navigate("/perfil")}>
+                      Meu Perfil
+                    </MenuItem>
+                  )}
+                  {isAuthor && (
+                    <MenuItem onClick={() => navigate("/admin")}>
+                      Painel
+                    </MenuItem>
+                  )}
+                  <div className="my-2 border-t border-branco/15" />
+                  {user ? (
+                    <MenuItem onClick={() => setConfirmingSignOut(true)}>
+                      Sair
+                    </MenuItem>
+                  ) : (
+                    <MenuItem onClick={() => navigate("/entrar")}>
+                      Entrar
+                    </MenuItem>
+                  )}
+                </nav>
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
 
       {confirmingSignOut && (
         <ConfirmDialog

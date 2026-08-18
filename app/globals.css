@@ -22,9 +22,20 @@ body {
 
 @layer base {
   p {
-    text-align: justify;
-    text-justify: inter-word;
+    text-align: left;
     hyphens: none;
+  }
+
+  @media (min-width: 640px) {
+    p {
+      text-align: justify;
+      text-justify: inter-word;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid #c1653a;
+    outline-offset: 3px;
   }
 }
 

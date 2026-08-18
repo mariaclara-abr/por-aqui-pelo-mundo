@@ -52,15 +52,32 @@ export default function SearchBox({
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    const controller = new AbortController();
+
     const timeout = setTimeout(() => {
       setLoading(true);
-      fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
-        .then((response) => response.json())
+      fetch(`/api/search?q=${encodeURIComponent(trimmed)}`, {
+        signal: controller.signal,
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error("Falha na busca");
+          return response.json();
+        })
         .then((data: SearchResults) => setResults(data))
-        .finally(() => setLoading(false));
+        .catch((error: unknown) => {
+          if (error instanceof Error && error.name !== "AbortError") {
+            setResults({ countries: [], cities: [] });
+          }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setLoading(false);
+        });
     }, 250);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [query]);
 
   function close() {
@@ -80,7 +97,15 @@ export default function SearchBox({
           ref={inputRef}
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          maxLength={100}
+          onChange={(event) => {
+            const value = event.target.value;
+            setQuery(value);
+            if (!value.trim()) {
+              setResults(null);
+              setLoading(false);
+            }
+          }}
           onKeyDown={(event) => event.key === "Escape" && close()}
           placeholder="Buscar destinos..."
           aria-label="Buscar destinos"
