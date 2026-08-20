@@ -1,4 +1,5 @@
 import CountryCard from "@/components/CountryCard";
+import Image from "next/image";
 import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
@@ -9,8 +10,20 @@ export default function DestinationGrid({
   countries: Country[];
 }) {
   return (
-    <section id="destinos" className="scroll-mt-20 bg-branco px-4 py-14 sm:px-6 sm:py-24 lg:px-10">
-      <div className="mx-auto max-w-[1440px]">
+    <section
+      id="destinos"
+      className="relative isolate scroll-mt-20 overflow-hidden bg-branco px-4 py-14 sm:px-6 sm:py-24 lg:px-10"
+    >
+      <Image
+        src="/destinos-background.png"
+        alt=""
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover object-center opacity-70"
+      />
+      <div className="absolute inset-0 -z-10 bg-white/45" />
+
+      <div className="relative mx-auto max-w-[1440px]">
         <h2 className="text-center font-serif text-3xl text-tinta sm:text-4xl">
           Escolha um destino
         </h2>

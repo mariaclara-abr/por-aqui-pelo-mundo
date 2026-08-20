@@ -73,7 +73,7 @@ function RoteiroTitle() {
 
   if (!canRename) {
     return (
-      <h1 className="font-serif text-3xl text-tinta sm:text-4xl">{title}</h1>
+      <h1 className="font-serif text-4xl text-tinta sm:text-5xl">{title}</h1>
     );
   }
 
@@ -94,7 +94,7 @@ function RoteiroTitle() {
             setEditing(false);
           }
         }}
-        className="w-full max-w-md border-b-2 border-terracota bg-transparent font-serif text-3xl text-tinta focus:outline-none disabled:opacity-60 sm:text-4xl"
+        className="w-full max-w-md border-b-2 border-terracota bg-transparent font-serif text-4xl text-tinta focus:outline-none disabled:opacity-60 sm:text-5xl"
       />
     );
   }
@@ -110,7 +110,7 @@ function RoteiroTitle() {
       title="Editar título"
       className="group flex items-center gap-2 text-left"
     >
-      <h1 className="font-serif text-3xl text-tinta sm:text-4xl">{title}</h1>
+      <h1 className="font-serif text-4xl text-tinta sm:text-5xl">{title}</h1>
       <span className="relative">
         <svg
           viewBox="0 0 20 20"
@@ -298,7 +298,7 @@ export default function MeuRoteiroPage() {
   }
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+    <main className="flex-1 bg-[url('/complete-roteiro-background.png')] bg-[length:100%_auto] bg-repeat-y bg-top px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-6xl">
         <div className="relative left-1/2 -mt-10 w-screen -translate-x-1/2 overflow-hidden bg-terracota sm:-mt-14">
           <div
@@ -340,7 +340,7 @@ export default function MeuRoteiroPage() {
           </button>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2">
             <RoteiroTitle />
             {user && itineraryId && (

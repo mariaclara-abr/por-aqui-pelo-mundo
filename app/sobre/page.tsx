@@ -49,7 +49,7 @@ export default async function SobrePage() {
     .filter(Boolean);
 
   return (
-    <main className="flex-1">
+    <main className="flex-1 bg-[url('/sobre-autora-background.png')] bg-[length:100%_auto] bg-repeat-y bg-top">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="flex flex-col items-center text-center">
           <div className="relative h-44 w-44 shrink-0 overflow-hidden rounded-full border-4 border-branco bg-branco shadow-sm sm:h-56 sm:w-56">
