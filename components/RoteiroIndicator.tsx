@@ -8,32 +8,18 @@ export default function RoteiroIndicator() {
   const count = items.length;
 
   return (
-    <>
-      <Link
-        href="/meu-roteiro"
-        aria-label={`Meus roteiros, ${count} ${count === 1 ? "item" : "itens"}`}
-        title="Meus roteiros"
-        className="group relative hidden h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota md:flex"
-      >
-        <SuitcaseIcon />
-        {count > 0 && <CountBadge count={count} />}
-        <span className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-tinta px-2 py-1 text-xs text-branco opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-          Meus roteiros
-        </span>
-      </Link>
-
-      <Link
-        href="/meu-roteiro"
-        aria-label={`Meus roteiros, ${count} ${count === 1 ? "item" : "itens"}`}
-        className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom)+1rem)] z-40 flex min-h-12 items-center gap-2 rounded-full bg-tinta px-4 py-3 text-sm font-medium text-areia shadow-[0_10px_30px_rgba(43,38,32,0.28)] transition-transform active:scale-95 md:hidden"
-      >
-        <span className="relative">
-          <SuitcaseIcon />
-          {count > 0 && <CountBadge count={count} />}
-        </span>
+    <Link
+      href="/meu-roteiro"
+      aria-label={`Meus roteiros, ${count} ${count === 1 ? "item" : "itens"}`}
+      title="Meus roteiros"
+      className="group relative flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota"
+    >
+      <SuitcaseIcon />
+      {count > 0 && <CountBadge count={count} />}
+      <span className="pointer-events-none absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-tinta px-2 py-1 text-xs text-branco opacity-0 transition-opacity duration-150 group-hover:opacity-100">
         Meus roteiros
-      </Link>
-    </>
+      </span>
+    </Link>
   );
 }
 

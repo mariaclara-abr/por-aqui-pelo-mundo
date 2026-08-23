@@ -9,7 +9,7 @@ interface AttractionInput {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curation_rating: number;
+  curation_rating: number | null;
   latitude: number | null;
   longitude: number | null;
   attraction_photos: { url: string; order: number }[];

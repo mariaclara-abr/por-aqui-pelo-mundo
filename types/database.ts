@@ -194,7 +194,7 @@ export interface Database {
           best_season: string | null;
           recommended_audience: string | null;
           important_notes: string | null;
-          curation_rating: number;
+          curation_rating: number | null;
           latitude: number | null;
           longitude: number | null;
           exclusive_perk_description: string | null;
@@ -216,7 +216,7 @@ export interface Database {
           best_season?: string | null;
           recommended_audience?: string | null;
           important_notes?: string | null;
-          curation_rating: number;
+          curation_rating?: number | null;
           latitude?: number | null;
           longitude?: number | null;
           exclusive_perk_description?: string | null;

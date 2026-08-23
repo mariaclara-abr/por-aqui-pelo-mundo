@@ -26,7 +26,7 @@ export interface RecommendedAttraction {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curationRating: number;
+  curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
   coverPhotoUrl: string | null;
@@ -60,7 +60,7 @@ interface GeoIndexRow {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curationRating: number;
+  curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
   coverPhotoUrl: string | null;
@@ -159,12 +159,12 @@ function rankAttractionsByCategory(
     )
     .sort((a, b) => {
       if (a.distanceKm === null && b.distanceKm === null) {
-        return b.item.curationRating - a.item.curationRating;
+        return (b.item.curationRating ?? 0) - (a.item.curationRating ?? 0);
       }
       if (a.distanceKm === null) return 1;
       if (b.distanceKm === null) return -1;
       if (a.distanceKm !== b.distanceKm) return a.distanceKm - b.distanceKm;
-      return b.item.curationRating - a.item.curationRating;
+      return (b.item.curationRating ?? 0) - (a.item.curationRating ?? 0);
     })
     .slice(0, limit)
     .map(({ item, distanceKm }) => ({ ...item, distanceKm }));

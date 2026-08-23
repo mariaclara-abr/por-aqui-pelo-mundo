@@ -7,7 +7,7 @@ export interface SharedItineraryAttraction {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curationRating: number;
+  curationRating: number | null;
   coverPhotoUrl: string | null;
   latitude: number | null;
   longitude: number | null;

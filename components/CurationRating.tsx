@@ -17,11 +17,13 @@ export default function CurationRating({
   size = "md",
   alignEnd = false,
 }: {
-  rating: number;
+  rating: number | null;
   showLabel?: boolean;
   size?: "sm" | "md";
   alignEnd?: boolean;
 }) {
+  if (rating == null) return null;
+
   const label = RATING_LABELS[rating] ?? "";
 
   return (

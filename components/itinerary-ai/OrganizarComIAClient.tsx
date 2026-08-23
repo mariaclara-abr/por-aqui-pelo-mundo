@@ -32,7 +32,7 @@ interface OrganizedItem {
   countrySlug: string;
   cityName: string;
   category: string;
-  curationRating: number;
+  curationRating: number | null;
   description: string | null;
   coverPhotoUrl: string | null;
   latitude: number | null;

@@ -5,7 +5,7 @@ export interface ExportAttractionItem {
   name: string;
   category: string;
   cityName: string;
-  curationRating: number;
+  curationRating: number | null;
   description: string | null;
   coverPhotoUrl: string | null;
   suggestedStartTime: string | null;
@@ -121,11 +121,15 @@ function buildItemCard(item: ExportAttractionItem) {
   }
   info.appendChild(nameRow);
 
+  const metaParts = [categoryLabel(item.category), item.cityName];
+  if (item.curationRating != null) {
+    metaParts.push("★".repeat(item.curationRating));
+  }
   info.appendChild(
     el(
       "p",
       "text-xs uppercase tracking-wide text-oliva",
-      `${categoryLabel(item.category)} · ${item.cityName} · ${"★".repeat(item.curationRating)}`,
+      metaParts.join(" · "),
     ),
   );
 

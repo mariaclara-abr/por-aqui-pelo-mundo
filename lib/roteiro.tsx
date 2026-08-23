@@ -36,7 +36,7 @@ export interface RoteiroAttraction {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curationRating: number;
+  curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
   coverPhotoUrl: string | null;
@@ -55,7 +55,7 @@ interface AttractionFields {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curation_rating: number;
+  curation_rating: number | null;
   latitude: number | null;
   longitude: number | null;
   attraction_photos: { url: string; order: number }[];

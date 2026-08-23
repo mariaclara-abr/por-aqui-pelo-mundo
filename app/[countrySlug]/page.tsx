@@ -72,10 +72,10 @@ export default async function CountryPage(
         {country.description ? (
           <ExpandableText
             text={country.description}
-            className="mt-2 max-w-xl text-oliva"
+            className="mt-2 text-oliva"
           />
         ) : (
-          <p className="mt-2 max-w-xl text-oliva">
+          <p className="mt-2 text-oliva">
             Escolha uma cidade para ver as atrações com curadoria.
           </p>
         )}

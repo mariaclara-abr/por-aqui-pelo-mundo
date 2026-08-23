@@ -19,7 +19,7 @@ export interface OrganizeAttractionInput {
   name: string;
   category: string;
   cityName: string;
-  curationRating: number;
+  curationRating: number | null;
   averageVisitTime: string | null;
   bestTimeOfDay: string | null;
 }
@@ -58,8 +58,10 @@ function describeAttraction(a: OrganizeAttractionInput, index: number): string {
     a.name,
     `(${a.cityName})`,
     `| categoria: ${a.category}`,
-    `| nota da curadoria: ${a.curationRating}/5`,
   ];
+  if (a.curationRating != null) {
+    parts.push(`| nota da curadoria: ${a.curationRating}/5`);
+  }
   if (a.averageVisitTime) parts.push(`| tempo médio de visita: ${a.averageVisitTime}`);
   if (a.bestTimeOfDay) parts.push(`| melhor horário: ${a.bestTimeOfDay}`);
   return parts.join(" ");

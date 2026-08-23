@@ -29,6 +29,13 @@ export default async function AdminAtracoesPage(
         )
       : allAttractions;
 
+  const totalCount = attractions.length;
+  const withPhotoCount = attractions.filter(
+    (attraction) => attraction.attraction_photos.length > 0,
+  ).length;
+  const withPhotoPercentage =
+    totalCount > 0 ? Math.round((withPhotoCount / totalCount) * 100) : 0;
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -40,6 +47,25 @@ export default async function AdminAtracoesPage(
           + Nova atração
         </Link>
       </div>
+
+      {totalCount > 0 && (
+        <div className="mt-4 flex flex-wrap items-center gap-4 rounded-lg border border-oliva/15 bg-branco p-4">
+          <p className="font-serif text-2xl text-terracota">
+            {withPhotoPercentage}%
+          </p>
+          <div className="min-w-[160px] flex-1">
+            <p className="text-sm text-tinta">
+              {withPhotoCount} de {totalCount} atrações com foto
+            </p>
+            <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-areia">
+              <div
+                className="h-full rounded-full bg-terracota transition-all"
+                style={{ width: `${withPhotoPercentage}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <AttractionCityFilter cities={cities} />
 

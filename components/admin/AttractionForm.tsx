@@ -61,8 +61,8 @@ export default function AttractionForm({
   const [importantNotes, setImportantNotes] = useState(
     attraction?.important_notes ?? "",
   );
-  const [curationRating, setCurationRating] = useState(
-    attraction?.curation_rating ?? 5,
+  const [curationRating, setCurationRating] = useState<number | null>(
+    attraction ? attraction.curation_rating : 5,
   );
   const [latitude, setLatitude] = useState(
     attraction?.latitude != null ? String(attraction.latitude) : "",
@@ -437,27 +437,42 @@ export default function AttractionForm({
         htmlFor="curationRating"
         helpText="Sua avaliação pessoal do lugar, não é média de avaliações de usuários."
       >
-        <div className="flex flex-col gap-2">
-          {[5, 4, 3, 2, 1].map((value) => (
-            <label
-              key={value}
-              className="flex items-center gap-2 text-sm text-tinta"
-            >
-              <input
-                type="radio"
-                name="curationRating"
-                checked={curationRating === value}
-                onChange={() => setCurationRating(value)}
-              />
-              <span className="text-terracota">
-                {"★".repeat(value)}
-                <span className="text-tinta/20">
-                  {"★".repeat(5 - value)}
-                </span>
-              </span>
-              {RATING_LABELS[value]}
-            </label>
-          ))}
+        <div className="flex flex-col gap-3">
+          <label className="flex items-center gap-2 text-sm text-tinta">
+            <input
+              type="checkbox"
+              checked={curationRating === null}
+              onChange={(event) =>
+                setCurationRating(event.target.checked ? null : 5)
+              }
+            />
+            Não avaliar esta atração (oculta as estrelas)
+          </label>
+
+          {curationRating !== null && (
+            <div className="flex flex-col gap-2">
+              {[5, 4, 3, 2, 1].map((value) => (
+                <label
+                  key={value}
+                  className="flex items-center gap-2 text-sm text-tinta"
+                >
+                  <input
+                    type="radio"
+                    name="curationRating"
+                    checked={curationRating === value}
+                    onChange={() => setCurationRating(value)}
+                  />
+                  <span className="text-terracota">
+                    {"★".repeat(value)}
+                    <span className="text-tinta/20">
+                      {"★".repeat(5 - value)}
+                    </span>
+                  </span>
+                  {RATING_LABELS[value]}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
       </FormField>
 

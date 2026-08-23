@@ -12,7 +12,7 @@ export interface AIAttraction {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curationRating: number;
+  curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
   averageVisitTime: string | null;
@@ -37,7 +37,7 @@ interface RawAttractionRow {
   name: string;
   slug: string;
   category: AttractionCategory;
-  curation_rating: number;
+  curation_rating: number | null;
   latitude: number | null;
   longitude: number | null;
   average_visit_time: string | null;
@@ -130,7 +130,7 @@ export async function getCandidateAttractions(
 
   const candidates: AIAttraction[] = [];
   for (const list of byCity.values()) {
-    list.sort((a, b) => b.curationRating - a.curationRating);
+    list.sort((a, b) => (b.curationRating ?? 0) - (a.curationRating ?? 0));
     candidates.push(...list.slice(0, MAX_CANDIDATES_PER_CITY));
   }
   return candidates;
@@ -216,7 +216,7 @@ export interface ChatAttractionMatch {
   name: string;
   cityName: string;
   category: AttractionCategory;
-  curationRating: number;
+  curationRating: number | null;
 }
 
 // Busca por nome na curadoria — é assim que a IA descobre o id real de um
@@ -229,7 +229,7 @@ export async function searchAttractionsForChat(
     .from("attractions")
     .select("id, name, category, curation_rating, cities(name)")
     .ilike("name", `%${query}%`)
-    .order("curation_rating", { ascending: false })
+    .order("curation_rating", { ascending: false, nullsFirst: false })
     .limit(8);
 
   if (error) throw error;

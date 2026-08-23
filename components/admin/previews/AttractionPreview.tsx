@@ -30,7 +30,7 @@ export default function AttractionPreview({
   categoryLabel: string;
   cityName: string;
   countryName: string;
-  curationRating: number;
+  curationRating: number | null;
   tags: Tag[];
   photos: AdminPhoto[];
   description: string;
