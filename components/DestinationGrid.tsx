@@ -1,4 +1,5 @@
 import CountryCard from "@/components/CountryCard";
+import ComingSoonCountryCard from "@/components/ComingSoonCountryCard";
 import Image from "next/image";
 import type { Database } from "@/types/database";
 
@@ -6,8 +7,10 @@ type Country = Database["public"]["Tables"]["countries"]["Row"];
 
 export default function DestinationGrid({
   countries,
+  comingSoonCountries = [],
 }: {
   countries: Country[];
+  comingSoonCountries?: Country[];
 }) {
   return (
     <section
@@ -31,7 +34,7 @@ export default function DestinationGrid({
           Menos horas pesquisando, mais dias aproveitando.
         </p>
 
-        {countries.length === 0 ? (
+        {countries.length === 0 && comingSoonCountries.length === 0 ? (
           <div className="mt-16 flex flex-col items-center gap-2 py-16 text-center">
             <p className="font-serif text-xl text-tinta">
               Novos destinos em breve
@@ -45,6 +48,9 @@ export default function DestinationGrid({
           <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 sm:mt-10 sm:grid-cols-2 sm:gap-y-14 lg:grid-cols-3 xl:grid-cols-4">
             {countries.map((country) => (
               <CountryCard key={country.id} country={country} />
+            ))}
+            {comingSoonCountries.map((country) => (
+              <ComingSoonCountryCard key={country.id} country={country} />
             ))}
           </div>
         )}

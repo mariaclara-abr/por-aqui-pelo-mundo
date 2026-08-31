@@ -38,6 +38,8 @@ export function categoryLabels(categories: string[]): string {
     .join(", ");
 }
 
+export type CountryStatus = "draft" | "published";
+
 export type UserRole = "user" | "author";
 
 export type ItineraryStatus = "planejando" | "concluida";
@@ -143,6 +145,7 @@ export interface Database {
           slug: string;
           cover_image_url: string | null;
           description: string | null;
+          status: CountryStatus;
           created_at: string;
         };
         Insert: {
@@ -151,6 +154,7 @@ export interface Database {
           slug: string;
           cover_image_url?: string | null;
           description?: string | null;
+          status?: CountryStatus;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["countries"]["Insert"]>;
@@ -608,6 +612,34 @@ export interface Database {
             columns: ["question_id"];
             isOneToOne: true;
             referencedRelation: "country_questions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      country_interest: {
+        Row: {
+          id: string;
+          country_id: string;
+          user_id: string | null;
+          visitor_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          country_id: string;
+          user_id?: string | null;
+          visitor_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["country_interest"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "country_interest_country_id_fkey";
+            columns: ["country_id"];
+            isOneToOne: false;
+            referencedRelation: "countries";
             referencedColumns: ["id"];
           },
         ];

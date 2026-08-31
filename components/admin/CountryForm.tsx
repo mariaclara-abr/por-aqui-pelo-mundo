@@ -19,6 +19,7 @@ export default function CountryForm({ country }: { country?: Country }) {
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
     country?.cover_image_url ?? null,
   );
+  const [isDraft, setIsDraft] = useState(country?.status === "draft");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -36,6 +37,7 @@ export default function CountryForm({ country }: { country?: Country }) {
       slug,
       description: description || null,
       cover_image_url: coverImageUrl,
+      status: isDraft ? ("draft" as const) : ("published" as const),
     };
 
     const { error } = country
@@ -101,6 +103,22 @@ export default function CountryForm({ country }: { country?: Country }) {
         />
       </FormField>
 
+      <FormField
+        label="Publicação"
+        htmlFor="isDraft"
+        helpText="Enquanto marcado, o país aparece na home em preto e branco, com o selo 'Em breve' e um botão para o visitante registrar interesse. Ninguém acessa a página do país até você desmarcar."
+      >
+        <label className="flex items-center gap-2 text-sm text-tinta">
+          <input
+            id="isDraft"
+            type="checkbox"
+            checked={isDraft}
+            onChange={(event) => setIsDraft(event.target.checked)}
+          />
+          Marcar como &quot;Em breve&quot; (rascunho, ainda não publicado)
+        </label>
+      </FormField>
+
       {error && <p className="text-sm text-terracota">{error}</p>}
 
       <div className="flex gap-3">
@@ -126,6 +144,7 @@ export default function CountryForm({ country }: { country?: Country }) {
             name={name}
             description={description || null}
             coverImageUrl={coverImageUrl}
+            isDraft={isDraft}
           />
         </PreviewModal>
       )}

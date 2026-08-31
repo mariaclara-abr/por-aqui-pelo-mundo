@@ -3,11 +3,11 @@ import { SITE_URL } from "@/lib/metadata";
 import {
   getAttractionNamesByCity,
   getCitiesByCountry,
-  getCountries,
+  getPublishedCountries,
 } from "@/lib/queries";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const countries = await getCountries();
+  const countries = await getPublishedCountries();
   const destinations = await Promise.all(
     countries.map(async (country) => {
       const cities = await getCitiesByCountry(country.slug);

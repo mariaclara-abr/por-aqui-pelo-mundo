@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-browser";
-import { getCitiesByCountry, getCountries } from "@/lib/queries";
+import { getCitiesByCountry, getPublishedCountries } from "@/lib/queries";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import SearchBox from "@/components/SearchBox";
 
@@ -85,7 +85,7 @@ export default function NavDrawer() {
 
     setLoadingCountries(true);
     setCountries(null);
-    getCountries()
+    getPublishedCountries()
       .then(setCountries)
       .finally(() => setLoadingCountries(false));
   }

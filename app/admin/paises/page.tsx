@@ -1,9 +1,30 @@
 import Link from "next/link";
 import { getCountries } from "@/lib/queries";
+import { createClient } from "@/lib/supabase-server";
 import DeleteButton from "@/components/admin/DeleteButton";
 
 export default async function AdminPaisesPage() {
   const countries = await getCountries();
+
+  const draftIds = countries
+    .filter((country) => country.status === "draft")
+    .map((country) => country.id);
+
+  const interestCounts = new Map<string, number>();
+  if (draftIds.length > 0) {
+    const supabase = await createClient();
+    const { data: interests } = await supabase
+      .from("country_interest")
+      .select("country_id")
+      .in("country_id", draftIds);
+
+    for (const row of interests ?? []) {
+      interestCounts.set(
+        row.country_id,
+        (interestCounts.get(row.country_id) ?? 0) + 1,
+      );
+    }
+  }
 
   return (
     <div>
@@ -37,6 +58,13 @@ export default async function AdminPaisesPage() {
                   <div className="h-10 w-14 rounded bg-areia" />
                 )}
                 <span className="text-tinta">{country.name}</span>
+                {country.status === "draft" && (
+                  <span className="rounded-full bg-terracota/10 px-2.5 py-0.5 text-xs font-medium text-terracota">
+                    Em breve
+                    {(interestCounts.get(country.id) ?? 0) > 0 &&
+                      ` · ${interestCounts.get(country.id)} interessado(s)`}
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-4">
                 <Link

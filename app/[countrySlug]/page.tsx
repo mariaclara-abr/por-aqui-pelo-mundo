@@ -13,7 +13,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { countrySlug } = await props.params;
   const country = await getCountryBySlug(countrySlug).catch(() => null);
-  if (!country) {
+  if (!country || country.status === "draft") {
     notFound();
   }
 
@@ -48,7 +48,7 @@ export default async function CountryPage(
   const { countrySlug } = await props.params;
 
   const country = await getCountryBySlug(countrySlug).catch(() => null);
-  if (!country) {
+  if (!country || country.status === "draft") {
     notFound();
   }
 

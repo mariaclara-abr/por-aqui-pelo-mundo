@@ -32,10 +32,20 @@ export default async function Home() {
     getAboutPageContent(),
   ]);
 
+  const publishedCountries = countries.filter(
+    (country) => country.status === "published",
+  );
+  const comingSoonCountries = countries.filter(
+    (country) => country.status === "draft",
+  );
+
   return (
     <main className="flex-1">
       <HeroSection counts={counts} />
-      <DestinationGrid countries={countries} />
+      <DestinationGrid
+        countries={publishedCountries}
+        comingSoonCountries={comingSoonCountries}
+      />
       <AuthorBand
         authorName={about.author_name}
         authorPhotoUrl={about.author_photo_url}

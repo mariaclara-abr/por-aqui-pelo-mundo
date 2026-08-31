@@ -4,14 +4,23 @@ export default function CountryPreview({
   name,
   description,
   coverImageUrl,
+  isDraft = false,
 }: {
   name: string;
   description: string | null;
   coverImageUrl: string | null;
+  isDraft?: boolean;
 }) {
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-[1440px]">
+        {isDraft && (
+          <p className="mb-6 rounded-lg bg-terracota/10 px-4 py-3 text-sm text-terracota">
+            Este país está marcado como &quot;Em breve&quot;: na home ele
+            aparece em preto e branco, e esta página abaixo só fica acessível
+            ao público depois que você publicar.
+          </p>
+        )}
         <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
           {name || "Nome do país"}
         </h1>

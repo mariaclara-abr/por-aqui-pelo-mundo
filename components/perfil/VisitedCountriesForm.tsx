@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCountries } from "@/lib/queries";
+import { getPublishedCountries } from "@/lib/queries";
 import {
   addVisitedCountry,
   removeVisitedCountry,
@@ -24,7 +24,7 @@ export default function VisitedCountriesForm({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getCountries()
+    getPublishedCountries()
       .then((data) => setAllCountries(data))
       .catch(() => setAllCountries([]));
   }, []);

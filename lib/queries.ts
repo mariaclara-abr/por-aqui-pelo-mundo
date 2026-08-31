@@ -12,6 +12,21 @@ export async function getCountries() {
   return data;
 }
 
+// Só os países já publicados: usada em pontos que não devem revelar um país
+// "em breve" antes da hora (menu de navegação, sitemap, lista de países
+// visitados no perfil). A home usa getCountries() e filtra os dois grupos
+// ela mesma, para mostrar os rascunhos como teaser em preto e branco.
+export async function getPublishedCountries() {
+  const { data, error } = await supabase
+    .from("countries")
+    .select("*")
+    .eq("status", "published")
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
 // Envolvidas em React cache(): tanto generateMetadata quanto o page.tsx da
 // mesma rota chamam essas funções, e cache() garante que rodem só uma vez
 // por request em vez de duas idas ao banco. Só as usadas em Server
