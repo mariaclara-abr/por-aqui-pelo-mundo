@@ -67,7 +67,7 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
                 href="#destinos"
                 className="relative inline-block min-h-12 w-full rounded-lg bg-terracota px-7 py-3.5 text-center text-base font-medium text-white transition hover:scale-105 hover:bg-terracota/90 active:scale-95 sm:w-auto sm:px-9"
               >
-                Explorar destinos
+                Monte seu roteiro
               </a>
             </div>
             <span className="absolute left-full top-1/2 ml-6 hidden h-[22px] w-[22px] -translate-y-1/2 sm:block">

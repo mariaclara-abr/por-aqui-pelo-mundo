@@ -46,7 +46,11 @@ export default function AvatarUploader({
     <div className="flex items-center gap-4">
       <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-oliva text-xl font-medium text-white">
         {value ? (
-          <img src={value} alt="" className="h-full w-full object-cover" />
+          <img
+            src={value}
+            alt="Sua foto de perfil"
+            className="h-full w-full object-cover"
+          />
         ) : (
           initial
         )}

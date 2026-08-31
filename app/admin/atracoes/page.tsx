@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAllAttractions, getCitiesWithCountry } from "@/lib/queries";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 import DeleteButton from "@/components/admin/DeleteButton";
 import AttractionCityFilter from "@/components/admin/AttractionCityFilter";
 
@@ -81,9 +81,7 @@ export default async function AdminAtracoesPage(
             const cover = [...attraction.attraction_photos].sort(
               (a, b) => a.order - b.order,
             )[0];
-            const categoryLabel =
-              ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)
-                ?.label ?? attraction.category;
+            const categoryLabel = categoryLabels(attraction.categories);
 
             return (
               <li

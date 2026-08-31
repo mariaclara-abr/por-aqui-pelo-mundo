@@ -95,7 +95,10 @@ function buildSystemPrompt(context: ItineraryChatContext): string {
   const itemsList =
     context.items.length > 0
       ? context.items
-          .map((a, i) => `${i + 1}. id="${a.id}" ${a.name} (${a.cityName}) — ${a.category}`)
+          .map(
+            (a, i) =>
+              `${i + 1}. id="${a.id}" ${a.name} (${a.cityName}): ${a.categories.join(", ")}`,
+          )
           .join("\n")
       : "(o roteiro está vazio no momento)";
 

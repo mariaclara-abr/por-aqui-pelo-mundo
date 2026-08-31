@@ -62,7 +62,7 @@ export default function AboutPreview({
           {travelPhoto1Url ? (
             <img
               src={travelPhoto1Url}
-              alt=""
+              alt={`Foto de viagem de ${authorName}`}
               className="h-full w-full rounded-xl object-cover"
             />
           ) : (
@@ -110,7 +110,7 @@ export default function AboutPreview({
           {travelPhoto2Url ? (
             <img
               src={travelPhoto2Url}
-              alt=""
+              alt={`Foto de viagem de ${authorName}`}
               className="h-full w-full rounded-xl object-cover"
             />
           ) : (

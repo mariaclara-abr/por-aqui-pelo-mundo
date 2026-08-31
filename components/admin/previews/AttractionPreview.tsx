@@ -1,4 +1,5 @@
 import CurationRating from "@/components/CurationRating";
+import PriceRange from "@/components/PriceRange";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import { linkify } from "@/components/Linkify";
 import type { AdminPhoto } from "@/components/admin/PhotoUploader";
@@ -17,11 +18,16 @@ export default function AttractionPreview({
   description,
   personalExperience,
   importantTips,
-  importantNotes,
   averageVisitTime,
   bestTimeOfDay,
   bestSeason,
   recommendedAudience,
+  priceRange,
+  weatherSensitive,
+  intensePhysicalEffort,
+  requiresAdvancePurchase,
+  requiresReservation,
+  hasAirConditioning,
   exclusivePerkDescription,
   exclusivePerkUrl,
   exclusivePerkCtaLabel,
@@ -36,11 +42,16 @@ export default function AttractionPreview({
   description: string;
   personalExperience: string;
   importantTips: string;
-  importantNotes: string;
   averageVisitTime: string;
   bestTimeOfDay: string;
   bestSeason: string;
   recommendedAudience: string;
+  priceRange: number | null;
+  weatherSensitive: boolean;
+  intensePhysicalEffort: boolean;
+  requiresAdvancePurchase: boolean;
+  requiresReservation: boolean;
+  hasAirConditioning: boolean;
   exclusivePerkDescription: string;
   exclusivePerkUrl: string;
   exclusivePerkCtaLabel: string;
@@ -54,11 +65,37 @@ export default function AttractionPreview({
   }));
 
   const quickFacts = [
-    { label: "Tempo médio de visita", value: averageVisitTime },
-    { label: "Melhor horário", value: bestTimeOfDay },
-    { label: "Melhor época", value: bestSeason },
-    { label: "Público recomendado", value: recommendedAudience },
-  ].filter((fact): fact is { label: string; value: string } => !!fact.value);
+    averageVisitTime
+      ? { label: "Tempo médio de visita", content: averageVisitTime as React.ReactNode }
+      : null,
+    bestTimeOfDay
+      ? { label: "Melhor horário", content: bestTimeOfDay as React.ReactNode }
+      : null,
+    bestSeason
+      ? { label: "Melhor época", content: bestSeason as React.ReactNode }
+      : null,
+    recommendedAudience
+      ? { label: "Público recomendado", content: recommendedAudience as React.ReactNode }
+      : null,
+    priceRange != null
+      ? { label: "Faixa de preço", content: <PriceRange value={priceRange} /> }
+      : null,
+    weatherSensitive
+      ? { label: "Sensível à chuva", content: "Sim" as React.ReactNode }
+      : null,
+    intensePhysicalEffort
+      ? { label: "Esforço físico", content: "Intenso" as React.ReactNode }
+      : null,
+    requiresAdvancePurchase
+      ? { label: "Compra antecipada", content: "Necessária" as React.ReactNode }
+      : null,
+    requiresReservation
+      ? { label: "Reserva", content: "Necessária" as React.ReactNode }
+      : null,
+    hasAirConditioning
+      ? { label: "Ar condicionado", content: "Sim" as React.ReactNode }
+      : null,
+  ].filter((fact): fact is { label: string; content: React.ReactNode } => fact !== null);
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
@@ -107,7 +144,7 @@ export default function AttractionPreview({
         <div className="mt-8">
           {description && (
             <section>
-              <p className="leading-relaxed text-tinta">
+              <p className="leading-relaxed text-tinta whitespace-pre-line">
                 {linkify(description)}
               </p>
             </section>
@@ -124,7 +161,7 @@ export default function AttractionPreview({
                     <dt className="text-xs uppercase tracking-wide text-oliva/70">
                       {fact.label}
                     </dt>
-                    <dd className="mt-1 text-sm text-oliva">{fact.value}</dd>
+                    <dd className="mt-1 text-sm text-oliva">{fact.content}</dd>
                   </div>
                 ))}
               </dl>
@@ -136,7 +173,7 @@ export default function AttractionPreview({
               <p className="text-xs font-medium uppercase tracking-wide text-terracota">
                 Exclusivo Por Aqui Pelo Mundo
               </p>
-              <p className="mt-2 leading-relaxed text-tinta">
+              <p className="mt-2 leading-relaxed text-tinta whitespace-pre-line">
                 {linkify(exclusivePerkDescription)}
               </p>
               {exclusivePerkUrl && (
@@ -157,7 +194,7 @@ export default function AttractionPreview({
               <h2 className="font-serif text-lg text-tinta">
                 Experiência de quem já foi
               </h2>
-              <p className="mt-2 leading-relaxed text-tinta/90">
+              <p className="mt-2 leading-relaxed text-tinta/90 whitespace-pre-line">
                 {linkify(personalExperience)}
               </p>
             </section>
@@ -168,19 +205,8 @@ export default function AttractionPreview({
               <h2 className="font-serif text-lg text-tinta">
                 Dicas importantes
               </h2>
-              <p className="mt-2 leading-relaxed text-tinta/90">
+              <p className="mt-2 leading-relaxed text-tinta/90 whitespace-pre-line">
                 {linkify(importantTips)}
-              </p>
-            </section>
-          )}
-
-          {importantNotes && (
-            <section className="mt-6 border-l-2 border-oliva/40 pl-4">
-              <h2 className="font-serif text-lg text-tinta">
-                Observações importantes
-              </h2>
-              <p className="mt-2 leading-relaxed text-tinta/90">
-                {linkify(importantNotes)}
               </p>
             </section>
           )}

@@ -29,7 +29,10 @@ export async function getPublicProfileByUsername(
     displayName: data.display_name || data.username,
     avatarUrl: data.avatar_url,
     memberSince: data.created_at,
-    isAuthor: data.role === "author",
+    // role "author" também é usado para permissões do painel admin (mais de
+    // uma conta pode ter esse role), mas só a Rejane é a autora pública do
+    // site: só a conta dela deve aparecer com a bio de autora no perfil.
+    isAuthor: data.role === "author" && data.username === "rejane_abrantes",
   };
 }
 

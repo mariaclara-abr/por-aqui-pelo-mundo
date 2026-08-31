@@ -35,7 +35,7 @@ export interface RoteiroAttraction {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -54,7 +54,7 @@ interface AttractionFields {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curation_rating: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -78,7 +78,7 @@ export function attractionToRoteiroSummary(
     id: attraction.id,
     name: attraction.name,
     slug: attraction.slug,
-    category: attraction.category,
+    categories: attraction.categories,
     curationRating: attraction.curation_rating,
     latitude: attraction.latitude,
     longitude: attraction.longitude,

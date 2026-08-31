@@ -35,7 +35,7 @@ export default function CityPreview({
             <>
               <img
                 src={coverImageUrl}
-                alt=""
+                alt={name || "Nome da cidade"}
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-tinta/60" />

@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import { useRoteiro } from "@/lib/roteiro";
 import { useAuth } from "@/lib/auth";
-import { useUserSubscription } from "@/lib/useUserSubscription";
 import RelatedContent from "@/components/RelatedContent";
 import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
@@ -17,7 +17,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
 import { humanizeSlug } from "@/lib/affiliates";
 import { exportToGoogleMaps } from "@/lib/export";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 
 const RoteiroMap = dynamic(() => import("@/components/RoteiroMap"), {
   ssr: false,
@@ -147,7 +147,6 @@ export default function MeuRoteiroPage() {
     title,
   } = useRoteiro();
   const { user } = useAuth();
-  const { isPremium, hasRoteiroUnicoFor } = useUserSubscription();
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const [shareOpen, setShareOpen] = useState(false);
@@ -178,13 +177,7 @@ export default function MeuRoteiroPage() {
   }
 
   function handleOrganizarClick() {
-    const hasAccess =
-      isPremium || (itineraryId ? hasRoteiroUnicoFor(itineraryId) : false);
-    if (hasAccess) {
-      router.push("/meu-roteiro/organizar-com-ia");
-    } else {
-      setPremiumOpen(true);
-    }
+    router.push("/meu-roteiro/organizar-com-ia");
   }
 
   async function handleRemove(attractionId: string) {
@@ -223,10 +216,17 @@ export default function MeuRoteiroPage() {
     return (
       <main className="flex flex-1 items-center justify-center px-4 py-16 sm:px-6">
         <div className="flex max-w-sm flex-col items-center gap-3 text-center">
-          <p className="font-serif text-xl text-tinta">
+          <Image
+            src="/roteiro-vazio-ilustracao.png"
+            alt="Caderno de viagem aberto, mapa, lápis e avião de papel"
+            className="-mb-1 w-64 max-w-full sm:w-72"
+            width={288}
+            height={192}
+          />
+          <p className="text-center font-serif text-xl text-tinta">
             Seu roteiro está vazio
           </p>
-          <p className="text-oliva">
+          <p className="text-center text-oliva">
             Explore os destinos e adicione atrações para começar a montar sua
             viagem.
           </p>
@@ -238,10 +238,10 @@ export default function MeuRoteiroPage() {
           </Link>
           <button
             type="button"
-            onClick={() => setPremiumOpen(true)}
+            onClick={handleOrganizarClick}
             className="text-sm text-terracota hover:underline"
           >
-            Comprar roteiro avulso
+            Fazer com IA
           </button>
           {user && (
             <button
@@ -501,10 +501,7 @@ export default function MeuRoteiroPage() {
 
         <div className="mt-4 flex flex-col gap-3">
           {items.map((item, index) => {
-            const categoryLabel =
-              ATTRACTION_CATEGORIES.find(
-                (c) => c.value === item.attraction.category,
-              )?.label ?? item.attraction.category;
+            const categoryLabel = categoryLabels(item.attraction.categories);
             const next = items[index + 1];
 
             let distanceNode: React.ReactNode = null;

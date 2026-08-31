@@ -47,7 +47,7 @@ export default function CoverImageUploader({
         {value ? (
           <img
             src={value}
-            alt=""
+            alt="Prévia da imagem de capa selecionada"
             className="h-20 w-28 rounded-lg object-cover"
           />
         ) : (

@@ -6,7 +6,7 @@ export interface SharedItineraryAttraction {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curationRating: number | null;
   coverPhotoUrl: string | null;
   latitude: number | null;
@@ -43,7 +43,7 @@ export const getSharedItineraryByToken = cache(async (
   const { data: itinerary, error: itineraryError } = await supabase
     .from("itineraries")
     .select(
-      "title, itinerary_items(order, attractions(id, name, slug, category, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, countries(slug))))",
+      "title, itinerary_items(order, attractions(id, name, slug, categories, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, countries(slug))))",
     )
     .eq("id", share.itinerary_id)
     .maybeSingle();
@@ -73,7 +73,7 @@ export const getSharedItineraryByToken = cache(async (
           id: attraction.id,
           name: attraction.name,
           slug: attraction.slug,
-          category: attraction.category,
+          categories: attraction.categories,
           curationRating: attraction.curation_rating,
           coverPhotoUrl: cover?.url ?? null,
           latitude: attraction.latitude,

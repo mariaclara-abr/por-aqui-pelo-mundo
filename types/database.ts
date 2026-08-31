@@ -26,13 +26,24 @@ export const ATTRACTION_CATEGORIES: {
   { value: "outro", label: "Outro" },
 ];
 
+// Uma atração pode ter mais de uma categoria (ex: restaurante e café) — esta
+// função monta o texto exibido nos badges/detalhes a partir da lista.
+export function categoryLabels(categories: string[]): string {
+  return categories
+    .map(
+      (category) =>
+        ATTRACTION_CATEGORIES.find((c) => c.value === category)?.label ??
+        category,
+    )
+    .join(", ");
+}
+
 export type UserRole = "user" | "author";
 
 export type ItineraryStatus = "planejando" | "concluida";
 
 export type QuestionStatus = "pendente" | "respondida" | "oculta";
 
-export type SiteReviewStatus = "pendente" | "aprovada" | "oculta";
 
 export type NotificationType = "bem_vindo" | "pergunta_respondida" | "novo_destino";
 
@@ -185,7 +196,7 @@ export interface Database {
           city_id: string;
           name: string;
           slug: string;
-          category: AttractionCategory;
+          categories: AttractionCategory[];
           description: string | null;
           personal_experience: string | null;
           important_tips: string | null;
@@ -193,7 +204,12 @@ export interface Database {
           best_time_of_day: string | null;
           best_season: string | null;
           recommended_audience: string | null;
-          important_notes: string | null;
+          price_range: number | null;
+          weather_sensitive: boolean;
+          intense_physical_effort: boolean;
+          requires_advance_purchase: boolean;
+          requires_reservation: boolean;
+          has_air_conditioning: boolean;
           curation_rating: number | null;
           latitude: number | null;
           longitude: number | null;
@@ -207,7 +223,7 @@ export interface Database {
           city_id: string;
           name: string;
           slug: string;
-          category: AttractionCategory;
+          categories: AttractionCategory[];
           description?: string | null;
           personal_experience?: string | null;
           important_tips?: string | null;
@@ -215,7 +231,12 @@ export interface Database {
           best_time_of_day?: string | null;
           best_season?: string | null;
           recommended_audience?: string | null;
-          important_notes?: string | null;
+          price_range?: number | null;
+          weather_sensitive?: boolean;
+          intense_physical_effort?: boolean;
+          requires_advance_purchase?: boolean;
+          requires_reservation?: boolean;
+          has_air_conditioning?: boolean;
           curation_rating?: number | null;
           latitude?: number | null;
           longitude?: number | null;
@@ -770,7 +791,6 @@ export interface Database {
           order: number;
           created_at: string;
           user_id: string | null;
-          status: SiteReviewStatus;
         };
         Insert: {
           id?: string;
@@ -780,7 +800,6 @@ export interface Database {
           order?: number;
           created_at?: string;
           user_id?: string | null;
-          status?: SiteReviewStatus;
         };
         Update: Partial<Database["public"]["Tables"]["site_reviews"]["Insert"]>;
         Relationships: [];
@@ -874,7 +893,6 @@ export interface Database {
       user_role: UserRole;
       itinerary_status: ItineraryStatus;
       question_status: QuestionStatus;
-      site_review_status: SiteReviewStatus;
       plan_type: PlanType;
       notification_type: NotificationType;
     };

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAttractionBySlug } from "@/lib/queries";
 import { getAttractionQuestions } from "@/lib/questions";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 import type { Database } from "@/types/database";
 import CurationRating from "@/components/CurationRating";
+import PriceRange from "@/components/PriceRange";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
@@ -103,18 +104,42 @@ export default async function AttractionPage(
     (a, b) => a.order - b.order,
   );
   const tags = attraction.attraction_tags.map((entry) => entry.tags);
-  const categoryLabel =
-    ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)
-      ?.label ?? attraction.category;
+  const categoryLabel = categoryLabels(attraction.categories);
 
   const questions = await getAttractionQuestions(attraction.id).catch(() => []);
 
   const quickFacts = [
-    { label: "Tempo médio de visita", value: attraction.average_visit_time },
-    { label: "Melhor horário", value: attraction.best_time_of_day },
-    { label: "Melhor época", value: attraction.best_season },
-    { label: "Público recomendado", value: attraction.recommended_audience },
-  ].filter((fact): fact is { label: string; value: string } => !!fact.value);
+    attraction.average_visit_time
+      ? { label: "Tempo médio de visita", content: attraction.average_visit_time as React.ReactNode }
+      : null,
+    attraction.best_time_of_day
+      ? { label: "Melhor horário", content: attraction.best_time_of_day as React.ReactNode }
+      : null,
+    attraction.best_season
+      ? { label: "Melhor época", content: attraction.best_season as React.ReactNode }
+      : null,
+    attraction.recommended_audience
+      ? { label: "Público recomendado", content: attraction.recommended_audience as React.ReactNode }
+      : null,
+    attraction.price_range != null
+      ? { label: "Faixa de preço", content: <PriceRange value={attraction.price_range} /> }
+      : null,
+    attraction.weather_sensitive
+      ? { label: "Sensível à chuva", content: "Sim" as React.ReactNode }
+      : null,
+    attraction.intense_physical_effort
+      ? { label: "Esforço físico", content: "Intenso" as React.ReactNode }
+      : null,
+    attraction.requires_advance_purchase
+      ? { label: "Compra antecipada", content: "Necessária" as React.ReactNode }
+      : null,
+    attraction.requires_reservation
+      ? { label: "Reserva", content: "Necessária" as React.ReactNode }
+      : null,
+    attraction.has_air_conditioning
+      ? { label: "Ar condicionado", content: "Sim" as React.ReactNode }
+      : null,
+  ].filter((fact): fact is { label: string; content: React.ReactNode } => fact !== null);
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
@@ -175,7 +200,7 @@ export default async function AttractionPage(
         <div className="mt-8">
           {attraction.description && (
             <section>
-              <p className="leading-relaxed text-tinta">
+              <p className="leading-relaxed text-tinta whitespace-pre-line">
                 {linkify(attraction.description)}
               </p>
             </section>
@@ -192,7 +217,7 @@ export default async function AttractionPage(
                     <dt className="text-xs uppercase tracking-wide text-oliva/70">
                       {fact.label}
                     </dt>
-                    <dd className="mt-1 text-sm text-oliva">{fact.value}</dd>
+                    <dd className="mt-1 text-sm text-oliva">{fact.content}</dd>
                   </div>
                 ))}
               </dl>
@@ -226,7 +251,7 @@ export default async function AttractionPage(
               <h2 className="font-serif text-lg text-tinta">
                 Experiência de quem já foi
               </h2>
-              <p className="mt-2 leading-relaxed text-tinta/90">
+              <p className="mt-2 leading-relaxed text-tinta/90 whitespace-pre-line">
                 {linkify(attraction.personal_experience)}
               </p>
             </section>
@@ -237,19 +262,8 @@ export default async function AttractionPage(
               <h2 className="font-serif text-lg text-tinta">
                 Dicas importantes
               </h2>
-              <p className="mt-2 leading-relaxed text-tinta/90">
+              <p className="mt-2 leading-relaxed text-tinta/90 whitespace-pre-line">
                 {linkify(attraction.important_tips)}
-              </p>
-            </section>
-          )}
-
-          {attraction.important_notes && (
-            <section className="mt-6 border-l-2 border-oliva/40 pl-4">
-              <h2 className="font-serif text-lg text-tinta">
-                Observações importantes
-              </h2>
-              <p className="mt-2 leading-relaxed text-tinta/90">
-                {linkify(attraction.important_notes)}
               </p>
             </section>
           )}

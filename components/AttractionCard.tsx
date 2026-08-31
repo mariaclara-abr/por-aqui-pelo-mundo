@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Database } from "@/types/database";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 import CurationRating from "@/components/CurationRating";
 import RoteiroButton from "@/components/RoteiroButton";
 
@@ -25,9 +25,7 @@ export default function AttractionCard({
     (a, b) => a.order - b.order,
   )[0];
   const tags = attraction.attraction_tags.map((entry) => entry.tags);
-  const categoryLabel =
-    ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)
-      ?.label ?? attraction.category;
+  const categoryLabel = categoryLabels(attraction.categories);
 
   return (
     <div className="group relative">

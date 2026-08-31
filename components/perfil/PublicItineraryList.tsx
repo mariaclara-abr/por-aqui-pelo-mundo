@@ -50,7 +50,13 @@ export default function PublicItineraryList({
                       key={index}
                       className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-branco"
                     >
-                      <Image src={url} alt="" fill sizes="48px" className="object-cover" />
+                      <Image
+                        src={url}
+                        alt={`Foto do roteiro ${itinerary.title}`}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
                     </div>
                   ))}
                 </div>

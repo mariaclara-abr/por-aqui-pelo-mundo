@@ -11,7 +11,7 @@ export interface AIAttraction {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -36,7 +36,7 @@ interface RawAttractionRow {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curation_rating: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -54,7 +54,7 @@ function mapAttractionRow(a: RawAttractionRow): AIAttraction | null {
     id: a.id,
     name: a.name,
     slug: a.slug,
-    category: a.category,
+    categories: a.categories,
     curationRating: a.curation_rating,
     latitude: a.latitude,
     longitude: a.longitude,
@@ -75,7 +75,7 @@ async function fetchItineraryAttractions(
   const { data, error } = await supabase
     .from("itinerary_items")
     .select(
-      "order, attractions(id, name, slug, category, curation_rating, latitude, longitude, average_visit_time, best_time_of_day, description, attraction_photos(url, order), cities(name, slug, countries(slug)))",
+      "order, attractions(id, name, slug, categories, curation_rating, latitude, longitude, average_visit_time, best_time_of_day, description, attraction_photos(url, order), cities(name, slug, countries(slug)))",
     )
     .eq("itinerary_id", itineraryId)
     .order("order");
@@ -113,7 +113,7 @@ export async function getCandidateAttractions(
   const { data, error } = await supabase
     .from("attractions")
     .select(
-      "id, name, slug, category, curation_rating, latitude, longitude, average_visit_time, best_time_of_day, description, attraction_photos(url, order), cities(name, slug, countries(slug))",
+      "id, name, slug, categories, curation_rating, latitude, longitude, average_visit_time, best_time_of_day, description, attraction_photos(url, order), cities(name, slug, countries(slug))",
     )
     .in("city_id", cityIds);
   if (error) throw error;
@@ -134,6 +134,77 @@ export async function getCandidateAttractions(
     candidates.push(...list.slice(0, MAX_CANDIDATES_PER_CITY));
   }
   return candidates;
+}
+
+// Quantas atrações por cidade oferecemos como pool completo para a IA
+// escolher ao montar um roteiro do zero (sem nenhuma atração confirmada).
+const MAX_CANDIDATES_PER_CITY_FROM_SCRATCH = 15;
+
+// Atrações da curadoria nas cidades escolhidas pelo viajante para montar um
+// roteiro do zero — a IA escolhe livremente dentro desta lista, nunca
+// inventa lugares fora do que já está cadastrado no banco.
+export async function getAttractionsForCities(
+  citySlugs: string[],
+): Promise<AIAttraction[]> {
+  const supabase = await createClient();
+  if (citySlugs.length === 0) return [];
+
+  const { data: cities, error: citiesError } = await supabase
+    .from("cities")
+    .select("id")
+    .in("slug", citySlugs);
+  if (citiesError) throw citiesError;
+  if (cities.length === 0) return [];
+
+  const cityIds = cities.map((c) => c.id);
+
+  const { data, error } = await supabase
+    .from("attractions")
+    .select(
+      "id, name, slug, categories, curation_rating, latitude, longitude, average_visit_time, best_time_of_day, description, attraction_photos(url, order), cities(name, slug, countries(slug))",
+    )
+    .in("city_id", cityIds);
+  if (error) throw error;
+
+  const byCity = new Map<string, AIAttraction[]>();
+  for (const row of data) {
+    const attraction = mapAttractionRow(row);
+    if (!attraction) continue;
+    const list = byCity.get(attraction.citySlug) ?? [];
+    list.push(attraction);
+    byCity.set(attraction.citySlug, list);
+  }
+
+  const candidates: AIAttraction[] = [];
+  for (const list of byCity.values()) {
+    list.sort((a, b) => (b.curationRating ?? 0) - (a.curationRating ?? 0));
+    candidates.push(...list.slice(0, MAX_CANDIDATES_PER_CITY_FROM_SCRATCH));
+  }
+  return candidates;
+}
+
+// Países distintos das cidades escolhidas — usado para decidir acesso
+// (plano avulso x Premium) antes mesmo de existir qualquer atração
+// confirmada no roteiro do zero.
+export async function getCountrySlugsForCities(
+  citySlugs: string[],
+): Promise<string[]> {
+  const supabase = await createClient();
+  if (citySlugs.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("cities")
+    .select("slug, countries(slug)")
+    .in("slug", citySlugs);
+  if (error) throw error;
+
+  return [
+    ...new Set(
+      data
+        .map((c) => c.countries?.slug)
+        .filter((slug): slug is string => !!slug),
+    ),
+  ];
 }
 
 // Busca o roteiro que o usuário está editando no momento (o mesmo que
@@ -215,7 +286,7 @@ export interface ChatAttractionMatch {
   id: string;
   name: string;
   cityName: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curationRating: number | null;
 }
 
@@ -227,7 +298,7 @@ export async function searchAttractionsForChat(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("attractions")
-    .select("id, name, category, curation_rating, cities(name)")
+    .select("id, name, categories, curation_rating, cities(name)")
     .ilike("name", `%${query}%`)
     .order("curation_rating", { ascending: false, nullsFirst: false })
     .limit(8);
@@ -240,7 +311,7 @@ export async function searchAttractionsForChat(
       id: a.id,
       name: a.name,
       cityName: a.cities.name,
-      category: a.category,
+      categories: a.categories,
       curationRating: a.curation_rating,
     }));
 }

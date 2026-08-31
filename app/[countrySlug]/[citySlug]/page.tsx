@@ -161,7 +161,7 @@ export default async function CityPage(
             <>
               <Image
                 src={coverImage}
-                alt=""
+                alt={city.name}
                 fill
                 sizes="100vw"
                 className="object-cover"

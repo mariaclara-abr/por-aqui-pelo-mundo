@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 import DeleteButton from "@/components/admin/DeleteButton";
-import PendingSiteReviewsList from "@/components/admin/PendingSiteReviewsList";
 
 export default async function AdminAvaliacoesPage() {
   const supabase = await createClient();
@@ -14,8 +13,6 @@ export default async function AdminAvaliacoesPage() {
   if (error) throw error;
 
   const reviews = data ?? [];
-  const pending = reviews.filter((review) => review.status === "pendente");
-  const resolved = reviews.filter((review) => review.status !== "pendente");
 
   return (
     <div>
@@ -29,24 +26,16 @@ export default async function AdminAvaliacoesPage() {
         </Link>
       </div>
       <p className="mt-1 text-sm text-oliva">
-        Depoimentos exibidos na página inicial. Visitantes logados também podem
-        enviar a própria avaliação pela home. Elas caem aqui como pendentes
-        até você aprovar.
+        Depoimentos exibidos na página inicial. Visitantes logados também
+        podem enviar a própria avaliação pela home: elas aparecem publicadas
+        na hora. Exclua daqui qualquer avaliação que não deva ficar no ar.
       </p>
 
-      <h2 className="mt-8 font-serif text-lg text-tinta">
-        Pendentes de aprovação{pending.length > 0 ? ` (${pending.length})` : ""}
-      </h2>
-      <div className="mt-3">
-        <PendingSiteReviewsList initialReviews={pending} />
-      </div>
-
-      <h2 className="mt-10 font-serif text-lg text-tinta">Todas as avaliações</h2>
-      {resolved.length === 0 ? (
-        <p className="mt-4 text-oliva">Nenhuma avaliação cadastrada ainda.</p>
+      {reviews.length === 0 ? (
+        <p className="mt-6 text-oliva">Nenhuma avaliação cadastrada ainda.</p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-2">
-          {resolved.map((review) => (
+        <ul className="mt-6 flex flex-col gap-2">
+          {reviews.map((review) => (
             <li
               key={review.id}
               className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-oliva/15 bg-branco p-3"
@@ -60,11 +49,6 @@ export default async function AdminAvaliacoesPage() {
                     </span>
                   </span>
                   <span className="text-tinta">{review.reviewer_name}</span>
-                  {review.status === "oculta" && (
-                    <span className="rounded-full bg-oliva/10 px-2 py-0.5 text-xs text-oliva">
-                      Oculta
-                    </span>
-                  )}
                 </div>
                 <p className="max-w-md truncate text-sm text-oliva">
                   {review.comment}

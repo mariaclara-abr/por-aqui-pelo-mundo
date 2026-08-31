@@ -186,7 +186,7 @@ function ItineraryCard({
               <img
                 key={index}
                 src={url}
-                alt=""
+                alt={`Foto do roteiro ${itinerary.title}`}
                 className="h-12 w-12 rounded-full border-2 border-branco object-cover"
               />
             ))}

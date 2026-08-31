@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSharedItineraryByToken } from "@/lib/shared-itinerary";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 import CurationRating from "@/components/CurationRating";
 import SharedItineraryMap from "@/components/SharedItineraryMap";
 import { buildOpenGraph } from "@/lib/metadata";
@@ -105,10 +105,7 @@ export default async function SharedItineraryPage(
             }
           >
             {shared.attractions.map((attraction) => {
-              const categoryLabel =
-                ATTRACTION_CATEGORIES.find(
-                  (c) => c.value === attraction.category,
-                )?.label ?? attraction.category;
+              const categoryLabel = categoryLabels(attraction.categories);
 
               return (
                 <Link

@@ -25,7 +25,7 @@ export interface RecommendedAttraction {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -59,7 +59,7 @@ interface GeoIndexRow {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
@@ -104,7 +104,7 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
   const { data, error } = await supabase
     .from("attractions")
     .select(
-      "id, name, slug, category, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, cover_image_url, latitude, longitude, countries(slug))",
+      "id, name, slug, categories, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, cover_image_url, latitude, longitude, countries(slug))",
     );
 
   if (error) throw error;
@@ -115,7 +115,7 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
       id: row.id,
       name: row.name,
       slug: row.slug,
-      category: row.category,
+      categories: row.categories,
       curationRating: row.curation_rating,
       latitude: row.latitude,
       longitude: row.longitude,
@@ -136,14 +136,18 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
 function rankAttractionsByCategory(
   index: GeoIndexRow[],
   reference: GeoReference,
-  categories: AttractionCategory[],
+  categoryFilter: AttractionCategory[],
   excludeIds: Set<string>,
   limit: number,
 ): RecommendedAttraction[] {
   const hasCoords = reference.latitude !== null && reference.longitude !== null;
 
   return index
-    .filter((item) => categories.includes(item.category) && !excludeIds.has(item.id))
+    .filter(
+      (item) =>
+        item.categories.some((category) => categoryFilter.includes(category)) &&
+        !excludeIds.has(item.id),
+    )
     .map((item) => ({
       item,
       distanceKm:

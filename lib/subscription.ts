@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase-server";
-import type { ItineraryForAI } from "@/lib/itinerary-ai";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -65,15 +64,16 @@ export interface AIAccessResult {
 }
 
 // Ponto único de decisão sobre se o usuário pode usar "Organizar com IA"
-// neste roteiro. Usado tanto pela página (para desenhar o paywall) quanto
-// pela rota /api/generate-itinerary-ai (que é quem realmente barra a ação).
+// neste roteiro. Usado pela rota /api/generate-itinerary-ai (que é quem
+// realmente barra a ação) tanto para roteiros já com atrações escolhidas
+// quanto para o modo "montar do zero" (onde countryCount vem dos destinos
+// selecionados, não de atrações confirmadas).
 export async function canUseAIForItinerary(
   supabase: SupabaseServerClient,
   userId: string,
-  itinerary: ItineraryForAI,
+  itineraryId: string,
+  countryCount: number,
 ): Promise<AIAccessResult> {
-  const countryCount = countDistinctCountries(itinerary.attractions);
-
   const premium = await getActivePremium(supabase, userId);
   if (premium) {
     return { allowed: true, reason: "premium", countryCount };
@@ -83,7 +83,7 @@ export async function canUseAIForItinerary(
     const hasAccess = await hasRoteiroUnicoAccess(
       supabase,
       userId,
-      itinerary.itineraryId,
+      itineraryId,
     );
     return {
       allowed: hasAccess,

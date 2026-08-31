@@ -1,13 +1,59 @@
-import type { Database } from "@/types/database";
+import Link from "next/link";
+import Image from "next/image";
+import type { SiteReviewWithProfile } from "@/lib/queries";
 import SiteReviewSubmitForm from "@/components/SiteReviewSubmitForm";
 import { linkify } from "@/components/Linkify";
 
-type SiteReview = Database["public"]["Tables"]["site_reviews"]["Row"];
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function ReviewerLink({
+  review,
+  className,
+  children,
+}: {
+  review: SiteReviewWithProfile;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (!review.reviewerUsername) return <span className={className}>{children}</span>;
+  return (
+    <Link href={`/perfil/${review.reviewerUsername}`} className={className}>
+      {children}
+    </Link>
+  );
+}
+
+function ReviewerAvatar({ review }: { review: SiteReviewWithProfile }) {
+  return (
+    <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-oliva text-xs font-medium text-white">
+      {review.reviewerAvatarUrl ? (
+        <Image
+          src={review.reviewerAvatarUrl}
+          alt=""
+          fill
+          unoptimized
+          sizes="36px"
+          className="object-cover"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          {review.reviewerName.charAt(0).toUpperCase()}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function SiteReviewsSection({
   reviews,
 }: {
-  reviews: SiteReview[];
+  reviews: SiteReviewWithProfile[];
 }) {
   return (
     <section id="avaliacoes" className="bg-areia px-4 py-14 sm:px-6 sm:py-24 lg:px-10">
@@ -45,12 +91,23 @@ export default function SiteReviewsSection({
                 </div>
                 <span className="sr-only">{`Avaliação: ${review.rating} de 5 estrelas`}</span>
 
-                <blockquote className="flex-1 text-sm leading-relaxed text-tinta">
+                <blockquote className="flex-1 whitespace-pre-line text-sm leading-relaxed text-tinta">
                   &ldquo;{linkify(review.comment)}&rdquo;
                 </blockquote>
 
-                <figcaption className="font-serif text-base text-tinta">
-                  {review.reviewer_name}
+                <figcaption className="flex items-center gap-3">
+                  <ReviewerLink review={review}>
+                    <ReviewerAvatar review={review} />
+                  </ReviewerLink>
+                  <div className="min-w-0">
+                    <ReviewerLink
+                      review={review}
+                      className="block truncate font-serif text-base text-tinta hover:text-terracota hover:underline"
+                    >
+                      {review.reviewerName}
+                    </ReviewerLink>
+                    <p className="text-xs text-oliva">{formatDate(review.createdAt)}</p>
+                  </div>
                 </figcaption>
               </figure>
             ))}

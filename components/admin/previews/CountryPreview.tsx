@@ -38,7 +38,7 @@ export default function CountryPreview({
             <>
               <img
                 src={coverImageUrl}
-                alt=""
+                alt={name || "Nome do país"}
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-tinta/60" />

@@ -102,7 +102,7 @@ export async function loadAccountItems(itineraryId: string) {
   const { data, error } = await supabase
     .from("itinerary_items")
     .select(
-      "id, order, attraction_id, attractions(id, name, slug, category, curation_rating, latitude, longitude, attraction_photos(url, order), cities(slug, countries(slug)))",
+      "id, order, attraction_id, attractions(id, name, slug, categories, curation_rating, latitude, longitude, attraction_photos(url, order), cities(slug, countries(slug)))",
     )
     .eq("itinerary_id", itineraryId);
 

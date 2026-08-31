@@ -25,7 +25,7 @@ export default function DestinationGrid({
 
       <div className="relative mx-auto max-w-[1440px]">
         <h2 className="text-center font-serif text-3xl text-tinta sm:text-4xl">
-          Escolha um destino
+          Explorar destinos
         </h2>
         <p className="mt-2 text-center text-oliva">
           Menos horas pesquisando, mais dias aproveitando.

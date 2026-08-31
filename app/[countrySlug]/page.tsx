@@ -102,7 +102,7 @@ export default async function CountryPage(
             <>
               <Image
                 src={coverImage}
-                alt=""
+                alt={country.name}
                 fill
                 sizes="100vw"
                 className="object-cover"

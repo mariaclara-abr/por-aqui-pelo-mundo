@@ -14,25 +14,29 @@ export default function Header() {
       <div className="relative mx-auto flex max-w-[1440px] items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <NavDrawer />
+          <div className="hidden min-w-0 items-center gap-2 md:flex">
+            <PlaneLaunchIcon size={20} />
+            <Link
+              href="/"
+              aria-label="Por Aqui Pelo Mundo: início"
+              className="min-w-0 font-serif text-xl text-tinta transition-colors hover:text-terracota"
+            >
+              <span className="truncate">Por Aqui Pelo Mundo</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="absolute left-1/2 flex max-w-[calc(100%-112px)] -translate-x-1/2 items-center gap-1.5 whitespace-nowrap md:hidden">
+          <PlaneLaunchIcon size={18} />
           <Link
             href="/"
             aria-label="Por Aqui Pelo Mundo: início"
-            className="hidden min-w-0 items-center gap-2 font-serif text-xl text-tinta transition-colors hover:text-terracota md:flex"
+            className="font-serif text-base text-tinta"
           >
-            <PlaneLaunchIcon size={20} />
-            <span className="truncate">Por Aqui Pelo Mundo</span>
+            <span className="hidden min-[390px]:inline">Por Aqui Pelo Mundo</span>
+            <span className="min-[390px]:hidden">Por Aqui</span>
           </Link>
         </div>
-
-        <Link
-          href="/"
-          aria-label="Por Aqui Pelo Mundo: início"
-          className="absolute left-1/2 flex max-w-[calc(100%-112px)] -translate-x-1/2 items-center gap-1.5 whitespace-nowrap font-serif text-base text-tinta md:hidden"
-        >
-          <PlaneLaunchIcon size={18} />
-          <span className="hidden min-[390px]:inline">Por Aqui Pelo Mundo</span>
-          <span className="min-[390px]:hidden">Por Aqui</span>
-        </Link>
 
         <div className="flex shrink-0 items-center gap-3">
           <div className="hidden items-center gap-3 md:flex">

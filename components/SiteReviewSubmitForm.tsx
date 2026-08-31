@@ -1,31 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-browser";
-import type { SiteReviewStatus } from "@/types/database";
-
-const STATUS_MESSAGE: Record<SiteReviewStatus, string> = {
-  pendente: "Recebemos sua avaliação e ela está aguardando aprovação. Obrigada!",
-  aprovada: "Sua avaliação já está publicada aqui embaixo. Obrigada!",
-  oculta: "Recebemos sua avaliação. Obrigada!",
-};
+import EmojiPickerButton from "@/components/EmojiPickerButton";
 
 export default function SiteReviewSubmitForm() {
   const { user, profile, loading: authLoading } = useAuth();
-  const [existingStatus, setExistingStatus] = useState<
-    SiteReviewStatus | null | undefined
-  >(undefined);
+  const commentRef = useRef<HTMLTextAreaElement>(null);
+  const [alreadyReviewed, setAlreadyReviewed] = useState<boolean | undefined>(
+    undefined,
+  );
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [justSubmitted, setJustSubmitted] = useState<SiteReviewStatus | null>(
-    null,
-  );
-  const checking = !authLoading && !!user && existingStatus === undefined;
+  const [justSubmitted, setJustSubmitted] = useState(false);
+  const checking = !authLoading && !!user && alreadyReviewed === undefined;
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -33,11 +26,11 @@ export default function SiteReviewSubmitForm() {
     const supabase = createClient();
     supabase
       .from("site_reviews")
-      .select("status")
+      .select("id")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        setExistingStatus(data?.status ?? null);
+        setAlreadyReviewed(!!data);
       });
   }, [authLoading, user]);
 
@@ -55,7 +48,6 @@ export default function SiteReviewSubmitForm() {
       rating,
       comment: trimmed,
       reviewer_name: profile?.display_name || profile?.username || "Viajante",
-      status: "pendente",
     });
 
     setSaving(false);
@@ -69,15 +61,15 @@ export default function SiteReviewSubmitForm() {
       return;
     }
 
-    setJustSubmitted("pendente");
+    setJustSubmitted(true);
   }
 
   if (authLoading || checking) return null;
 
-  if (justSubmitted || existingStatus) {
+  if (justSubmitted || alreadyReviewed) {
     return (
       <p className="text-center text-sm text-oliva">
-        {STATUS_MESSAGE[justSubmitted ?? existingStatus!]}
+        Sua avaliação já está publicada aqui embaixo. Obrigada!
       </p>
     );
   }
@@ -133,7 +125,16 @@ export default function SiteReviewSubmitForm() {
         </div>
       </div>
 
+      <div className="flex items-center justify-end">
+        <EmojiPickerButton
+          value={comment}
+          onChange={setComment}
+          textareaRef={commentRef}
+        />
+      </div>
+
       <textarea
+        ref={commentRef}
         value={comment}
         onChange={(event) => setComment(event.target.value)}
         rows={3}

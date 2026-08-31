@@ -89,7 +89,7 @@ export default async function SobrePage() {
           {about.travel_photo_1_url ? (
             <Image
               src={about.travel_photo_1_url}
-              alt=""
+              alt={`Foto de viagem de ${about.author_name}`}
               fill
               sizes="(min-width: 1024px) 1152px, 100vw"
               className="rounded-xl object-cover"
@@ -139,7 +139,7 @@ export default async function SobrePage() {
           {about.travel_photo_2_url ? (
             <Image
               src={about.travel_photo_2_url}
-              alt=""
+              alt={`Foto de viagem de ${about.author_name}`}
               fill
               sizes="(min-width: 1024px) 1152px, 100vw"
               className="rounded-xl object-cover"

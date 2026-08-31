@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 import { getActiveItineraryForAI } from "@/lib/itinerary-ai";
-import { canUseAIForItinerary } from "@/lib/subscription";
+import { getDestinationPickerCities } from "@/lib/queries";
 import { parseUserPreferences } from "@/types/database";
 import OrganizarComIAClient from "@/components/itinerary-ai/OrganizarComIAClient";
 import { buildOpenGraph } from "@/lib/metadata";
@@ -30,18 +30,17 @@ export default async function OrganizarComIAPage() {
     redirect("/entrar");
   }
 
-  const [itinerary, { data: profile }] = await Promise.all([
+  const [itinerary, { data: profile }, destinationCities] = await Promise.all([
     getActiveItineraryForAI(user.id),
     supabase.from("profiles").select("preferences").eq("id", user.id).single(),
+    getDestinationPickerCities(),
   ]);
 
   const preferences = parseUserPreferences(profile?.preferences);
-  const access = itinerary
-    ? await canUseAIForItinerary(supabase, user.id, itinerary)
-    : null;
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+    <main className="relative flex-1 overflow-hidden px-4 py-7 sm:px-6 sm:py-10 lg:px-10">
+      <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[440px] w-[min(1100px,120vw)] -translate-x-1/2 rounded-b-[48%] bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.92),_rgba(255,255,255,0)_68%)]" />
       <div className="mx-auto max-w-6xl">
         <Link
           href="/meu-roteiro"
@@ -50,26 +49,35 @@ export default async function OrganizarComIAPage() {
           ← Voltar para o roteiro
         </Link>
 
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
-            Organizar com IA
-          </h1>
-          <span className="rounded-full bg-terracota/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-terracota">
-            Premium
-          </span>
-        </div>
-        <p className="mt-2 max-w-xl text-oliva">
-          A IA organiza a ordem, os dias e os horários das atrações que você já
-          escolheu, e pode sugerir outros lugares da curadoria nas mesmas
-          cidades. Sugestões vêm marcadas como tal e você pode excluí-las a
-          qualquer momento; o que já está no seu roteiro nunca é removido.
-        </p>
+        <section className="relative mt-5 overflow-hidden rounded-[28px] border border-white/80 bg-tinta px-6 py-9 text-branco shadow-[0_22px_55px_-30px_rgba(43,38,32,0.75)] sm:px-10 sm:py-12">
+          <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full border border-areia/20" />
+          <div className="absolute top-12 right-10 h-36 w-36 rounded-full border border-terracota/50" />
+          <div className="absolute right-24 bottom-[-72px] h-48 w-48 rounded-full bg-terracota/20 blur-2xl" />
+          <div className="relative max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-areia/25 bg-branco/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-areia">
+              <span className="h-1.5 w-1.5 rounded-full bg-terracota" />
+              Experiência premium
+            </span>
+            <h1 className="mt-5 font-serif text-4xl leading-[1.02] sm:text-5xl">
+              Sua viagem, no ritmo certo.
+            </h1>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-areia/85 sm:text-base">
+              A IA transforma suas escolhas em um roteiro fluido: encontra a melhor ordem,
+              distribui os dias e sugere horários para você aproveitar cada lugar com calma.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-areia/90">
+              <span className="flex items-center gap-2"><span className="text-terracota">✦</span> Trajetos mais inteligentes</span>
+              <span className="flex items-center gap-2"><span className="text-terracota">✦</span> Sugestões da curadoria</span>
+              <span className="flex items-center gap-2"><span className="text-terracota">✦</span> Seu jeito de viajar</span>
+            </div>
+          </div>
+        </section>
 
-        <div className="mt-8">
+        <div className="mt-7">
           <OrganizarComIAClient
             itinerary={itinerary}
             preferences={preferences}
-            access={access}
+            destinationCities={destinationCities}
           />
         </div>
       </div>

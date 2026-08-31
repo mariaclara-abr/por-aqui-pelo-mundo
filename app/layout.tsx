@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/auth";
 import { RoteiroProvider } from "@/lib/roteiro";
 import { NotificationsProvider } from "@/lib/notifications-context";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { SITE_NAME, SITE_URL, buildOpenGraph } from "@/lib/metadata";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <NotificationsProvider>
               <Header />
               {children}
+              <Footer />
             </NotificationsProvider>
           </RoteiroProvider>
         </AuthProvider>

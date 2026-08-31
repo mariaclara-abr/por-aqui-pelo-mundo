@@ -41,6 +41,7 @@ Princípios visuais:
 - Seguir a paleta e tipografia acima em toda nova página ou componente, sem introduzir cores fora dela sem perguntar.
 - Ao criar componentes de UI, reutilizar componentes já existentes em vez de duplicar estilos.
 - Proibido o uso de travessões (—) em qualquer texto do projeto (código, copy da interface, conteúdo do banco, documentação). Use dois pontos, vírgula ou ponto final no lugar.
+- Toda imagem de conteúdo real (fotos de atrações, capas de país/cidade, fotos de viagem, fotos de roteiro) deve usar alt text descritivo (ex: nome da atração, da cidade, do país ou legenda da foto), nunca `alt=""`. `alt=""` só é permitido em imagens puramente decorativas (ícones, texturas de fundo) ou quando o mesmo texto já aparece visível ao lado da imagem (ex: nome do lugar num card, evitando leitor de tela anunciar duas vezes).
 
 ## Banco de dados (Supabase)
 - Autorização permanente do usuário: rodar SQL/migrations diretamente no banco Supabase de produção (`SUPABASE_DB_URL` em `.env.local`) sem pedir confirmação antes, usando `npm run sql -- <arquivo.sql>` (script em `scripts/run-sql.mjs`, conecta via `pg`). Não é necessário pausar para perguntar antes desse tipo de execução.

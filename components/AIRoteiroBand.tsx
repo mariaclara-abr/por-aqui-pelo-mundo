@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
-import PremiumDialog from "@/components/PremiumDialog";
 
 export default function AIRoteiroBand() {
   const prefersReducedMotion = useReducedMotion();
-  const [showPremium, setShowPremium] = useState(false);
+  const router = useRouter();
 
   return (
     <section className="relative overflow-hidden bg-terracota px-4 py-12 sm:px-6 sm:py-20 lg:px-10">
@@ -44,7 +43,7 @@ export default function AIRoteiroBand() {
             />
             <button
               type="button"
-              onClick={() => setShowPremium(true)}
+              onClick={() => router.push("/meu-roteiro/organizar-com-ia")}
               className="relative inline-flex items-center gap-2 rounded-lg bg-branco px-7 py-3.5 text-sm font-medium text-terracota transition-transform hover:scale-105 active:scale-95"
             >
               Montar meu roteiro com IA
@@ -60,14 +59,6 @@ export default function AIRoteiroBand() {
           className="mx-auto w-full max-w-[390px] drop-shadow-xl sm:max-w-[470px] lg:mx-0 lg:max-w-[520px] lg:-translate-x-12 xl:-translate-x-20"
         />
       </div>
-
-      {showPremium && (
-        <PremiumDialog
-          itineraryId={null}
-          countryCount={0}
-          onClose={() => setShowPremium(false)}
-        />
-      )}
     </section>
   );
 }

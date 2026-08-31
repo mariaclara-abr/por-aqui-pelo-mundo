@@ -1,9 +1,9 @@
 import { slugify } from "@/lib/slugify";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 
 export interface ExportAttractionItem {
   name: string;
-  category: string;
+  categories: string[];
   cityName: string;
   curationRating: number | null;
   description: string | null;
@@ -29,10 +29,6 @@ export interface ExportItinerary {
 // html2canvas (ver exportItineraryToPDF).
 const PAGE_WIDTH_PX = 794;
 const PAGE_HEIGHT_PX = 1123;
-
-function categoryLabel(category: string) {
-  return ATTRACTION_CATEGORIES.find((c) => c.value === category)?.label ?? category;
-}
 
 function formatDate(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("pt-BR", {
@@ -121,7 +117,7 @@ function buildItemCard(item: ExportAttractionItem) {
   }
   info.appendChild(nameRow);
 
-  const metaParts = [categoryLabel(item.category), item.cityName];
+  const metaParts = [categoryLabels(item.categories), item.cityName];
   if (item.curationRating != null) {
     metaParts.push("★".repeat(item.curationRating));
   }
@@ -350,7 +346,7 @@ function buildDayEvent(itinerary: ExportItinerary, day: ExportDay): string[] {
   const description = day.items
     .map((item) => {
       const time = item.suggestedStartTime ? `${item.suggestedStartTime} · ` : "";
-      return `${time}${item.name} (${categoryLabel(item.category)})`;
+      return `${time}${item.name} (${categoryLabels(item.categories)})`;
     })
     .join("\n");
   lines.push(`DESCRIPTION:${escapeICSText(description)}`);

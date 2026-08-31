@@ -108,6 +108,39 @@ export async function getCitiesWithCountry() {
   return data;
 }
 
+export interface DestinationPickerCity {
+  slug: string;
+  name: string;
+  countrySlug: string;
+  countryName: string;
+}
+
+// Lista enxuta de cidades + país usada pelo seletor de destinos do roteiro
+// "do zero" com IA (components/itinerary-ai) — só os campos necessários
+// pra montar a lista, sem o resto das colunas de cities/countries.
+export async function getDestinationPickerCities(): Promise<
+  DestinationPickerCity[]
+> {
+  const { data, error } = await supabase
+    .from("cities")
+    .select("slug, name, countries(slug, name)")
+    .order("name");
+
+  if (error) throw error;
+
+  return data
+    .filter(
+      (c): c is typeof c & { countries: { slug: string; name: string } } =>
+        c.countries !== null,
+    )
+    .map((c) => ({
+      slug: c.slug,
+      name: c.name,
+      countrySlug: c.countries.slug,
+      countryName: c.countries.name,
+    }));
+}
+
 export async function getTags() {
   const { data, error } = await supabase.from("tags").select("*").order("name");
 
@@ -165,9 +198,9 @@ export async function getAttractionsByCity(
     .eq("city_id", city.id);
 
   if (filters?.categories && filters.categories.length > 0) {
-    // Retorna atrações que se enquadram em qualquer uma das categorias
-    // selecionadas (seleção soma, não restringe a uma categoria só).
-    query = query.in("category", filters.categories);
+    // Retorna atrações que têm pelo menos uma das categorias selecionadas
+    // (seleção soma, não restringe a uma categoria só).
+    query = query.overlaps("categories", filters.categories);
   }
 
   if (filters?.tags && filters.tags.length > 0) {
@@ -261,7 +294,7 @@ export async function getAttractionsSummaryByIds(ids: string[]) {
   const { data, error } = await supabase
     .from("attractions")
     .select(
-      "id, name, slug, category, curation_rating, latitude, longitude, attraction_photos(url, order), cities(slug, countries(slug))",
+      "id, name, slug, categories, curation_rating, latitude, longitude, attraction_photos(url, order), cities(slug, countries(slug))",
     )
     .in("id", ids);
 
@@ -308,7 +341,18 @@ export async function getAboutVisitedCountries() {
   return data;
 }
 
-export async function getSiteReviews() {
+export interface SiteReviewWithProfile {
+  id: string;
+  rating: number;
+  comment: string;
+  order: number;
+  createdAt: string;
+  reviewerName: string;
+  reviewerUsername: string | null;
+  reviewerAvatarUrl: string | null;
+}
+
+export async function getSiteReviews(): Promise<SiteReviewWithProfile[]> {
   const { data, error } = await supabase
     .from("site_reviews")
     .select("*")
@@ -316,6 +360,38 @@ export async function getSiteReviews() {
     .order("created_at", { ascending: false });
 
   if (error) throw error;
-  return data;
+
+  const userIds = [
+    ...new Set(
+      data
+        .map((review) => review.user_id)
+        .filter((id): id is string => id !== null),
+    ),
+  ];
+
+  const { data: profiles, error: profilesError } =
+    userIds.length === 0
+      ? { data: [], error: null }
+      : await supabase
+          .from("public_profiles")
+          .select("*")
+          .in("id", userIds);
+
+  if (profilesError) throw profilesError;
+  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
+
+  return data.map((review) => {
+    const profile = review.user_id ? profileById.get(review.user_id) : undefined;
+    return {
+      id: review.id,
+      rating: review.rating,
+      comment: review.comment,
+      order: review.order,
+      createdAt: review.created_at,
+      reviewerName: profile?.display_name || profile?.username || review.reviewer_name,
+      reviewerUsername: profile?.username ?? null,
+      reviewerAvatarUrl: profile?.avatar_url ?? null,
+    };
+  });
 }
 

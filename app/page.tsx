@@ -11,7 +11,6 @@ import WelcomeMarquee from "@/components/WelcomeMarquee";
 import AuthorBand from "@/components/AuthorBand";
 import AIRoteiroBand from "@/components/AIRoteiroBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
-import HomeFooterBand from "@/components/HomeFooterBand";
 import { buildOpenGraph } from "@/lib/metadata";
 
 const TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
@@ -44,7 +43,6 @@ export default async function Home() {
       <WelcomeMarquee />
       <AIRoteiroBand />
       <SiteReviewsSection reviews={siteReviews} />
-      <HomeFooterBand />
     </main>
   );
 }

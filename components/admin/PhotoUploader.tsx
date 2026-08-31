@@ -123,7 +123,7 @@ export default function PhotoUploader({
               <div className="flex items-center gap-3">
                 <img
                   src={photo.url}
-                  alt=""
+                  alt={photo.caption || `Foto ${index + 1}`}
                   className="h-16 w-24 rounded object-cover"
                 />
                 <span className="text-xs text-oliva">

@@ -22,7 +22,7 @@ import {
   type RecommendedAttraction,
   type RecommendedCity,
 } from "@/lib/recommendations";
-import { ATTRACTION_CATEGORIES } from "@/types/database";
+import { categoryLabels } from "@/types/database";
 import CurationRating from "@/components/CurationRating";
 import DestinationCard from "@/components/DestinationCard";
 
@@ -264,8 +264,7 @@ function AttractionRecommendationCard({
 }: {
   attraction: RecommendedAttraction;
 }) {
-  const categoryLabel =
-    ATTRACTION_CATEGORIES.find((c) => c.value === attraction.category)?.label ?? attraction.category;
+  const categoryLabel = categoryLabels(attraction.categories);
 
   return (
     <div className="w-40 shrink-0 snap-start sm:w-48">

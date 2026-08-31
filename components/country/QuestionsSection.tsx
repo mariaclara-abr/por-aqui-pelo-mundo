@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { inputClass } from "@/components/admin/FormField";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import EmojiPickerButton from "@/components/EmojiPickerButton";
 import { linkify } from "@/components/Linkify";
 import {
   askCountryQuestion,
@@ -78,6 +79,7 @@ function QuestionCard({
   onChanged: () => void;
 }) {
   const [answerDraft, setAnswerDraft] = useState(question.answer?.answer ?? "");
+  const answerRef = useRef<HTMLTextAreaElement>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [confirmingHide, setConfirmingHide] = useState(false);
@@ -183,6 +185,7 @@ function QuestionCard({
       {isAuthor && (!question.answer || editing) && (
         <div className="mt-3 ml-4 sm:ml-12">
           <textarea
+            ref={answerRef}
             rows={2}
             value={answerDraft}
             onChange={(event) => setAnswerDraft(event.target.value)}
@@ -190,7 +193,7 @@ function QuestionCard({
             className={inputClass}
             disabled={saving}
           />
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 flex items-center gap-2">
             <button
               type="button"
               onClick={handleSubmitAnswer}
@@ -212,6 +215,11 @@ function QuestionCard({
                 Cancelar
               </button>
             )}
+            <EmojiPickerButton
+              value={answerDraft}
+              onChange={setAnswerDraft}
+              textareaRef={answerRef}
+            />
           </div>
         </div>
       )}
@@ -260,6 +268,7 @@ export default function QuestionsSection({
   const { user, profile, isAuthor, loading: authLoading } = useAuth();
   const [questions, setQuestions] = useState(initialQuestions);
   const [newQuestion, setNewQuestion] = useState("");
+  const newQuestionRef = useRef<HTMLTextAreaElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -297,11 +306,19 @@ export default function QuestionsSection({
           onSubmit={handleAsk}
           className="rounded-xl bg-branco/55 p-4"
         >
-          <label htmlFor="new-country-question" className="text-sm font-medium text-tinta">
-            Faça uma pergunta
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="new-country-question" className="text-sm font-medium text-tinta">
+              Faça uma pergunta
+            </label>
+            <EmojiPickerButton
+              value={newQuestion}
+              onChange={setNewQuestion}
+              textareaRef={newQuestionRef}
+            />
+          </div>
           <textarea
             id="new-country-question"
+            ref={newQuestionRef}
             rows={2}
             value={newQuestion}
             onChange={(event) => setNewQuestion(event.target.value)}

@@ -8,7 +8,7 @@ interface AttractionInput {
   id: string;
   name: string;
   slug: string;
-  category: AttractionCategory;
+  categories: AttractionCategory[];
   curation_rating: number | null;
   latitude: number | null;
   longitude: number | null;

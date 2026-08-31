@@ -142,14 +142,22 @@ export default function PremiumDialog({
   itineraryId,
   countryCount,
   onClose,
+  onAccessGranted,
 }: {
   itineraryId: string | null;
   countryCount: number;
   onClose: () => void;
+  onAccessGranted?: () => void;
 }) {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { isPremium, refresh } = useUserSubscription();
+  const { isPremium, hasRoteiroUnicoFor, refresh } = useUserSubscription();
+
+  useEffect(() => {
+    if (isPremium || (itineraryId && hasRoteiroUnicoFor(itineraryId))) {
+      onAccessGranted?.();
+    }
+  }, [isPremium, itineraryId, hasRoteiroUnicoFor, onAccessGranted]);
   const [checkoutStatus] = useState(readCheckoutStatus);
   const [confirming, setConfirming] = useState(checkoutStatus === "success");
   const [loadingPlan, setLoadingPlan] = useState<PlanType | null>(null);
