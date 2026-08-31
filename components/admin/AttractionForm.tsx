@@ -236,10 +236,13 @@ export default function AttractionForm({
       setSaving(false);
       console.error("Falha ao salvar atração:", err);
       const code = (err as { code?: string }).code;
+      const message = (err as { message?: string }).message;
+      const details = (err as { details?: string }).details;
+      const hint = (err as { hint?: string }).hint;
       setError(
         code === "23505"
           ? "Já existe uma atração com esse nome nessa cidade."
-          : "Não foi possível salvar. Tente novamente.",
+          : `Não foi possível salvar. [DEBUG] code=${code ?? "?"} message=${message ?? "?"} details=${details ?? "?"} hint=${hint ?? "?"}`,
       );
     }
   }
