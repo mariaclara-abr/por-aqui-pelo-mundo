@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import SearchBox from "@/components/SearchBox";
 import AuthStatus from "@/components/AuthStatus";
@@ -9,8 +10,32 @@ import RoteiroIndicator from "@/components/RoteiroIndicator";
 import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
 export default function Header() {
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Expõe a altura real do header (varia com o breakpoint) como variável CSS,
+  // usada pelo menu do admin para saber onde grudar (sticky) sem sobrepor o header.
+  useEffect(() => {
+    const element = headerRef.current;
+    if (!element) return;
+
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--header-height",
+        `${element.getBoundingClientRect().height}px`,
+      );
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-tinta/5 bg-areia/80 px-2.5 py-2.5 shadow-[0_2px_16px_-4px_rgba(43,38,32,0.08)] backdrop-blur-md sm:px-6 sm:py-4 lg:px-10">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-50 border-b border-tinta/5 bg-areia/80 px-2.5 py-2.5 shadow-[0_2px_16px_-4px_rgba(43,38,32,0.08)] backdrop-blur-md sm:px-6 sm:py-4 lg:px-10"
+    >
       <div className="relative mx-auto flex max-w-[1440px] items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <NavDrawer />

@@ -77,6 +77,9 @@ export default function AttractionForm({
   const [hasAirConditioning, setHasAirConditioning] = useState(
     attraction?.has_air_conditioning ?? false,
   );
+  const [noAirConditioning, setNoAirConditioning] = useState(
+    attraction?.no_air_conditioning ?? false,
+  );
   const [curationRating, setCurationRating] = useState<number | null>(
     attraction ? attraction.curation_rating : 5,
   );
@@ -162,6 +165,7 @@ export default function AttractionForm({
       requires_advance_purchase: requiresAdvancePurchase,
       requires_reservation: requiresReservation,
       has_air_conditioning: hasAirConditioning,
+      no_air_conditioning: noAirConditioning,
       curation_rating: curationRating,
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
@@ -494,6 +498,14 @@ export default function AttractionForm({
             />
             Tem ar condicionado
           </label>
+          <label className="flex items-center gap-2 text-sm text-tinta">
+            <input
+              type="checkbox"
+              checked={noAirConditioning}
+              onChange={(event) => setNoAirConditioning(event.target.checked)}
+            />
+            Não tem ar condicionado
+          </label>
         </div>
       </FormField>
 
@@ -702,6 +714,7 @@ export default function AttractionForm({
             requiresAdvancePurchase={requiresAdvancePurchase}
             requiresReservation={requiresReservation}
             hasAirConditioning={hasAirConditioning}
+            noAirConditioning={noAirConditioning}
             exclusivePerkDescription={exclusivePerkDescription}
             exclusivePerkUrl={exclusivePerkUrl}
             exclusivePerkCtaLabel={exclusivePerkCtaLabel}

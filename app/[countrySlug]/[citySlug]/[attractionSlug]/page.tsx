@@ -139,6 +139,9 @@ export default async function AttractionPage(
     attraction.has_air_conditioning
       ? { label: "Ar condicionado", content: "Sim" as React.ReactNode }
       : null,
+    attraction.no_air_conditioning
+      ? { label: "Ar condicionado", content: "Não tem" as React.ReactNode }
+      : null,
   ].filter((fact): fact is { label: string; content: React.ReactNode } => fact !== null);
 
   return (

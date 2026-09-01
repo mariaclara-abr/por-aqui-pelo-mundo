@@ -4,6 +4,7 @@ const LINKS = [
   { label: "Meus roteiros", href: "/meu-roteiro" },
   { label: "Avisos", href: "/notificacoes" },
   { label: "Sobre a autora", href: "/sobre" },
+  { label: "Dicas de viagem", href: "/dicas-de-viagem" },
   { label: "Destinos", href: "/#destinos" },
   { label: "Roteiros completos com IA", href: "/meu-roteiro/organizar-com-ia" },
 ];

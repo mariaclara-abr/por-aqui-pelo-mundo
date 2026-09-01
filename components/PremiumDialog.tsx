@@ -44,11 +44,31 @@ function TagIcon({ className }: { className?: string }) {
   );
 }
 
+function LightbulbIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth={1.5}>
+      <path
+        d="M10 3a5 5 0 0 0-3 9v2h6v-2a5 5 0 0 0-3-9z"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      <path d="M8.3 17h3.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const HERO_BENEFITS: {
   icon: (props: { className?: string }) => ReactElement;
   title: string;
   detail: string;
+  isNew?: boolean;
 }[] = [
+  {
+    icon: LightbulbIcon,
+    title: "Todas as dicas do site",
+    detail: "acesso completo às dicas imperdíveis, sem cards bloqueados",
+    isNew: true,
+  },
   {
     icon: SparkleIcon,
     title: "IA organiza tudo por você",
@@ -319,15 +339,20 @@ export default function PremiumDialog({
             Desbloqueie ainda mais benefícios
           </p>
 
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {HERO_BENEFITS.map(({ icon: Icon, title, detail }, index) => {
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {HERO_BENEFITS.map(({ icon: Icon, title, detail, isNew }, index) => {
               const stagger = staggerProps(index, entered);
               return (
                 <div
                   key={title}
                   style={stagger.style}
-                  className={`flex flex-col items-center gap-2 rounded-xl bg-areia p-4 text-center ${stagger.className}`}
+                  className={`relative flex flex-col items-center gap-2 rounded-xl bg-areia p-4 text-center ${stagger.className}`}
                 >
+                  {isNew && (
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-terracota px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                      Novo
+                    </span>
+                  )}
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracota/15 text-terracota">
                     <Icon className="h-5 w-5" />
                   </span>

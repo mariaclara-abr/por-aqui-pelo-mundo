@@ -410,3 +410,14 @@ export async function getSiteReviews(): Promise<SiteReviewWithProfile[]> {
   });
 }
 
+export async function getTravelTips() {
+  const { data, error } = await supabase
+    .from("travel_tips")
+    .select("*")
+    .order("order")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+

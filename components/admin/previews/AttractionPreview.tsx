@@ -28,6 +28,7 @@ export default function AttractionPreview({
   requiresAdvancePurchase,
   requiresReservation,
   hasAirConditioning,
+  noAirConditioning,
   exclusivePerkDescription,
   exclusivePerkUrl,
   exclusivePerkCtaLabel,
@@ -52,6 +53,7 @@ export default function AttractionPreview({
   requiresAdvancePurchase: boolean;
   requiresReservation: boolean;
   hasAirConditioning: boolean;
+  noAirConditioning: boolean;
   exclusivePerkDescription: string;
   exclusivePerkUrl: string;
   exclusivePerkCtaLabel: string;
@@ -94,6 +96,9 @@ export default function AttractionPreview({
       : null,
     hasAirConditioning
       ? { label: "Ar condicionado", content: "Sim" as React.ReactNode }
+      : null,
+    noAirConditioning
+      ? { label: "Ar condicionado", content: "Não tem" as React.ReactNode }
       : null,
   ].filter((fact): fact is { label: string; content: React.ReactNode } => fact !== null);
 

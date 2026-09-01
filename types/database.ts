@@ -214,6 +214,7 @@ export interface Database {
           requires_advance_purchase: boolean;
           requires_reservation: boolean;
           has_air_conditioning: boolean;
+          no_air_conditioning: boolean;
           curation_rating: number | null;
           latitude: number | null;
           longitude: number | null;
@@ -241,6 +242,7 @@ export interface Database {
           requires_advance_purchase?: boolean;
           requires_reservation?: boolean;
           has_air_conditioning?: boolean;
+          no_air_conditioning?: boolean;
           curation_rating?: number | null;
           latitude?: number | null;
           longitude?: number | null;
@@ -834,6 +836,28 @@ export interface Database {
           user_id?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["site_reviews"]["Insert"]>;
+        Relationships: [];
+      };
+      travel_tips: {
+        Row: {
+          id: string;
+          category: string;
+          title: string;
+          content: string;
+          order: number;
+          is_premium: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          category: string;
+          title: string;
+          content: string;
+          order?: number;
+          is_premium?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["travel_tips"]["Insert"]>;
         Relationships: [];
       };
       login_attempts: {

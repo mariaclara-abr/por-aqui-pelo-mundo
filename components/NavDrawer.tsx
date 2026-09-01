@@ -229,6 +229,9 @@ export default function NavDrawer() {
                   <MenuItem onClick={() => navigate("/sobre")}>
                     Sobre a autora
                   </MenuItem>
+                  <MenuItem onClick={() => navigate("/dicas-de-viagem")}>
+                    Dicas de viagem
+                  </MenuItem>
                   {user && (
                     <MenuItem onClick={() => navigate("/perfil")}>
                       Meu Perfil
