@@ -680,6 +680,7 @@ export interface Database {
           itinerary_id: string | null;
           purchase_date: string;
           expiration_date: string | null;
+          tips_unlock_expiration: string | null;
           is_active: boolean;
           stripe_customer_id: string | null;
           stripe_subscription_id: string | null;
@@ -693,6 +694,7 @@ export interface Database {
           itinerary_id?: string | null;
           purchase_date?: string;
           expiration_date?: string | null;
+          tips_unlock_expiration?: string | null;
           is_active?: boolean;
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;

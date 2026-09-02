@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { computeTipsUnlockExpiration } from "@/lib/subscription";
 import type { PlanType } from "@/types/database";
 
 function toIso(unixSeconds: number | null | undefined) {
@@ -36,11 +37,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     stripeSubscriptionId = subscription.id;
   }
 
+  const tipsUnlockExpiration =
+    planType === "roteiro_unico_1pais" ? computeTipsUnlockExpiration() : null;
+
   const { error } = await supabase.from("subscriptions").insert({
     user_id: userId,
     plan_type: planType,
     itinerary_id: itineraryId,
     expiration_date: expirationDate,
+    tips_unlock_expiration: tipsUnlockExpiration,
     is_active: true,
     stripe_customer_id:
       typeof session.customer === "string"

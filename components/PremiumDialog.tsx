@@ -57,29 +57,34 @@ function LightbulbIcon({ className }: { className?: string }) {
   );
 }
 
+type PremiumHighlight = "dicas" | "ia" | "download";
+
 const HERO_BENEFITS: {
+  id: PremiumHighlight | "economia";
   icon: (props: { className?: string }) => ReactElement;
   title: string;
   detail: string;
-  isNew?: boolean;
 }[] = [
   {
+    id: "dicas",
     icon: LightbulbIcon,
     title: "Todas as dicas do site",
     detail: "acesso completo às dicas imperdíveis, sem cards bloqueados",
-    isNew: true,
   },
   {
+    id: "ia",
     icon: SparkleIcon,
     title: "IA organiza tudo por você",
     detail: "define ordem, horário e tempo ideal em cada atração",
   },
   {
+    id: "download",
     icon: DownloadIcon,
     title: "Baixe e leve com você",
     detail: "acesso total mesmo sem internet",
   },
   {
+    id: "economia",
     icon: TagIcon,
     title: "Economia garantida",
     detail: "evite armadilhas turísticas e gaste só no que vale a pena",
@@ -97,27 +102,35 @@ const COMPACT_BENEFITS = [
 
 const PLAN_INFO: Record<
   PlanType,
-  { title: string; price: string; priceSuffix: string; belowPriceNote?: string; detail: string }
+  {
+    title: string;
+    price: string;
+    originalPrice?: string;
+    priceSuffix: string;
+    belowPriceNote?: string;
+    detail: string;
+  }
 > = {
   roteiro_unico_1pais: {
-    title: "Roteiro Premium",
+    title: "Roteiro Premium Individual",
     price: "R$ 19,90",
+    originalPrice: "R$ 24,90",
     priceSuffix: "",
-    belowPriceNote: "Pagamento único",
     detail:
-      "Válido para este roteiro (máximo 1 país)\ncidades e atrações ilimitadas",
+      "Válido para este roteiro (máximo 1 país)\ncidades e atrações ilimitadas\n+ todas as dicas desbloqueadas por 10 dias",
   },
   premium_mensal: {
     title: "Premium Mensal",
     price: "R$ 29,90",
+    originalPrice: "R$ 39,90",
     priceSuffix: "/mês",
     detail: "Acesso ilimitado ao Premium em qualquer roteiro",
   },
   premium_anual: {
     title: "Premium Anual",
-    price: "R$ 99,90",
-    priceSuffix: "/ano",
-    belowPriceNote: "ou R$8,30/mês",
+    price: "R$ 9,90",
+    priceSuffix: "/mês",
+    belowPriceNote: "ou R$ 118,80/ano",
     detail: "Acesso ilimitado ao Premium em qualquer roteiro",
   },
 };
@@ -125,8 +138,8 @@ const PLAN_INFO: Record<
 const LOCKED_ROTEIRO_UNICO_DETAIL =
   "Válido apenas para roteiros de até 1 país";
 
-// (29,90 × 12 − 99,90) / (29,90 × 12) ≈ 72% de economia no plano anual.
-const ANNUAL_SAVINGS_LABEL = "Economize 72% em relação ao mensal";
+// (29,90 × 12 − 118,80) / (29,90 × 12) ≈ 67% de economia no plano anual.
+const ANNUAL_SAVINGS_LABEL = "Economize 67% em relação ao mensal";
 
 const PLAN_ORDER: PlanType[] = ["premium_anual", "premium_mensal", "roteiro_unico_1pais"];
 
@@ -163,11 +176,13 @@ export default function PremiumDialog({
   countryCount,
   onClose,
   onAccessGranted,
+  highlight,
 }: {
   itineraryId: string | null;
   countryCount: number;
   onClose: () => void;
   onAccessGranted?: () => void;
+  highlight?: PremiumHighlight;
 }) {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -339,20 +354,17 @@ export default function PremiumDialog({
             Desbloqueie ainda mais benefícios
           </p>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {HERO_BENEFITS.map(({ icon: Icon, title, detail, isNew }, index) => {
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            {HERO_BENEFITS.map(({ id, icon: Icon, title, detail }, index) => {
               const stagger = staggerProps(index, entered);
               return (
                 <div
                   key={title}
                   style={stagger.style}
-                  className={`relative flex flex-col items-center gap-2 rounded-xl bg-areia p-4 text-center ${stagger.className}`}
+                  className={`relative flex flex-col items-center gap-2 rounded-xl bg-areia p-4 text-center ${
+                    id === highlight ? "ring-2 ring-terracota" : ""
+                  } ${stagger.className}`}
                 >
-                  {isNew && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-terracota px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-                      Novo
-                    </span>
-                  )}
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracota/15 text-terracota">
                     <Icon className="h-5 w-5" />
                   </span>
@@ -420,6 +432,7 @@ export default function PremiumDialog({
                 {PLAN_ORDER.map((plan) => {
                   const info = PLAN_INFO[plan];
                   const isAnnual = plan === "premium_anual";
+                  const isFeatured = plan === "premium_mensal";
                   const noItinerary =
                     plan === "roteiro_unico_1pais" && !itineraryId;
                   const isLocked =
@@ -432,14 +445,14 @@ export default function PremiumDialog({
                       className={
                         isLocked
                           ? "relative rounded-xl border border-oliva/15 bg-areia/40 p-4"
-                          : isAnnual
+                          : isFeatured
                             ? "relative rounded-xl border-2 border-terracota bg-terracota/5 p-4"
                             : "relative rounded-xl border border-oliva/20 p-4"
                       }
                     >
-                      {isAnnual && (
-                        <span className="absolute -top-3 left-4 rounded-full bg-terracota px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
-                          Melhor custo-benefício
+                      {isFeatured && (
+                        <span className="absolute -top-3 left-4 rounded-full border border-terracota bg-branco px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-terracota">
+                          Favorito
                         </span>
                       )}
                       <div className="flex items-start justify-between gap-3">
@@ -451,15 +464,20 @@ export default function PremiumDialog({
                           </p>
                           <p className="mt-1 whitespace-pre-line text-xs text-oliva">
                             {noItinerary
-                              ? "Monte seu roteiro escolhendo destinos para desbloquear este plano."
+                              ? "Faça um roteiro premium limitado a um país. Tenha acesso a todas as dicas por 10 dias."
                               : isLocked
                                 ? `${LOCKED_ROTEIRO_UNICO_DETAIL}: seu roteiro atual tem atrações em ${countryCount} países.`
                                 : info.detail}
                           </p>
                         </div>
                         <div className="shrink-0 text-center">
+                          {info.originalPrice && !isLocked && (
+                            <p className="text-center text-xs text-oliva/50 line-through">
+                              {info.originalPrice}
+                            </p>
+                          )}
                           <p
-                            className={`text-center text-base font-semibold ${isLocked ? "text-oliva" : isAnnual ? "text-terracota" : "text-tinta"}`}
+                            className={`text-center text-base font-semibold ${isLocked ? "text-oliva" : isFeatured ? "text-terracota" : "text-tinta"}`}
                           >
                             {info.price}
                             {info.priceSuffix && (
@@ -476,7 +494,7 @@ export default function PremiumDialog({
                         </div>
                       </div>
                       {isAnnual && (
-                        <p className="mt-1 text-xs font-semibold text-terracota">
+                        <p className="mt-1 text-xs font-semibold text-oliva">
                           {ANNUAL_SAVINGS_LABEL}
                         </p>
                       )}
@@ -496,7 +514,7 @@ export default function PremiumDialog({
                           className={
                             isLocked
                               ? "mt-3 w-full cursor-not-allowed rounded-full border border-oliva/25 py-2.5 text-sm font-medium text-oliva/60"
-                              : isAnnual
+                              : isFeatured
                                 ? "mt-3 w-full rounded-full bg-terracota py-2.5 text-sm font-semibold text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
                                 : "mt-3 w-full rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 disabled:opacity-60"
                           }

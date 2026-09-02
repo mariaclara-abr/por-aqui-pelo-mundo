@@ -10,12 +10,12 @@ import type { Database } from "@/types/database";
 type TravelTip = Database["public"]["Tables"]["travel_tips"]["Row"];
 
 export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
-  const { isPremium } = useUserSubscription();
+  const { hasUnlockedTips } = useUserSubscription();
   const [openTip, setOpenTip] = useState<TravelTip | null>(null);
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
 
   function handleCardClick(tip: TravelTip) {
-    if (tip.is_premium && !isPremium) {
+    if (tip.is_premium && !hasUnlockedTips) {
       setShowPremiumDialog(true);
       return;
     }
@@ -93,6 +93,7 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
           itineraryId={null}
           countryCount={0}
           onClose={() => setShowPremiumDialog(false)}
+          highlight="dicas"
         />
       )}
     </>

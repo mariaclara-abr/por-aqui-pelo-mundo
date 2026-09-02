@@ -1,15 +1,14 @@
 import { renderBold } from "@/lib/text-formatting";
 
-function CrownIcon({ className }: { className?: string }) {
+function SparkleIcon({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 20 20"
+      viewBox="0 0 24 24"
       className={className}
       fill="currentColor"
       aria-hidden="true"
     >
-      <path d="M3 7.5l3 2 4-4.5 4 4.5 3-2-1.2 7.5H4.2L3 7.5z" />
-      <rect x="4" y="15.5" width="12" height="1.8" rx="0.9" />
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
     </svg>
   );
 }
@@ -53,9 +52,9 @@ export default function TravelTipCard({
       {isPremium && (
         <span
           title="Conteúdo Premium"
-          className="absolute right-4 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-terracota/15 bg-terracota text-white"
+          className="absolute right-4 top-4 z-10 text-terracota"
         >
-          <CrownIcon className="h-3.5 w-3.5" />
+          <SparkleIcon className="h-6 w-6" />
         </span>
       )}
 
@@ -72,7 +71,7 @@ export default function TravelTipCard({
       <span
         className={`relative z-10 mt-auto pt-6 text-xs font-semibold uppercase tracking-[0.13em] ${linkColor}`}
       >
-        {isPremium ? "Acessar dica" : "Abrir anotação"}
+        Abrir anotação
         <span
           aria-hidden="true"
           className="ml-2 inline-block text-base leading-none transition-transform duration-200 group-hover:translate-x-1"

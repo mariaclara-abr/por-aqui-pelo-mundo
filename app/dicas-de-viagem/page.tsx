@@ -66,7 +66,7 @@ export default async function DicasDeViagemPage() {
               </h2>
             </div>
             <p className="max-w-xl text-left text-sm leading-relaxed text-oliva sm:text-base lg:justify-self-end">
-              Escolha um assunto e abra a anotação que quiser.
+              Clique nas anotações para saber mais
             </p>
           </div>
 

@@ -381,6 +381,7 @@ export default function OrganizarComIAClient({
           countryCount={paywallCountryCount}
           onClose={() => setShowPaywall(false)}
           onAccessGranted={() => setShowPaywall(false)}
+          highlight="ia"
         />
       )}
 

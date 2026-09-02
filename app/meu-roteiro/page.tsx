@@ -409,6 +409,7 @@ export default function MeuRoteiroPage() {
             itineraryId={itineraryId}
             countryCount={countryCount}
             onClose={() => setPremiumOpen(false)}
+            highlight="download"
           />
         )}
 

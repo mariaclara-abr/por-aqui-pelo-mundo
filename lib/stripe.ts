@@ -26,7 +26,7 @@ export const PLANS: Record<PlanType, PlanConfig> = {
   },
   premium_anual: {
     label: "Premium Anual",
-    amountCents: 9990,
+    amountCents: 11880,
     mode: "subscription",
     interval: "year",
   },
