@@ -4,12 +4,14 @@ import {
   getCountries,
   getCounts,
   getSiteReviews,
+  getTravelTips,
 } from "@/lib/queries";
 import HeroSection from "@/components/HeroSection";
 import DestinationGrid from "@/components/DestinationGrid";
 import WelcomeMarquee from "@/components/WelcomeMarquee";
 import AuthorBand from "@/components/AuthorBand";
 import AIRoteiroBand from "@/components/AIRoteiroBand";
+import TravelTipsBand from "@/components/TravelTipsBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
 import { buildOpenGraph } from "@/lib/metadata";
 
@@ -25,11 +27,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [countries, counts, siteReviews, about] = await Promise.all([
+  const [countries, counts, siteReviews, about, tips] = await Promise.all([
     getCountries(),
     getCounts(),
     getSiteReviews(),
     getAboutPageContent(),
+    getTravelTips(),
   ]);
 
   const publishedCountries = countries.filter(
@@ -50,8 +53,9 @@ export default async function Home() {
         authorName={about.author_name}
         authorPhotoUrl={about.author_photo_url}
       />
-      <WelcomeMarquee />
+      <TravelTipsBand tipCount={tips.length} />
       <AIRoteiroBand />
+      <WelcomeMarquee />
       <SiteReviewsSection reviews={siteReviews} />
     </main>
   );

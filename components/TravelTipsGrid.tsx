@@ -42,11 +42,16 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
             <section
               key={category}
               aria-labelledby={`tip-category-${categoryIndex}`}
-              className="grid gap-7 border-b border-tinta/15 py-12 first:pt-0 last:border-b-0 last:pb-0 sm:py-16 lg:grid-cols-[220px_1fr] lg:gap-12"
+              className="flex flex-col gap-7 border-b border-tinta/15 py-12 first:pt-0 last:border-b-0 last:pb-0 sm:gap-8 sm:py-16"
             >
-              <div className="lg:pt-1">
-                <p className="text-left text-[10px] font-semibold uppercase tracking-[0.22em] text-terracota">
-                  Capítulo {String(categoryIndex + 1).padStart(2, "0")}
+              <div className="text-center">
+                <p className="flex items-center justify-center gap-2 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-terracota">
+                  <span>Capítulo {String(categoryIndex + 1).padStart(2, "0")}</span>
+                  <span aria-hidden="true">•</span>
+                  <span>
+                    {categoryTips.length}{" "}
+                    {categoryTips.length === 1 ? "anotação" : "anotações"}
+                  </span>
                 </p>
                 <h3
                   id={`tip-category-${categoryIndex}`}
@@ -54,10 +59,6 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
                 >
                   {category}
                 </h3>
-                <p className="mt-3 text-left text-xs text-oliva/75">
-                  {categoryTips.length}{" "}
-                  {categoryTips.length === 1 ? "anotação" : "anotações"}
-                </p>
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
@@ -69,7 +70,6 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
                     chapter={categoryIndex + 1}
                     position={tipIndex + 1}
                     tone={categoryIndex % 2 === 0 ? "olive" : "terracotta"}
-                    featured={tipIndex === 0}
                     onClick={() => handleCardClick(tip)}
                   />
                 ))}

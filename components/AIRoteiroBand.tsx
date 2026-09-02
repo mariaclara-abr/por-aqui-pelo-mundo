@@ -9,7 +9,7 @@ export default function AIRoteiroBand() {
   const router = useRouter();
 
   return (
-    <section className="relative overflow-hidden bg-terracota px-4 py-12 sm:px-6 sm:py-20 lg:px-10">
+    <section className="relative overflow-hidden bg-terracota px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
       <div className="relative mx-auto flex max-w-[1440px] flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
         <motion.div
           className="max-w-xl"

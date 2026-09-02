@@ -34,18 +34,9 @@ export default async function DicasDeViagemPage() {
               Pequenos detalhes que mudam uma viagem inteira. Achados,
               atalhos e cuidados reunidos por quem já esteve lá.
             </p>
-            <div className="mt-8 flex max-w-lg items-center gap-4 border-t border-areia/20 pt-5">
-              <span className="font-serif text-3xl italic text-terracota">
-                real
-              </span>
-              <p className="text-left text-xs leading-relaxed text-areia/70 sm:text-sm">
-                Nada de listas prontas. Só dicas testadas na prática e
-                guardadas para a sua próxima viagem.
-              </p>
-            </div>
           </div>
 
-          <div className="relative flex min-h-[290px] items-end justify-center sm:min-h-[390px] lg:h-full lg:min-h-[580px] lg:justify-end">
+          <div className="relative flex min-h-[290px] items-end justify-center sm:min-h-[390px] lg:h-full lg:min-h-[580px]">
             <span
               aria-hidden="true"
               className="absolute bottom-6 left-6 top-6 hidden w-px bg-areia/15 lg:block"
@@ -57,7 +48,7 @@ export default async function DicasDeViagemPage() {
               height={1024}
               preload
               sizes="(min-width: 1024px) 42vw, (min-width: 640px) 68vw, 82vw"
-              className="relative mb-3 h-auto max-h-[34svh] w-[82%] object-contain sm:max-h-[360px] sm:w-[68%] lg:absolute lg:bottom-8 lg:right-8 lg:max-h-[500px] lg:w-[82%]"
+              className="relative mb-3 h-auto max-h-[34svh] w-[82%] object-contain sm:max-h-[360px] sm:w-[68%] lg:absolute lg:bottom-24 lg:left-[43%] lg:max-h-[500px] lg:w-[82%] lg:-translate-x-1/2"
             />
           </div>
         </div>
@@ -75,8 +66,7 @@ export default async function DicasDeViagemPage() {
               </h2>
             </div>
             <p className="max-w-xl text-left text-sm leading-relaxed text-oliva sm:text-base lg:justify-self-end">
-              Escolha um assunto e abra a anotação que quiser. Algumas dicas
-              fazem parte do conteúdo Premium e aparecem sinalizadas.
+              Escolha um assunto e abra a anotação que quiser.
             </p>
           </div>
 

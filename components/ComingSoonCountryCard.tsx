@@ -100,7 +100,7 @@ export default function ComingSoonCountryCard({
           type="button"
           onClick={handleInterest}
           disabled={sending || interested}
-          className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-tinta transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-areia"
+          className="shrink-0 text-xs font-medium text-white underline-offset-2 transition-opacity duration-200 hover:underline sm:opacity-0 sm:group-hover:opacity-100"
         >
           {interested ? "Interesse registrado ✓" : "Tenho interesse"}
         </button>

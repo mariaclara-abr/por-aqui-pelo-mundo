@@ -20,7 +20,6 @@ export default function TravelTipCard({
   chapter = 1,
   position = 1,
   tone = "olive",
-  featured = false,
   onClick,
 }: {
   title: string;
@@ -28,71 +27,50 @@ export default function TravelTipCard({
   chapter?: number;
   position?: number;
   tone?: "olive" | "terracotta";
-  featured?: boolean;
   onClick?: () => void;
 }) {
-  const solidSurface =
-    tone === "olive"
-      ? "border-oliva bg-oliva text-areia"
-      : "border-terracota bg-terracota text-white";
-  const paperSurface =
-    tone === "olive"
-      ? "border-oliva/20 bg-branco/60 text-tinta hover:border-oliva/45"
-      : "border-terracota/25 bg-branco/60 text-tinta hover:border-terracota/50";
-  const metaColor = featured ? "text-current opacity-65" : "text-oliva/65";
-  const linkColor = featured
-    ? "text-current"
-    : tone === "olive"
-      ? "text-oliva"
-      : "text-terracota";
+  const border = tone === "olive" ? "border-oliva/20" : "border-terracota/25";
+  const accent = tone === "olive" ? "bg-oliva" : "bg-terracota";
+  const linkColor = tone === "olive" ? "text-oliva" : "text-terracota";
 
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={`${isPremium ? "Dica Premium: " : "Abrir dica: "}${title}`}
-      className={`group relative flex h-full min-h-44 flex-col items-start overflow-hidden rounded-card border p-5 text-left transition-[transform,border-color] duration-200 hover:-translate-y-0.5 sm:min-h-48 sm:p-6 ${
-        featured ? solidSurface : paperSurface
-      }`}
+      className={`group relative flex h-full min-h-44 flex-col items-start overflow-hidden rounded-card border ${border} bg-branco p-5 text-left text-tinta transition-transform duration-200 hover:scale-[1.02] sm:min-h-48 sm:p-6`}
     >
       <span
         aria-hidden="true"
-        className={`absolute inset-x-0 top-0 h-1 ${
-          featured
-            ? "bg-branco/25"
-            : tone === "olive"
-              ? "bg-oliva"
-              : "bg-terracota"
-        }`}
+        className="absolute inset-0 bg-[url('/dicas-card-background.jpg')] bg-cover bg-center opacity-60 transition-opacity duration-200 group-hover:opacity-75"
+      />
+
+      <span
+        aria-hidden="true"
+        className={`absolute inset-x-0 top-0 z-10 h-1 ${accent}`}
       />
 
       {isPremium && (
         <span
           title="Conteúdo Premium"
-          className={`absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full border ${
-            featured
-              ? "border-branco/30 bg-branco/15 text-branco"
-              : "border-terracota/15 bg-terracota text-white"
-          }`}
+          className="absolute right-4 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-terracota/15 bg-terracota text-white"
         >
           <CrownIcon className="h-3.5 w-3.5" />
         </span>
       )}
 
-      <span
-        className={`text-[10px] font-semibold tracking-[0.18em] ${metaColor}`}
-      >
+      <span className="relative z-10 text-[10px] font-semibold tracking-[0.18em] text-oliva/65">
         {String(chapter).padStart(2, "0")}.{String(position).padStart(2, "0")}
       </span>
       <h3
-        className={`mt-2 font-serif text-xl leading-snug sm:text-[1.35rem] ${
+        className={`relative z-10 mt-2 font-serif text-xl leading-snug sm:text-[1.35rem] ${
           isPremium ? "pr-8" : ""
         }`}
       >
         {renderBold(title)}
       </h3>
       <span
-        className={`mt-auto pt-6 text-xs font-semibold uppercase tracking-[0.13em] ${linkColor}`}
+        className={`relative z-10 mt-auto pt-6 text-xs font-semibold uppercase tracking-[0.13em] ${linkColor}`}
       >
         {isPremium ? "Acessar dica" : "Abrir anotação"}
         <span
