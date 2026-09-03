@@ -1,5 +1,10 @@
 import { notFound } from "next/navigation";
-import { getAttractionById, getCitiesWithCountry, getTags } from "@/lib/queries";
+import {
+  getAllAttractions,
+  getAttractionById,
+  getCitiesWithCountry,
+  getTags,
+} from "@/lib/queries";
 import AttractionForm from "@/components/admin/AttractionForm";
 
 export default async function EditarAtracaoPage(
@@ -12,7 +17,11 @@ export default async function EditarAtracaoPage(
     notFound();
   }
 
-  const [cities, tags] = await Promise.all([getCitiesWithCountry(), getTags()]);
+  const [cities, tags, allAttractions] = await Promise.all([
+    getCitiesWithCountry(),
+    getTags(),
+    getAllAttractions(),
+  ]);
 
   return (
     <div>
@@ -20,7 +29,12 @@ export default async function EditarAtracaoPage(
         Editar {attraction.name}
       </h1>
       <div className="mt-6">
-        <AttractionForm attraction={attraction} cities={cities} tags={tags} />
+        <AttractionForm
+          attraction={attraction}
+          cities={cities}
+          tags={tags}
+          allAttractions={allAttractions}
+        />
       </div>
     </div>
   );

@@ -11,8 +11,8 @@ export default async function AdminPerguntasPage() {
     <div>
       <h1 className="font-serif text-2xl text-tinta">Perguntas</h1>
       <p className="mt-1 text-sm text-oliva">
-        Perguntas feitas pelos viajantes em qualquer atração, tudo num só
-        lugar.
+        Perguntas feitas pelos viajantes em qualquer país, cidade ou atração,
+        tudo num só lugar.
       </p>
 
       <div className="mt-6">

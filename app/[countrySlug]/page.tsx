@@ -3,17 +3,38 @@ import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { getCitiesByCountry, getCityCountByCountry, getCountryBySlug } from "@/lib/queries";
 import { getCountryQuestions } from "@/lib/questions";
+import { createClient } from "@/lib/supabase-server";
 import CityCard from "@/components/CityCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import ExpandableText from "@/components/ExpandableText";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
+
+// Países com status "draft" ("em breve") ficam visíveis só para a autora,
+// que pode assim conferir a prévia da página antes de publicar.
+async function checkIsAuthor(): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  return profile?.role === "author";
+}
 
 export async function generateMetadata(
   props: PageProps<"/[countrySlug]">,
 ): Promise<Metadata> {
   const { countrySlug } = await props.params;
   const country = await getCountryBySlug(countrySlug).catch(() => null);
-  if (!country || country.status === "draft") {
+  if (!country) {
+    notFound();
+  }
+  if (country.status === "draft" && !(await checkIsAuthor())) {
     notFound();
   }
 
@@ -34,6 +55,9 @@ export async function generateMetadata(
     title,
     description,
     alternates: { canonical: `/${countrySlug}` },
+    ...(country.status === "draft"
+      ? { robots: { index: false, follow: false } }
+      : {}),
     openGraph: buildOpenGraph({
       title,
       description,
@@ -48,7 +72,10 @@ export default async function CountryPage(
   const { countrySlug } = await props.params;
 
   const country = await getCountryBySlug(countrySlug).catch(() => null);
-  if (!country || country.status === "draft") {
+  if (!country) {
+    notFound();
+  }
+  if (country.status === "draft" && !(await checkIsAuthor())) {
     notFound();
   }
 
@@ -66,6 +93,12 @@ export default async function CountryPage(
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-[1440px]">
+        {country.status === "draft" && (
+          <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">
+            Prévia: este país ainda está marcado como em breve, só você
+            consegue ver esta página.
+          </p>
+        )}
         <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
           {country.name}
         </h1>

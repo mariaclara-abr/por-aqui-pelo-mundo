@@ -8,12 +8,14 @@ export type AttractionCategory =
   | "passeio"
   | "cafe"
   | "estacionamentos"
+  | "parque_tematico"
   | "outro";
 
 export const ATTRACTION_CATEGORIES: {
   value: AttractionCategory;
   label: string;
 }[] = [
+  { value: "parque_tematico", label: "Parque temático" },
   { value: "ponto_turistico", label: "Ponto turístico" },
   { value: "restaurante", label: "Restaurante" },
   { value: "cafe", label: "Café" },
@@ -198,6 +200,7 @@ export interface Database {
         Row: {
           id: string;
           city_id: string;
+          parent_attraction_id: string | null;
           name: string;
           slug: string;
           categories: AttractionCategory[];
@@ -226,6 +229,7 @@ export interface Database {
         Insert: {
           id?: string;
           city_id: string;
+          parent_attraction_id?: string | null;
           name: string;
           slug: string;
           categories: AttractionCategory[];
@@ -258,6 +262,13 @@ export interface Database {
             columns: ["city_id"];
             isOneToOne: false;
             referencedRelation: "cities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "attractions_parent_attraction_id_fkey";
+            columns: ["parent_attraction_id"];
+            isOneToOne: false;
+            referencedRelation: "attractions";
             referencedColumns: ["id"];
           },
         ];
@@ -944,6 +955,20 @@ export interface Database {
       is_username_available: {
         Args: { check_username: string };
         Returns: boolean;
+      };
+      search_destinations: {
+        Args: { search_query: string; include_drafts?: boolean };
+        Returns: {
+          result_type: string;
+          id: string;
+          name: string;
+          slug: string;
+          city_name: string | null;
+          city_slug: string | null;
+          country_name: string | null;
+          country_slug: string | null;
+          rank: number;
+        }[];
       };
     };
     Enums: {

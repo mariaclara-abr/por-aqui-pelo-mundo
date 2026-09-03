@@ -7,11 +7,24 @@ import { inputClass } from "@/components/admin/FormField";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   getAllPendingQuestions,
-  hideQuestion,
-  submitAnswer,
+  hideAdminQuestion,
+  submitAdminAnswer,
+  type AdminQuestionSubjectType,
 } from "@/lib/questions";
 
 type PendingQuestion = Awaited<ReturnType<typeof getAllPendingQuestions>>[number];
+
+const removedSubjectLabel: Record<AdminQuestionSubjectType, string> = {
+  attraction: "Atração removida",
+  city: "Cidade removida",
+  country: "País removido",
+};
+
+const subjectLinkLabel: Record<AdminQuestionSubjectType, string> = {
+  attraction: "Ver página da atração",
+  city: "Ver página da cidade",
+  country: "Ver página do país",
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -36,11 +49,7 @@ function PendingQuestionCard({
   const [hiding, setHiding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const attraction = question.attraction;
-  const attractionHref =
-    attraction && attraction.cities?.countries
-      ? `/${attraction.cities.countries.slug}/${attraction.cities.slug}/${attraction.slug}`
-      : null;
+  const subject = question.subject;
 
   async function handleAnswer() {
     const trimmed = draft.trim();
@@ -49,7 +58,7 @@ function PendingQuestionCard({
     setSaving(true);
     setError(null);
     try {
-      await submitAnswer(question.id, authorId, trimmed);
+      await submitAdminAnswer(question.subjectType, question.id, authorId, trimmed);
       onChanged();
     } catch {
       setError("Não foi possível salvar a resposta. Tente novamente.");
@@ -61,7 +70,7 @@ function PendingQuestionCard({
     setHiding(true);
     setError(null);
     try {
-      await hideQuestion(question.id);
+      await hideAdminQuestion(question.subjectType, question.id);
       onChanged();
     } catch {
       setError("Não foi possível ocultar a pergunta. Tente novamente.");
@@ -74,21 +83,18 @@ function PendingQuestionCard({
     <div className="rounded-xl border border-oliva/15 bg-branco p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium text-tinta">
-          {attraction?.name ?? "Atração removida"}
-          {attraction?.cities && (
-            <span className="font-normal text-oliva">
-              {" "}
-              · {attraction.cities.name}
-            </span>
+          {subject?.name ?? removedSubjectLabel[question.subjectType]}
+          {subject?.breadcrumb && (
+            <span className="font-normal text-oliva"> · {subject.breadcrumb}</span>
           )}
         </p>
-        {attractionHref && (
+        {subject && (
           <Link
-            href={attractionHref}
+            href={subject.href}
             target="_blank"
             className="text-xs text-terracota hover:underline"
           >
-            Ver página da atração
+            {subjectLinkLabel[question.subjectType]}
           </Link>
         )}
       </div>

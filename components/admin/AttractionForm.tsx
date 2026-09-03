@@ -23,19 +23,28 @@ type City = Database["public"]["Tables"]["cities"]["Row"] & {
   countries: Database["public"]["Tables"]["countries"]["Row"];
 };
 type Tag = Database["public"]["Tables"]["tags"]["Row"];
+type AttractionOption = Pick<
+  Database["public"]["Tables"]["attractions"]["Row"],
+  "id" | "name" | "city_id" | "parent_attraction_id"
+>;
 
 export default function AttractionForm({
   attraction,
   cities,
   tags,
+  allAttractions = [],
 }: {
   attraction?: Attraction;
   cities: City[];
   tags: Tag[];
+  allAttractions?: AttractionOption[];
 }) {
   const router = useRouter();
 
   const [cityId, setCityId] = useState(attraction?.city_id ?? "");
+  const [parentAttractionId, setParentAttractionId] = useState(
+    attraction?.parent_attraction_id ?? "",
+  );
   const [name, setName] = useState(attraction?.name ?? "");
   const [categories, setCategories] = useState<AttractionCategory[]>(
     attraction?.categories ?? ["ponto_turistico"],
@@ -115,6 +124,12 @@ export default function AttractionForm({
   const selectedCity = cities.find((city) => city.id === cityId);
   const categoryLabel = categoryLabels(categories);
   const selectedTags = tags.filter((tag) => selectedTagIds.includes(tag.id));
+  // Qualquer atração da mesma cidade pode ser pai (permite mais de dois
+  // níveis, ex: Parques > Magic Kingdom > Satu'li Canteen). Só não pode ser
+  // pai dela mesma.
+  const parentOptions = allAttractions.filter(
+    (option) => option.city_id === cityId && option.id !== attraction?.id,
+  );
 
   function toggleTag(tagId: string) {
     setSelectedTagIds((prev) =>
@@ -149,6 +164,7 @@ export default function AttractionForm({
 
     const payload = {
       city_id: cityId,
+      parent_attraction_id: parentAttractionId || null,
       name,
       slug,
       categories,
@@ -269,6 +285,27 @@ export default function AttractionForm({
           {cities.map((city) => (
             <option key={city.id} value={city.id}>
               {city.name}, {city.countries.name}
+            </option>
+          ))}
+        </select>
+      </FormField>
+
+      <FormField
+        label="Atração pai (opcional)"
+        htmlFor="parentAttraction"
+        helpText="Preencha só se essa atração fica dentro de outra (ex: um restaurante dentro de um parque temático)."
+      >
+        <select
+          id="parentAttraction"
+          className={inputClass}
+          value={parentAttractionId}
+          onChange={(event) => setParentAttractionId(event.target.value)}
+          disabled={!cityId}
+        >
+          <option value="">Nenhuma, é uma atração independente</option>
+          {parentOptions.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
             </option>
           ))}
         </select>

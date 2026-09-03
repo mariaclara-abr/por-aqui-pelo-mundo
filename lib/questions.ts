@@ -123,91 +123,288 @@ export async function getAttractionQuestions(
   return sortQuestions(mapped);
 }
 
-export async function getAllPendingQuestions() {
-  const { data, error } = await supabase
-    .from("attraction_questions")
-    .select(
-      "id, question, created_at, user_id, attractions(id, name, slug, cities(name, slug, countries(slug)))",
-    )
-    .eq("status", "pendente")
-    .order("created_at", { ascending: true });
+// Painel da autora: perguntas de atrações, cidades e países combinadas numa
+// única lista, para ela não precisar visitar três telas separadas.
+export type AdminQuestionSubjectType = "attraction" | "city" | "country";
 
-  if (error) throw error;
-
-  const askerIds = [...new Set(data.map((question) => question.user_id))];
-  const { data: profiles, error: profilesError } =
-    askerIds.length === 0
-      ? { data: [] as PublicProfile[], error: null }
-      : await supabase.from("public_profiles").select("*").in("id", askerIds);
-
-  if (profilesError) throw profilesError;
-  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
-
-  return data.map((question) => ({
-    id: question.id,
-    question: question.question,
-    createdAt: question.created_at,
-    asker: toProfile(profileById.get(question.user_id), question.user_id),
-    attraction: question.attractions,
-  }));
+interface AdminQuestionSubject {
+  name: string;
+  breadcrumb: string | null;
+  href: string;
 }
 
-export async function getAllAnsweredQuestions() {
+export interface AdminPendingQuestion {
+  id: string;
+  subjectType: AdminQuestionSubjectType;
+  question: string;
+  createdAt: string;
+  asker: QuestionProfile;
+  subject: AdminQuestionSubject | null;
+}
+
+export interface AdminAnsweredQuestion extends AdminPendingQuestion {
+  answer: {
+    id: string;
+    answer: string;
+    createdAt: string;
+    updatedAt: string;
+    author: QuestionProfile;
+  } | null;
+}
+
+async function fetchProfilesById(
+  ids: string[],
+): Promise<Map<string, PublicProfile>> {
+  if (ids.length === 0) return new Map();
   const { data, error } = await supabase
-    .from("attraction_questions")
-    .select(
-      "id, question, created_at, user_id, attractions(id, name, slug, cities(name, slug, countries(slug))), attraction_answers(id, answer, created_at, updated_at, author_id)",
-    )
-    .eq("status", "respondida")
-    .order("created_at", { ascending: false });
-
+    .from("public_profiles")
+    .select("*")
+    .in("id", ids);
   if (error) throw error;
+  return new Map(data.map((profile) => [profile.id, profile]));
+}
 
-  const profileIds = new Set<string>();
-  for (const question of data) {
-    profileIds.add(question.user_id);
-    if (question.attraction_answers) {
-      profileIds.add(question.attraction_answers.author_id);
-    }
+function toAttractionSubject(
+  attraction: {
+    name: string;
+    slug: string;
+    cities: { name: string; slug: string; countries: { slug: string } | null } | null;
+  } | null,
+): AdminQuestionSubject | null {
+  if (!attraction?.cities?.countries) return null;
+  return {
+    name: attraction.name,
+    breadcrumb: attraction.cities.name,
+    href: `/${attraction.cities.countries.slug}/${attraction.cities.slug}/${attraction.slug}`,
+  };
+}
+
+function toCitySubject(
+  city: {
+    name: string;
+    slug: string;
+    countries: { name: string; slug: string } | null;
+  } | null,
+): AdminQuestionSubject | null {
+  if (!city?.countries) return null;
+  return {
+    name: city.name,
+    breadcrumb: city.countries.name,
+    href: `/${city.countries.slug}/${city.slug}`,
+  };
+}
+
+function toCountrySubject(
+  country: { name: string; slug: string } | null,
+): AdminQuestionSubject | null {
+  if (!country) return null;
+  return { name: country.name, breadcrumb: null, href: `/${country.slug}` };
+}
+
+interface RawAdminQuestion {
+  id: string;
+  subjectType: AdminQuestionSubjectType;
+  question: string;
+  createdAt: string;
+  userId: string;
+  subject: AdminQuestionSubject | null;
+  answer: {
+    id: string;
+    answer: string;
+    createdAt: string;
+    updatedAt: string;
+    authorId: string;
+  } | null;
+}
+
+// Sempre pede o join da resposta, mesmo para pendentes (onde ele vem nulo,
+// já que uma pergunta pendente não tem resposta ainda): assim o select fica
+// uma string literal, o que o Supabase precisa para inferir os tipos da
+// query corretamente. Uma string montada dinamicamente por status faz o
+// Supabase cair num tipo de erro de parser.
+async function fetchAdminQuestions(
+  status: "pendente" | "respondida",
+): Promise<RawAdminQuestion[]> {
+  const [attractionRes, cityRes, countryRes] = await Promise.all([
+    supabase
+      .from("attraction_questions")
+      .select(
+        "id, question, created_at, user_id, attractions(name, slug, cities(name, slug, countries(slug))), attraction_answers(id, answer, created_at, updated_at, author_id)",
+      )
+      .eq("status", status),
+    supabase
+      .from("city_questions")
+      .select(
+        "id, question, created_at, user_id, cities(name, slug, countries(name, slug)), city_answers(id, answer, created_at, updated_at, author_id)",
+      )
+      .eq("status", status),
+    supabase
+      .from("country_questions")
+      .select(
+        "id, question, created_at, user_id, countries(name, slug), country_answers(id, answer, created_at, updated_at, author_id)",
+      )
+      .eq("status", status),
+  ]);
+
+  if (attractionRes.error) throw attractionRes.error;
+  if (cityRes.error) throw cityRes.error;
+  if (countryRes.error) throw countryRes.error;
+
+  function toAnswer(
+    raw: { id: string; answer: string; created_at: string; updated_at: string; author_id: string } | null,
+  ) {
+    if (!raw) return null;
+    return {
+      id: raw.id,
+      answer: raw.answer,
+      createdAt: raw.created_at,
+      updatedAt: raw.updated_at,
+      authorId: raw.author_id,
+    };
   }
 
-  const { data: profiles, error: profilesError } =
-    profileIds.size === 0
-      ? { data: [] as PublicProfile[], error: null }
-      : await supabase.from("public_profiles").select("*").in("id", [...profileIds]);
+  const attractionRows: RawAdminQuestion[] = attractionRes.data.map((q) => ({
+    id: q.id,
+    subjectType: "attraction",
+    question: q.question,
+    createdAt: q.created_at,
+    userId: q.user_id,
+    subject: toAttractionSubject(q.attractions),
+    answer: toAnswer(q.attraction_answers),
+  }));
 
-  if (profilesError) throw profilesError;
-  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
+  const cityRows: RawAdminQuestion[] = cityRes.data.map((q) => ({
+    id: q.id,
+    subjectType: "city",
+    question: q.question,
+    createdAt: q.created_at,
+    userId: q.user_id,
+    subject: toCitySubject(q.cities),
+    answer: toAnswer(q.city_answers),
+  }));
 
-  return data.map((question) => {
-    const answer = question.attraction_answers;
-    return {
-      id: question.id,
-      question: question.question,
-      createdAt: question.created_at,
-      asker: toProfile(profileById.get(question.user_id), question.user_id),
-      attraction: question.attractions,
-      answer: answer
+  const countryRows: RawAdminQuestion[] = countryRes.data.map((q) => ({
+    id: q.id,
+    subjectType: "country",
+    question: q.question,
+    createdAt: q.created_at,
+    userId: q.user_id,
+    subject: toCountrySubject(q.countries),
+    answer: toAnswer(q.country_answers),
+  }));
+
+  return [...attractionRows, ...cityRows, ...countryRows];
+}
+
+export async function getAllPendingQuestions(): Promise<AdminPendingQuestion[]> {
+  const rows = await fetchAdminQuestions("pendente");
+  const profileById = await fetchProfilesById([
+    ...new Set(rows.map((row) => row.userId)),
+  ]);
+
+  return rows
+    .map((row): AdminPendingQuestion => ({
+      id: row.id,
+      subjectType: row.subjectType,
+      question: row.question,
+      createdAt: row.createdAt,
+      asker: toProfile(profileById.get(row.userId), row.userId),
+      subject: row.subject,
+    }))
+    .sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+}
+
+export async function getAllAnsweredQuestions(): Promise<AdminAnsweredQuestion[]> {
+  const rows = await fetchAdminQuestions("respondida");
+
+  const profileIds = new Set<string>();
+  for (const row of rows) {
+    profileIds.add(row.userId);
+    if (row.answer) profileIds.add(row.answer.authorId);
+  }
+  const profileById = await fetchProfilesById([...profileIds]);
+
+  return rows
+    .map((row): AdminAnsweredQuestion => ({
+      id: row.id,
+      subjectType: row.subjectType,
+      question: row.question,
+      createdAt: row.createdAt,
+      asker: toProfile(profileById.get(row.userId), row.userId),
+      subject: row.subject,
+      answer: row.answer
         ? {
-            id: answer.id,
-            answer: answer.answer,
-            createdAt: answer.created_at,
-            updatedAt: answer.updated_at,
-            author: toProfile(profileById.get(answer.author_id), answer.author_id),
+            id: row.answer.id,
+            answer: row.answer.answer,
+            createdAt: row.answer.createdAt,
+            updatedAt: row.answer.updatedAt,
+            author: toProfile(
+              profileById.get(row.answer.authorId),
+              row.answer.authorId,
+            ),
           }
         : null,
-    };
-  });
+    }))
+    .sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 }
 
 export async function getPendingQuestionsCount() {
-  const { count, error } = await supabase
-    .from("attraction_questions")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "pendente");
+  const [attraction, city, country] = await Promise.all([
+    supabase
+      .from("attraction_questions")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pendente"),
+    supabase
+      .from("city_questions")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pendente"),
+    supabase
+      .from("country_questions")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pendente"),
+  ]);
 
-  if (error) throw error;
-  return count ?? 0;
+  if (attraction.error) throw attraction.error;
+  if (city.error) throw city.error;
+  if (country.error) throw country.error;
+
+  return (attraction.count ?? 0) + (city.count ?? 0) + (country.count ?? 0);
+}
+
+// Dispara a mutação certa (attraction/city/country) a partir do subjectType
+// unificado usado pelo painel da autora.
+export async function submitAdminAnswer(
+  subjectType: AdminQuestionSubjectType,
+  questionId: string,
+  authorId: string,
+  answer: string,
+) {
+  if (subjectType === "attraction") return submitAnswer(questionId, authorId, answer);
+  if (subjectType === "city") return submitCityAnswer(questionId, authorId, answer);
+  return submitCountryAnswer(questionId, authorId, answer);
+}
+
+export async function editAdminAnswer(
+  subjectType: AdminQuestionSubjectType,
+  answerId: string,
+  answer: string,
+) {
+  if (subjectType === "attraction") return editAnswer(answerId, answer);
+  if (subjectType === "city") return editCityAnswer(answerId, answer);
+  return editCountryAnswer(answerId, answer);
+}
+
+export async function hideAdminQuestion(
+  subjectType: AdminQuestionSubjectType,
+  questionId: string,
+) {
+  if (subjectType === "attraction") return hideQuestion(questionId);
+  if (subjectType === "city") return hideCityQuestion(questionId);
+  return hideCountryQuestion(questionId);
 }
 
 export async function askQuestion(

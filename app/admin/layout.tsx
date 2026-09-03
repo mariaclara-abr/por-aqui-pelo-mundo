@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
+import { getPendingQuestionsCount } from "@/lib/questions";
 import AdminNav from "@/components/admin/AdminNav";
 
 // Painel interno, protegido por login + role "author" abaixo — nunca deve
@@ -36,9 +37,11 @@ export default async function AdminLayout({
     redirect("/");
   }
 
+  const pendingQuestionsCount = await getPendingQuestionsCount();
+
   return (
     <div className="flex flex-1 flex-col sm:flex-row">
-      <AdminNav />
+      <AdminNav pendingQuestionsCount={pendingQuestionsCount} />
       <main className="flex-1 px-4 py-8 sm:px-8">{children}</main>
     </div>
   );

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion } from "motion/react";
 import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
 interface HeroCounts {
@@ -12,7 +11,6 @@ interface HeroCounts {
 }
 
 export default function HeroSection({ counts }: { counts: HeroCounts }) {
-  const prefersReducedMotion = useReducedMotion();
   const showCounter =
     counts.countries > 0 && counts.cities > 0 && counts.attractions > 0;
 
@@ -49,20 +47,6 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
           </p>
           <div className="relative mt-6 w-full max-w-xs self-center sm:mt-8 sm:w-auto lg:self-start">
             <div className="relative flex w-full sm:inline-flex sm:w-fit">
-              <motion.span
-                aria-hidden="true"
-                className="absolute inset-0 rounded-lg bg-terracota"
-                animate={
-                  prefersReducedMotion
-                    ? undefined
-                    : { opacity: [0.35, 0, 0.35], scale: [1, 1.12, 1] }
-                }
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
               <a
                 href="#destinos"
                 className="relative inline-block min-h-12 w-full rounded-lg bg-terracota px-7 py-3.5 text-center text-base font-medium text-white transition hover:scale-105 hover:bg-terracota/90 active:scale-95 sm:w-auto sm:px-9"

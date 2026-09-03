@@ -78,6 +78,7 @@ export default async function OrganizarComIAPage() {
             itinerary={itinerary}
             preferences={preferences}
             destinationCities={destinationCities}
+            userId={user.id}
           />
         </div>
       </div>

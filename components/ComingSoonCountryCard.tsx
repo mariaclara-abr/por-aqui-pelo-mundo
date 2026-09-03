@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { getOrCreateVisitorId } from "@/lib/visitor-id";
+import { useAuth } from "@/lib/auth";
 import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
@@ -39,6 +41,7 @@ export default function ComingSoonCountryCard({
 }: {
   country: Country;
 }) {
+  const { isAuthor } = useAuth();
   const [interested, setInterested] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -48,7 +51,11 @@ export default function ComingSoonCountryCard({
     if (hasRegisteredInterest(country.id)) setInterested(true);
   }, [country.id]);
 
-  async function handleInterest() {
+  async function handleInterest(event: MouseEvent) {
+    // Impede que o clique no botão dispare a navegação do card, que vira um
+    // link para a autora conferir a prévia do país.
+    event.preventDefault();
+    event.stopPropagation();
     if (interested || sending) return;
     setSending(true);
 
@@ -74,8 +81,8 @@ export default function ComingSoonCountryCard({
     setSending(false);
   }
 
-  return (
-    <div className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm">
+  const content = (
+    <>
       {country.cover_image_url ? (
         <Image
           src={country.cover_image_url}
@@ -105,6 +112,21 @@ export default function ComingSoonCountryCard({
           {interested ? "Interesse registrado ✓" : "Tenho interesse"}
         </button>
       </div>
-    </div>
+    </>
   );
+
+  const className =
+    "group relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm";
+
+  // Só a autora pode entrar na página do país em breve, para conferir a
+  // prévia de como ela vai ficar quando publicada.
+  if (isAuthor) {
+    return (
+      <Link href={`/${country.slug}`} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{content}</div>;
 }

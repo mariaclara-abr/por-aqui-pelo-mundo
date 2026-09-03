@@ -163,31 +163,39 @@ export async function getTags() {
   return data;
 }
 
-export async function searchDestinations(query: string) {
+export interface SearchResult {
+  result_type: "country" | "city" | "attraction";
+  id: string;
+  name: string;
+  slug: string;
+  city_name: string | null;
+  city_slug: string | null;
+  country_name: string | null;
+  country_slug: string | null;
+  rank: number;
+}
+
+// Busca tolerante a maiúsculas/minúsculas, acentos e pequenos erros de
+// digitação (via pg_trgm), cobrindo países, cidades e atrações. A função
+// search_destinations no banco só inclui países "em breve" (draft) quando
+// includeDrafts é true, espelhando a regra de visibilidade das páginas de
+// país (só a autora vê rascunhos).
+export async function searchDestinations(
+  query: string,
+  includeDrafts = false,
+) {
   const trimmed = query.trim();
   if (!trimmed) {
-    return { countries: [], cities: [] };
+    return [] as SearchResult[];
   }
 
-  const [countriesResult, citiesResult] = await Promise.all([
-    supabase
-      .from("countries")
-      .select("id, name, slug")
-      .ilike("name", `%${trimmed}%`)
-      .order("name")
-      .limit(5),
-    supabase
-      .from("cities")
-      .select("id, name, slug, countries(name, slug)")
-      .ilike("name", `%${trimmed}%`)
-      .order("name")
-      .limit(5),
-  ]);
+  const { data, error } = await supabase.rpc("search_destinations", {
+    search_query: trimmed,
+    include_drafts: includeDrafts,
+  });
 
-  if (countriesResult.error) throw countriesResult.error;
-  if (citiesResult.error) throw citiesResult.error;
-
-  return { countries: countriesResult.data, cities: citiesResult.data };
+  if (error) throw error;
+  return data as unknown as SearchResult[];
 }
 
 export interface AttractionFilters {
@@ -207,10 +215,13 @@ export async function getAttractionsByCity(
 
   if (cityError) throw cityError;
 
+  // Atrações-filha (ex: um restaurante dentro de um parque) não aparecem
+  // na grade da cidade, só na página da atração-pai.
   let query = supabase
     .from("attractions")
     .select("*, attraction_photos(*), attraction_tags(tags(*))")
-    .eq("city_id", city.id);
+    .eq("city_id", city.id)
+    .is("parent_attraction_id", null);
 
   if (filters?.categories && filters.categories.length > 0) {
     // Retorna atrações que têm pelo menos uma das categorias selecionadas
@@ -245,7 +256,32 @@ export async function getAttractionsByCity(
 
   const { data, error } = await query.order("name");
   if (error) throw error;
-  return data;
+
+  // Atrações "pasta" (com sub-atrações, ex: Parques) sempre aparecem
+  // primeiro na grade, como um atalho fixo para esse conteúdo maior.
+  const { data: childRows, error: childError } = await supabase
+    .from("attractions")
+    .select("parent_attraction_id")
+    .eq("city_id", city.id)
+    .not("parent_attraction_id", "is", null);
+
+  if (childError) throw childError;
+
+  const folderIds = new Set(
+    childRows.map((row) => row.parent_attraction_id),
+  );
+
+  return [...data].sort((a, b) => {
+    // "Parques" sempre vem primeiro, na frente de qualquer outra pasta.
+    const aPinned = a.slug === "parques";
+    const bPinned = b.slug === "parques";
+    if (aPinned !== bPinned) return aPinned ? -1 : 1;
+
+    const aIsFolder = folderIds.has(a.id);
+    const bIsFolder = folderIds.has(b.id);
+    if (aIsFolder === bIsFolder) return 0;
+    return aIsFolder ? -1 : 1;
+  });
 }
 
 export async function getAttractionNamesByCity(citySlug: string) {
@@ -261,6 +297,7 @@ export async function getAttractionNamesByCity(citySlug: string) {
     .from("attractions")
     .select("id, name, slug")
     .eq("city_id", city.id)
+    .is("parent_attraction_id", null)
     .order("name");
 
   if (error) throw error;
@@ -279,6 +316,66 @@ export const getAttractionBySlug = cache(async (attractionSlug: string) => {
   if (error) throw error;
   return data;
 });
+
+// Cadeia de atrações-ancestrais, da mais externa (ex: "Parques") até o pai
+// direto, para montar o breadcrumb completo de uma atração aninhada em mais
+// de um nível (ex: Orlando > Parques > Magic Kingdom > Satu'li Canteen).
+// O limite de 10 níveis é só uma proteção contra um parent_attraction_id
+// configurado errado formando um ciclo.
+export async function getAttractionAncestors(
+  parentAttractionId: string | null,
+) {
+  const ancestors: { id: string; name: string; slug: string }[] = [];
+  let currentId = parentAttractionId;
+
+  for (let depth = 0; currentId && depth < 10; depth++) {
+    const { data, error } = await supabase
+      .from("attractions")
+      .select("id, name, slug, parent_attraction_id")
+      .eq("id", currentId)
+      .single();
+
+    if (error) throw error;
+    ancestors.unshift({ id: data.id, name: data.name, slug: data.slug });
+    currentId = data.parent_attraction_id;
+  }
+
+  return ancestors;
+}
+
+// Sub-atrações de uma atração-pai (ex: os restaurantes e lojas dentro de um
+// parque temático). Mesma cidade do pai, sempre.
+export async function getChildAttractions(parentAttractionId: string) {
+  const { data, error } = await supabase
+    .from("attractions")
+    .select("*, attraction_photos(*), attraction_tags(tags(*))")
+    .eq("parent_attraction_id", parentAttractionId)
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
+// Entre os ids informados, quais têm pelo menos uma sub-atração. Usada para
+// decidir se a grade de filhos de uma atração-pasta mostra cards de destino
+// (ex: os parques dentro de Parques, que por sua vez têm suas próprias
+// sub-atrações) ou cards de atração comuns (ex: os restaurantes dentro de
+// um parque, que não têm mais nada dentro).
+export async function getAttractionIdsWithChildren(parentIds: string[]) {
+  if (parentIds.length === 0) return new Set<string>();
+
+  const { data, error } = await supabase
+    .from("attractions")
+    .select("parent_attraction_id")
+    .in("parent_attraction_id", parentIds);
+
+  if (error) throw error;
+  return new Set(
+    data
+      .map((row) => row.parent_attraction_id)
+      .filter((id): id is string => id !== null),
+  );
+}
 
 export async function getAttractionById(id: string) {
   const { data, error } = await supabase

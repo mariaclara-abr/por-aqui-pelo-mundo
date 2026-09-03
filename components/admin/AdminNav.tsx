@@ -15,7 +15,11 @@ const LINKS = [
   { href: "/admin/sobre", label: "Sobre a autora" },
 ];
 
-export default function AdminNav() {
+export default function AdminNav({
+  pendingQuestionsCount = 0,
+}: {
+  pendingQuestionsCount?: number;
+}) {
   const pathname = usePathname();
 
   return (
@@ -36,13 +40,23 @@ export default function AdminNav() {
           <Link
             key={link.href}
             href={link.href}
-            className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors ${
+            className={`flex items-center justify-between gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors ${
               active
                 ? "bg-terracota text-white"
                 : "text-tinta hover:bg-areia"
             }`}
           >
             {link.label}
+            {link.href === "/admin/perguntas" && pendingQuestionsCount > 0 && (
+              <span
+                aria-label={`${pendingQuestionsCount} pergunta${pendingQuestionsCount > 1 ? "s" : ""} pendente${pendingQuestionsCount > 1 ? "s" : ""}`}
+                className={`flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-medium leading-none ${
+                  active ? "bg-white text-terracota" : "bg-terracota text-white"
+                }`}
+              >
+                {pendingQuestionsCount > 9 ? "9+" : pendingQuestionsCount}
+              </span>
+            )}
           </Link>
         );
       })}

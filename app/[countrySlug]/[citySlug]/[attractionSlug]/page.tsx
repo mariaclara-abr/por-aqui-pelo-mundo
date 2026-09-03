@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAttractionBySlug } from "@/lib/queries";
+import {
+  getAttractionAncestors,
+  getAttractionBySlug,
+  getAttractionIdsWithChildren,
+  getChildAttractions,
+} from "@/lib/queries";
 import { getAttractionQuestions } from "@/lib/questions";
 import { categoryLabels } from "@/types/database";
 import type { Database } from "@/types/database";
@@ -9,6 +14,8 @@ import CurationRating from "@/components/CurationRating";
 import PriceRange from "@/components/PriceRange";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
+import AttractionCard from "@/components/AttractionCard";
+import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import AffiliateCallout from "@/components/AffiliateCallout";
@@ -107,6 +114,28 @@ export default async function AttractionPage(
   const categoryLabel = categoryLabels(attraction.categories);
 
   const questions = await getAttractionQuestions(attraction.id).catch(() => []);
+  const childAttractions = await getChildAttractions(attraction.id).catch(
+    () => [],
+  );
+  const ancestors = await getAttractionAncestors(
+    attraction.parent_attraction_id,
+  ).catch(() => []);
+
+  // Uma atração com sub-atrações vira uma "pasta" e deixa de ter a
+  // formatação de uma atração única (sem foto de capa, nota, etiquetas ou
+  // botão de roteiro). Se os próprios filhos também tiverem sub-atrações,
+  // ela funciona como um país (lista destinos, ex: Parques > Magic
+  // Kingdom, que por sua vez tem seus restaurantes); senão, funciona como
+  // uma cidade (lista atrações, ex: Magic Kingdom > Satu'li Canteen).
+  const isContainer = childAttractions.length > 0;
+  const childrenWithChildren = isContainer
+    ? await getAttractionIdsWithChildren(
+        childAttractions.map((child) => child.id),
+      ).catch(() => new Set<string>())
+    : new Set<string>();
+  const childrenAreDestinations = childAttractions.some((child) =>
+    childrenWithChildren.has(child.id),
+  );
 
   const quickFacts = [
     attraction.average_visit_time
@@ -161,6 +190,17 @@ export default async function AttractionPage(
           >
             {attraction.cities.name}
           </Link>
+          {ancestors.map((ancestor) => (
+            <span key={ancestor.id} className="flex items-center gap-1">
+              <span>/</span>
+              <Link
+                href={`/${countrySlug}/${citySlug}/${ancestor.slug}`}
+                className="transition-colors hover:text-terracota"
+              >
+                {ancestor.name}
+              </Link>
+            </span>
+          ))}
         </div>
 
         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -168,22 +208,26 @@ export default async function AttractionPage(
             <h1 className="truncate font-serif text-3xl text-tinta sm:text-4xl">
               {attraction.name}
             </h1>
-            <p className="mt-1 text-xs uppercase tracking-wide text-oliva">
-              {categoryLabel}
-            </p>
+            {!isContainer && (
+              <p className="mt-1 text-xs uppercase tracking-wide text-oliva">
+                {categoryLabel}
+              </p>
+            )}
           </div>
 
-          <div className="flex flex-col items-start gap-3 sm:items-end">
-            <CurationRating rating={attraction.curation_rating} alignEnd />
-            <RoteiroButton
-              attraction={attraction}
-              countrySlug={countrySlug}
-              citySlug={citySlug}
-            />
-          </div>
+          {!isContainer && (
+            <div className="flex flex-col items-start gap-3 sm:items-end">
+              <CurationRating rating={attraction.curation_rating} alignEnd />
+              <RoteiroButton
+                attraction={attraction}
+                countrySlug={countrySlug}
+                citySlug={citySlug}
+              />
+            </div>
+          )}
         </div>
 
-        {tags.length > 0 && (
+        {!isContainer && tags.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {tags.map((tag) => (
               <span
@@ -196,9 +240,11 @@ export default async function AttractionPage(
           </div>
         )}
 
-        <div className="mt-8">
-          <AttractionPhotos photos={photos} attractionName={attraction.name} />
-        </div>
+        {!isContainer && (
+          <div className="mt-8">
+            <AttractionPhotos photos={photos} attractionName={attraction.name} />
+          </div>
+        )}
 
         <div className="mt-8">
           {attraction.description && (
@@ -227,7 +273,7 @@ export default async function AttractionPage(
             </div>
           )}
 
-          {attraction.exclusive_perk_description && (
+          {!isContainer && attraction.exclusive_perk_description && (
             <section className="mt-6 rounded-xl border-2 border-terracota bg-terracota/5 p-5">
               <p className="text-xs font-medium uppercase tracking-wide text-terracota">
                 Exclusivo Por Aqui Pelo Mundo
@@ -249,7 +295,7 @@ export default async function AttractionPage(
             </section>
           )}
 
-          {attraction.personal_experience && (
+          {!isContainer && attraction.personal_experience && (
             <section className="mt-6 rounded-xl bg-branco p-5">
               <h2 className="font-serif text-lg text-tinta">
                 Experiência de quem já foi
@@ -272,14 +318,45 @@ export default async function AttractionPage(
           )}
         </div>
 
-        <AffiliateCallout
-          variant="attraction"
-          location={{
-            cityName: attraction.cities.name,
-            countryName: attraction.cities.countries.name,
-          }}
-          attractionId={attraction.id}
-        />
+        {isContainer && (
+          <section className="mt-8">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {childrenAreDestinations
+                ? childAttractions.map((child) => {
+                    const childPhoto = [...child.attraction_photos].sort(
+                      (a, b) => a.order - b.order,
+                    )[0];
+                    return (
+                      <DestinationCard
+                        key={child.id}
+                        href={`/${countrySlug}/${citySlug}/${child.slug}`}
+                        name={child.name}
+                        imageUrl={childPhoto?.url ?? null}
+                      />
+                    );
+                  })
+                : childAttractions.map((child) => (
+                    <AttractionCard
+                      key={child.id}
+                      attraction={child}
+                      countrySlug={countrySlug}
+                      citySlug={citySlug}
+                    />
+                  ))}
+            </div>
+          </section>
+        )}
+
+        {!isContainer && (
+          <AffiliateCallout
+            variant="attraction"
+            location={{
+              cityName: attraction.cities.name,
+              countryName: attraction.cities.countries.name,
+            }}
+            attractionId={attraction.id}
+          />
+        )}
 
         <section className="relative left-1/2 mt-12 w-screen -translate-x-1/2 bg-oliva">
           <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-10">
@@ -295,22 +372,24 @@ export default async function AttractionPage(
           </div>
         </section>
 
-        <section className="mt-12 border-t border-tinta/10 pt-8">
-          <h2 className="font-serif text-xl text-tinta">
-            Recomendações relacionadas
-          </h2>
-          <div className="mt-4">
-            <RelatedContent
-              mode="attraction"
-              attraction={{
-                id: attraction.id,
-                citySlug: attraction.cities.slug,
-                latitude: attraction.latitude,
-                longitude: attraction.longitude,
-              }}
-            />
-          </div>
-        </section>
+        {!isContainer && (
+          <section className="mt-12 border-t border-tinta/10 pt-8">
+            <h2 className="font-serif text-xl text-tinta">
+              Recomendações relacionadas
+            </h2>
+            <div className="mt-4">
+              <RelatedContent
+                mode="attraction"
+                attraction={{
+                  id: attraction.id,
+                  citySlug: attraction.cities.slug,
+                  latitude: attraction.latitude,
+                  longitude: attraction.longitude,
+                }}
+              />
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );

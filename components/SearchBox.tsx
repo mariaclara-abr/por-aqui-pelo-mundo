@@ -3,15 +3,51 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-type SearchResults = {
-  countries: { id: string; name: string; slug: string }[];
-  cities: {
-    id: string;
-    name: string;
-    slug: string;
-    countries: { name: string; slug: string } | null;
-  }[];
+type SearchResult = {
+  result_type: "country" | "city" | "attraction";
+  id: string;
+  name: string;
+  slug: string;
+  city_name: string | null;
+  city_slug: string | null;
+  country_name: string | null;
+  country_slug: string | null;
 };
+
+type SearchResponse = { results: SearchResult[] };
+
+function resultHref(result: SearchResult): string {
+  switch (result.result_type) {
+    case "country":
+      return `/${result.slug}`;
+    case "city":
+      return `/${result.country_slug}/${result.slug}`;
+    case "attraction":
+      return `/${result.country_slug}/${result.city_slug}/${result.slug}`;
+  }
+}
+
+function resultLabel(result: SearchResult): string {
+  switch (result.result_type) {
+    case "country":
+      return "País";
+    case "city":
+      return "Cidade";
+    case "attraction":
+      return "Atração";
+  }
+}
+
+function resultSubtitle(result: SearchResult): string {
+  switch (result.result_type) {
+    case "country":
+      return "";
+    case "city":
+      return result.country_name ? `, ${result.country_name}` : "";
+    case "attraction":
+      return result.city_name ? `, ${result.city_name}` : "";
+  }
+}
 
 export default function SearchBox({
   variant = "header",
@@ -23,7 +59,7 @@ export default function SearchBox({
   const inDrawer = variant === "drawer";
   const [isOpen, setIsOpen] = useState(inDrawer);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResults | null>(null);
+  const [results, setResults] = useState<SearchResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -63,10 +99,10 @@ export default function SearchBox({
           if (!response.ok) throw new Error("Falha na busca");
           return response.json();
         })
-        .then((data: SearchResults) => setResults(data))
+        .then((data: SearchResponse) => setResults(data.results))
         .catch((error: unknown) => {
           if (error instanceof Error && error.name !== "AbortError") {
-            setResults({ countries: [], cities: [] });
+            setResults([]);
           }
         })
         .finally(() => {
@@ -87,8 +123,7 @@ export default function SearchBox({
     onNavigate?.();
   }
 
-  const hasResults =
-    !!results && (results.countries.length > 0 || results.cities.length > 0);
+  const hasResults = !!results && results.length > 0;
 
   return (
     <div ref={containerRef} className="relative">
@@ -145,31 +180,18 @@ export default function SearchBox({
             <p className="px-3 py-2 text-sm text-oliva">Buscando...</p>
           ) : hasResults ? (
             <div className="flex flex-col gap-1">
-              {results!.countries.map((country) => (
+              {results!.map((result) => (
                 <Link
-                  key={country.id}
-                  href={`/${country.slug}`}
+                  key={`${result.result_type}-${result.id}`}
+                  href={resultHref(result)}
                   onClick={close}
                   className="rounded-lg px-3 py-2 text-sm text-tinta hover:bg-areia"
                 >
                   <span className="block text-xs uppercase tracking-wide text-oliva">
-                    País
+                    {resultLabel(result)}
                   </span>
-                  {country.name}
-                </Link>
-              ))}
-              {results!.cities.map((city) => (
-                <Link
-                  key={city.id}
-                  href={`/${city.countries?.slug}/${city.slug}`}
-                  onClick={close}
-                  className="rounded-lg px-3 py-2 text-sm text-tinta hover:bg-areia"
-                >
-                  <span className="block text-xs uppercase tracking-wide text-oliva">
-                    Cidade
-                  </span>
-                  {city.name}
-                  {city.countries ? `, ${city.countries.name}` : ""}
+                  {result.name}
+                  {resultSubtitle(result)}
                 </Link>
               ))}
             </div>

@@ -1,11 +1,58 @@
 import Link from "next/link";
 import { getAllAttractions, getCitiesWithCountry } from "@/lib/queries";
 import { categoryLabels } from "@/types/database";
+import type { Database } from "@/types/database";
 import DeleteButton from "@/components/admin/DeleteButton";
 import AttractionCityFilter from "@/components/admin/AttractionCityFilter";
 
+type Attraction = Awaited<ReturnType<typeof getAllAttractions>>[number];
+
 function firstValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function AttractionRow({ attraction }: { attraction: Attraction }) {
+  const cover = [...attraction.attraction_photos].sort(
+    (a, b) => a.order - b.order,
+  )[0];
+  const categoryLabel = categoryLabels(attraction.categories);
+
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-oliva/15 bg-branco p-3">
+      <div className="flex items-center gap-3">
+        {cover ? (
+          <img
+            src={cover.url}
+            alt=""
+            className="h-10 w-14 rounded object-cover"
+          />
+        ) : (
+          <div className="h-10 w-14 rounded bg-areia" />
+        )}
+        <div>
+          <p className="text-tinta">{attraction.name}</p>
+          <p className="text-xs text-oliva">
+            {categoryLabel} · {attraction.cities.name},{" "}
+            {attraction.cities.countries.name}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <Link
+          href={`/admin/atracoes/${attraction.id}`}
+          className="text-sm text-terracota hover:underline"
+        >
+          Editar
+        </Link>
+        <DeleteButton
+          table="attractions"
+          id={attraction.id}
+          confirmMessage={`Excluir "${attraction.name}"?`}
+          redirectTo="/admin/atracoes"
+        />
+      </div>
+    </li>
+  );
 }
 
 export default async function AdminAtracoesPage(
@@ -28,6 +75,15 @@ export default async function AdminAtracoesPage(
           selectedCityIds.includes(attraction.city_id),
         )
       : allAttractions;
+
+  // Pasta "Parques": parques temáticos completos (Disney, Universal),
+  // agrupados à parte do restante das atrações da mesma cidade.
+  const parkAttractions = attractions.filter((attraction) =>
+    attraction.categories.includes("parque_tematico"),
+  );
+  const otherAttractions = attractions.filter(
+    (attraction) => !attraction.categories.includes("parque_tematico"),
+  );
 
   const totalCount = attractions.length;
   const withPhotoCount = attractions.filter(
@@ -76,54 +132,36 @@ export default async function AdminAtracoesPage(
             : "Nenhuma atração cadastrada ainda."}
         </p>
       ) : (
-        <ul className="mt-6 flex flex-col gap-2">
-          {attractions.map((attraction) => {
-            const cover = [...attraction.attraction_photos].sort(
-              (a, b) => a.order - b.order,
-            )[0];
-            const categoryLabel = categoryLabels(attraction.categories);
+        <>
+          {parkAttractions.length > 0 && (
+            <details
+              open
+              className="mt-6 rounded-lg border border-oliva/15 bg-areia/40"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3">
+                <span className="font-serif text-lg text-tinta">
+                  📁 Parques ({parkAttractions.length})
+                </span>
+                <span className="text-xs text-oliva">
+                  Disney, Universal
+                </span>
+              </summary>
+              <ul className="flex flex-col gap-2 px-4 pb-4">
+                {parkAttractions.map((attraction) => (
+                  <AttractionRow key={attraction.id} attraction={attraction} />
+                ))}
+              </ul>
+            </details>
+          )}
 
-            return (
-              <li
-                key={attraction.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-oliva/15 bg-branco p-3"
-              >
-                <div className="flex items-center gap-3">
-                  {cover ? (
-                    <img
-                      src={cover.url}
-                      alt=""
-                      className="h-10 w-14 rounded object-cover"
-                    />
-                  ) : (
-                    <div className="h-10 w-14 rounded bg-areia" />
-                  )}
-                  <div>
-                    <p className="text-tinta">{attraction.name}</p>
-                    <p className="text-xs text-oliva">
-                      {categoryLabel} · {attraction.cities.name},{" "}
-                      {attraction.cities.countries.name}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Link
-                    href={`/admin/atracoes/${attraction.id}`}
-                    className="text-sm text-terracota hover:underline"
-                  >
-                    Editar
-                  </Link>
-                  <DeleteButton
-                    table="attractions"
-                    id={attraction.id}
-                    confirmMessage={`Excluir "${attraction.name}"?`}
-                    redirectTo="/admin/atracoes"
-                  />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+          {otherAttractions.length > 0 && (
+            <ul className="mt-6 flex flex-col gap-2">
+              {otherAttractions.map((attraction) => (
+                <AttractionRow key={attraction.id} attraction={attraction} />
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );

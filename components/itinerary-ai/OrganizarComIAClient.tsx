@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import PillButton from "@/components/PillButton";
 import PremiumDialog from "@/components/PremiumDialog";
+import ItinerarySwitcherDialog from "@/components/ItinerarySwitcherDialog";
 import { addAccountItem } from "@/lib/itinerary-queries";
 import {
   estimateWalkMinutes,
@@ -114,11 +116,15 @@ export default function OrganizarComIAClient({
   itinerary,
   preferences,
   destinationCities,
+  userId,
 }: {
   itinerary: ItineraryForAI | null;
   preferences: UserPreferences;
   destinationCities: DestinationPickerCity[];
+  userId: string;
 }) {
+  const router = useRouter();
+  const [switcherOpen, setSwitcherOpen] = useState(false);
   const attractions = itinerary?.attractions ?? [];
   const cityCount = new Set(attractions.map((a) => a.citySlug)).size;
   const isFromScratch = attractions.length === 0;
@@ -385,6 +391,17 @@ export default function OrganizarComIAClient({
         />
       )}
 
+      {switcherOpen && (
+        <ItinerarySwitcherDialog
+          userId={userId}
+          currentItineraryId={itinerary.itineraryId}
+          onClose={() => {
+            setSwitcherOpen(false);
+            router.refresh();
+          }}
+        />
+      )}
+
       <div className="overflow-hidden rounded-[28px] border border-tinta/10 bg-branco shadow-[0_18px_45px_-34px_rgba(43,38,32,0.55)]">
         <div className="flex flex-col gap-5 border-b border-tinta/10 bg-[linear-gradient(110deg,#fff_5%,#f7efe1_100%)] px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           {isFromScratch ? (
@@ -400,12 +417,21 @@ export default function OrganizarComIAClient({
               <p className="mt-1 text-sm text-oliva">Conte para a IA como você quer viver essa viagem.</p>
             </div>
           )}
-          {!isFromScratch && (
-            <div className="flex shrink-0 divide-x divide-oliva/20 rounded-2xl border border-oliva/15 bg-branco/80 px-1 py-2 shadow-sm">
-              <div className="px-4 text-center"><p className="font-serif text-xl text-tinta">{attractions.length}</p><p className="text-[10px] uppercase tracking-wider text-oliva">{attractions.length === 1 ? "lugar" : "lugares"}</p></div>
-              <div className="px-4 text-center"><p className="font-serif text-xl text-tinta">{cityCount}</p><p className="text-[10px] uppercase tracking-wider text-oliva">{cityCount === 1 ? "cidade" : "cidades"}</p></div>
-            </div>
-          )}
+          <div className="flex shrink-0 flex-wrap items-center gap-3">
+            {!isFromScratch && (
+              <div className="flex divide-x divide-oliva/20 rounded-2xl border border-oliva/15 bg-branco/80 px-1 py-2 shadow-sm">
+                <div className="px-4 text-center"><p className="font-serif text-xl text-tinta">{attractions.length}</p><p className="text-[10px] uppercase tracking-wider text-oliva">{attractions.length === 1 ? "lugar" : "lugares"}</p></div>
+                <div className="px-4 text-center"><p className="font-serif text-xl text-tinta">{cityCount}</p><p className="text-[10px] uppercase tracking-wider text-oliva">{cityCount === 1 ? "cidade" : "cidades"}</p></div>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setSwitcherOpen(true)}
+              className="text-sm text-terracota hover:underline"
+            >
+              Trocar de roteiro
+            </button>
+          </div>
         </div>
 
         <div className="p-5 sm:p-8">
