@@ -44,7 +44,7 @@ cross join (
     (
       'Dimitris Ammoudi Taverna', 'dimitris-ammoudi-taverna', 'restaurante',
       'Em Amoudi Bay.',
-      'Peixe assado, comida deliciosa e fresca — preço mais em conta que '
+      'Peixe assado, comida deliciosa e fresca: preço mais em conta que '
       || 'nos restaurantes mais altos em Oia, inclusive nos drinks.',
       null, null, 5
     ),

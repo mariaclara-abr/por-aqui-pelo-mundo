@@ -4,7 +4,7 @@
 -- Saint-Tropez e Antibes (incluindo o Cap d'Antibes, tratado como a mesma
 -- cidade por ser a península ao lado, sem curadoria própria separada).
 -- Nota de curadoria: o roteiro não trazia nota explícita para nenhum
--- lugar, então todos entram com 5 estrelas como valor temporário —
+-- lugar, então todos entram com 5 estrelas como valor temporário,
 -- ajustar depois pelo painel /admin/atracoes, lugar por lugar.
 
 update cities
@@ -142,9 +142,9 @@ cross join (
       'Coração histórico de Nice, caracterizado por ruas estreitas e '
       || 'labirínticas, edifícios em tons pastel e atmosfera vibrante. É '
       || 'ideal para explorar a pé, com destaque para a gastronomia local '
-      || '(socca), o mercado de flores Cours Saleya, igrejas barrocas — a '
-      || 'principal é a Catedral Sainte-Réparate, do século XVII — e '
-      || 'proximidade à Colina do Castelo.',
+      || '(socca), o mercado de flores Cours Saleya, igrejas barrocas, '
+      || 'sendo a principal a Catedral Sainte-Réparate, do século XVII, e '
+      || 'a proximidade à Colina do Castelo.',
       null, 5
     ),
     (
@@ -251,7 +251,7 @@ cross join (
       'Le Galet', 'le-galet-nice', 'restaurante',
       'Beach club e restaurante sofisticado na Promenade des Anglais, '
       || 'próximo ao Casino Barrière Le Ruhl. Oferece restaurante à '
-      || 'beira-mar, espreguiçadeiras confortáveis e guarda-sóis — ótima '
+      || 'beira-mar, espreguiçadeiras confortáveis e guarda-sóis: ótima '
       || 'opção para relaxar, almoçar ou jantar com vista para o '
       || 'Mediterrâneo, com boa relação custo-benefício.',
       null, 5
@@ -273,7 +273,7 @@ select
   || 'saída de Nice há duas opções de roteiro a partir de Cannes: Plano '
   || 'A (Cannes + Saint-Tropez) ou Plano B (Cannes + Antibes e Cap '
   || 'd''Antibes). É comum nas praias francesas as mulheres fazerem '
-  || 'topless — cuidado para não filmar.',
+  || 'topless: cuidado para não filmar.',
   43.551854,
   7.017590
 from countries
@@ -439,7 +439,7 @@ cross join (
       || 'beach clubs luxuosos, oferece áreas públicas e privadas, águas '
       || 'calmas e límpidas, excelente infraestrutura, restaurantes de '
       || 'luxo e alta badalação no verão.',
-      'É comum nas praias francesas as mulheres fazerem topless — '
+      'É comum nas praias francesas as mulheres fazerem topless: '
       || 'cuidado para não filmar.',
       5
     )
@@ -453,7 +453,7 @@ select
   'Antibes',
   'antibes',
   'Cidade murada na Riviera Francesa entre Cannes e Nice, com a '
-  || 'península do Cap d''Antibes ao lado — mais tranquila, com '
+  || 'península do Cap d''Antibes ao lado, mais tranquila, com '
   || 'natureza, praias e vilas de luxo. Cannes fica a uns 12 km de '
   || 'Antibes, em média 25 minutos de trajeto. Faz parte do Plano B do '
   || 'roteiro a partir de Cannes (Cannes + Antibes e Cap d''Antibes), '
@@ -534,9 +534,9 @@ cross join (
       'Plage de la Garoupe', 'plage-de-la-garoupe', 'natureza',
       'Baía charmosa com areia fina e águas cristalinas, no início da '
       || 'trilha costeira Sentier du Littoral. Famosa pelo cenário '
-      || 'pitoresco e histórico — tornou-se popular nos anos 1920, '
+      || 'pitoresco e histórico, tornou-se popular nos anos 1920, '
       || 'frequentada por figuras famosas da época.',
-      'É comum nas praias francesas as mulheres fazerem topless — '
+      'É comum nas praias francesas as mulheres fazerem topless: '
       || 'cuidado para não filmar.',
       5
     )

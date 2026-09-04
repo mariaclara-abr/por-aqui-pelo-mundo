@@ -52,7 +52,7 @@ const TOOLS = [
   {
     name: "add_attraction",
     description:
-      "Adiciona uma atração ao roteiro do usuário. Use um id retornado por search_attractions ou já presente na lista de atrações do roteiro atual — nunca invente um id.",
+      "Adiciona uma atração ao roteiro do usuário. Use um id retornado por search_attractions ou já presente na lista de atrações do roteiro atual, nunca invente um id.",
     input_schema: {
       type: "object",
       properties: { attraction_id: { type: "string" } },
@@ -107,7 +107,7 @@ function buildSystemPrompt(context: ItineraryChatContext): string {
 Regras importantes:
 - Só existem lugares reais: você só pode adicionar atrações que já estão na curadoria do site. Nunca invente nomes, lugares ou ids. Se não tiver certeza do id de algo que o usuário mencionou, use search_attractions antes de agir.
 - Se a busca não encontrar nada parecido com o pedido, diga isso claramente ao usuário em vez de inventar algo.
-- Sempre execute a alteração pedida através de uma ferramenta — não diga que fez algo sem realmente chamar a ferramenta correspondente.
+- Sempre execute a alteração pedida através de uma ferramenta: não diga que fez algo sem realmente chamar a ferramenta correspondente.
 - Se o pedido for ambíguo (por exemplo, duas atrações com nomes parecidos), pergunte qual delas antes de agir.
 - Depois de executar as ações necessárias, responda em português, de forma breve e amigável, confirmando exatamente o que foi feito.
 

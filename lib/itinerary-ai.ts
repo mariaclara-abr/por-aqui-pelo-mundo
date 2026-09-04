@@ -359,7 +359,7 @@ export async function addAttractionToItineraryChat(
       !canAddCountryToItinerary(existingCountrySlugs, newCountrySlug, !!premium)
     ) {
       throw new Error(
-        "Esse roteiro já tem atrações de outro país — o limite é 1 país por roteiro, a menos que você seja Premium. Crie um novo roteiro pra essa atração (dá pra fazer isso na tela do roteiro).",
+        "Esse roteiro já tem atrações de outro país: o limite é 1 país por roteiro, a menos que você seja Premium. Crie um novo roteiro pra essa atração (dá pra fazer isso na tela do roteiro).",
       );
     }
   }

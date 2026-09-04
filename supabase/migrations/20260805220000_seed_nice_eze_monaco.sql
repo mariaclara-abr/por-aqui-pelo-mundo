@@ -1,7 +1,7 @@
 -- Curadoria: França > Nice e Èze, e Mônaco (país próprio, não é território
 -- francês) > Mônaco, a partir do roteiro do Dia 08 da viagem da família.
 -- Nota de curadoria: o roteiro não trazia nota explícita para nenhum lugar,
--- então todos entram com 5 estrelas como valor temporário — ajustar depois
+-- então todos entram com 5 estrelas como valor temporário, ajustar depois
 -- pelo painel /admin/atracoes, lugar por lugar.
 -- Mônaco entra só com país e cidade: o roteiro fornecido corta antes das
 -- atividades de Mônaco em si, só menciona o trajeto até lá a partir de Èze.
@@ -19,7 +19,7 @@ select
   'Nice fica no sul da França, próxima à fronteira com a Itália. É a '
   || 'capital da Côte d''Azur, região à beira do Mar Mediterrâneo, também '
   || 'conhecida como Riviera Francesa. O Aeroporto Internacional de Nice '
-  || 'está a apenas 15 minutos do centro da cidade — o deslocamento entre '
+  || 'está a apenas 15 minutos do centro da cidade. O deslocamento entre '
   || 'os terminais e a área mais turística pode ser feito pela linha de '
   || 'bonde Tram 2. Voo de julho: sol nasce por volta das 06:00 e se põe '
   || 'próximo das 21:10, com temperaturas médias em torno de 29°C durante '
@@ -120,14 +120,14 @@ cross join (
       'Église Notre-Dame-de-l''Assomption d''Èze', 'eglise-notre-dame-de-lassomption-d-eze', 'ponto_turistico',
       'Templo neoclássico construído entre 1764 e 1778, com interior '
       || 'barroco charmoso e acolhedor, situado próximo ao Jardim Exótico '
-      || 'da cidade. Substituiu uma igreja anterior que estava em ruínas '
-      || '— padroeira Nossa Senhora da Assunção.',
+      || 'da cidade. Substituiu uma igreja anterior que estava em ruínas, '
+      || 'dedicada à padroeira Nossa Senhora da Assunção.',
       null, 5
     ),
     (
       'Fragonard L''Usine Laboratoire d''Èze', 'fragonard-usine-laboratoire-d-eze', 'passeio',
       'Fábrica de perfumes inaugurada em 1968, com localização '
-      || 'privilegiada ao pé da rocha e vista para o mar — o design '
+      || 'privilegiada ao pé da rocha e vista para o mar. O design '
       || 'moderno contrasta com o cenário da vila medieval.',
       'Oferece tours guiados gratuitos sobre a produção de perfumes, '
       || 'cosméticos e sabonetes. As visitas acontecem a cada 30 minutos '

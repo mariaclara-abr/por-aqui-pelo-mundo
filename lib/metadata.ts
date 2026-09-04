@@ -67,7 +67,7 @@ export function countLabel(n: number, singular: string, plural: string): string 
   return n === 1 ? `1 ${singular}` : `${n} ${plural}`;
 }
 
-/** "A", "A e B", "A, B e C" — junção de nomes em português. */
+/** "A", "A e B", "A, B e C": junção de nomes em português. */
 export function joinNames(names: string[]): string {
   if (names.length === 0) return "";
   if (names.length === 1) return names[0];

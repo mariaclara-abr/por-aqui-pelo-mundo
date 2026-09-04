@@ -102,11 +102,11 @@ function buildPrompt(input: OrganizeItineraryInput): string {
     input.startDate ? `, começando em ${input.startDate}` : ""
   }.
 
-Atrações CONFIRMADAS pelo viajante — todas devem aparecer em algum dia do roteiro final (use exatamente os "id" fornecidos, não invente novas atrações, nomes ou ids):
+Atrações CONFIRMADAS pelo viajante: todas devem aparecer em algum dia do roteiro final (use exatamente os "id" fornecidos, não invente novas atrações, nomes ou ids):
 ${attractionsList}
 ${
   input.candidates.length > 0
-    ? `\nAtrações SUGERIDAS — já são curadoria real cadastrada nas mesmas cidades do roteiro, mas o viajante ainda não escolheu nenhuma delas. Você PODE (não é obrigatório) encaixar até ${MAX_SUGGESTIONS_PER_DAY} delas por dia, só quando combinarem bem (mesma cidade do dia, ritmo compatível, sem lotar a agenda). Use exatamente os "id" fornecidos:\n${candidatesList}\n`
+    ? `\nAtrações SUGERIDAS: já são curadoria real cadastrada nas mesmas cidades do roteiro, mas o viajante ainda não escolheu nenhuma delas. Você PODE (não é obrigatório) encaixar até ${MAX_SUGGESTIONS_PER_DAY} delas por dia, só quando combinarem bem (mesma cidade do dia, ritmo compatível, sem lotar a agenda). Use exatamente os "id" fornecidos:\n${candidatesList}\n`
     : ""
 }
 ${

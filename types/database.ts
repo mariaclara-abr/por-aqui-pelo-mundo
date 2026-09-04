@@ -162,7 +162,7 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["countries"]["Insert"]>;
         Relationships: [];
       };
-      cities: {
+      states: {
         Row: {
           id: string;
           country_id: string;
@@ -185,6 +185,42 @@ export interface Database {
           longitude?: number | null;
           created_at?: string;
         };
+        Update: Partial<Database["public"]["Tables"]["states"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "states_country_id_fkey";
+            columns: ["country_id"];
+            isOneToOne: false;
+            referencedRelation: "countries";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      cities: {
+        Row: {
+          id: string;
+          country_id: string;
+          state_id: string | null;
+          name: string;
+          slug: string;
+          cover_image_url: string | null;
+          description: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          country_id: string;
+          state_id?: string | null;
+          name: string;
+          slug: string;
+          cover_image_url?: string | null;
+          description?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          created_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["cities"]["Insert"]>;
         Relationships: [
           {
@@ -192,6 +228,13 @@ export interface Database {
             columns: ["country_id"];
             isOneToOne: false;
             referencedRelation: "countries";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "cities_state_id_fkey";
+            columns: ["state_id"];
+            isOneToOne: false;
+            referencedRelation: "states";
             referencedColumns: ["id"];
           },
         ];

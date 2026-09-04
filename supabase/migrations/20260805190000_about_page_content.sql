@@ -19,8 +19,8 @@ insert into about_page_content (id, author_name, bio, why_site_text, quote_text)
 values (
   1,
   '[Nome da autora]',
-  E'Sou mãe, avó e viajante desde muito antes de existir aplicativo de viagem. Ao longo de mais de vinte anos, viajei pelo Brasil e pelo exterior — quase sempre em família, com criança pequena no colo, mala de mão cheia de remédio e paciência para roteiro que precisa mudar em cima da hora.\n\nCada lugar que aparece aqui eu visitei de verdade, ou visitei junto com alguém da família em quem confio. Não é uma lista genérica: é o que eu realmente recomendaria para outra família que está planejando a próxima viagem.',
-  'A maior parte do conteúdo de viagem por aí é feito para mochileiro sozinho ou casal sem filhos — e o que sobra costuma ser só uma nota média de milhares de estranhos, sem contexto nenhum sobre se aquele lugar faz sentido pra sua família. Esse site nasceu pra preencher esse espaço: transformar experiência real de viagem em planejamento fácil, pensado especialmente para famílias.',
+  E'Sou mãe, avó e viajante desde muito antes de existir aplicativo de viagem. Ao longo de mais de vinte anos, viajei pelo Brasil e pelo exterior, quase sempre em família, com criança pequena no colo, mala de mão cheia de remédio e paciência para roteiro que precisa mudar em cima da hora.\n\nCada lugar que aparece aqui eu visitei de verdade, ou visitei junto com alguém da família em quem confio. Não é uma lista genérica: é o que eu realmente recomendaria para outra família que está planejando a próxima viagem.',
+  'A maior parte do conteúdo de viagem por aí é feito para mochileiro sozinho ou casal sem filhos, e o que sobra costuma ser só uma nota média de milhares de estranhos, sem contexto nenhum sobre se aquele lugar faz sentido pra sua família. Esse site nasceu pra preencher esse espaço: transformar experiência real de viagem em planejamento fácil, pensado especialmente para famílias.',
   'A IA organiza a viagem. Quem escolhe os lugares é quem realmente esteve lá.'
 );
 

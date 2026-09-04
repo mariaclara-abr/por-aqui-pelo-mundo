@@ -3,7 +3,7 @@
 
 create table shared_itineraries (
   id uuid primary key default gen_random_uuid(),
-  -- Um compartilhamento por roteiro — reativar/desativar em vez de acumular
+  -- Um compartilhamento por roteiro: reativar/desativar em vez de acumular
   -- tokens novos a cada clique em "Compartilhar".
   itinerary_id uuid not null unique references itineraries(id) on delete cascade,
   share_token text not null unique,

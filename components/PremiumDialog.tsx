@@ -75,13 +75,13 @@ const HERO_BENEFITS: {
     id: "ia",
     icon: SparkleIcon,
     title: "IA organiza tudo por você",
-    detail: "define ordem, horário e tempo ideal em cada atração",
+    detail: "define ordem, horário e tempo ideal em cada atração do roteiro",
   },
   {
     id: "download",
     icon: DownloadIcon,
     title: "Baixe e leve com você",
-    detail: "acesso total mesmo sem internet",
+    detail: "acesso total ao roteiro mesmo sem internet",
   },
   {
     id: "economia",
@@ -117,7 +117,7 @@ const PLAN_INFO: Record<
     originalPrice: "R$ 24,90",
     priceSuffix: "",
     detail:
-      "Válido para este roteiro (máximo 1 país)\ncidades e atrações ilimitadas\n+ todas as dicas desbloqueadas por 10 dias",
+      "Válido para um roteiro (máximo 1 país), cidades e\natrações ilimitadas + todas as dicas desbloqueadas por 10 dias",
   },
   premium_mensal: {
     title: "Premium Mensal",

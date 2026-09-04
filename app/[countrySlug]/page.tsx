@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
-import { getCitiesByCountry, getCityCountByCountry, getCountryBySlug } from "@/lib/queries";
+import {
+  getCitiesByCountry,
+  getCityCountByCountry,
+  getCountryBySlug,
+  getStatesByCountry,
+} from "@/lib/queries";
 import { getCountryQuestions } from "@/lib/questions";
 import { createClient } from "@/lib/supabase-server";
 import CityCard from "@/components/CityCard";
+import StateCard from "@/components/StateCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import ExpandableText from "@/components/ExpandableText";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
@@ -79,11 +85,18 @@ export default async function CountryPage(
     notFound();
   }
 
-  const cities = await getCitiesByCountry(countrySlug);
+  // Países grandes o bastante (hoje só o Brasil) agrupam suas cidades em
+  // estados: nesse caso a página do país lista estados, não cidades direto,
+  // e cada estado tem sua própria página (mesma rota de cidade, ver
+  // app/[countrySlug]/[citySlug]/page.tsx) com a grade de cidades dele.
+  const states = await getStatesByCountry(countrySlug);
+  const hasStates = states.length > 0;
+
+  const cities = hasStates ? [] : await getCitiesByCountry(countrySlug);
 
   // Países com uma única cidade (ex: Mônaco) não precisam da etapa
   // intermediária de escolher a cidade: vai direto para as atrações.
-  if (cities.length === 1) {
+  if (!hasStates && cities.length === 1) {
     redirect(`/${countrySlug}/${cities[0].slug}`);
   }
 
@@ -109,11 +122,19 @@ export default async function CountryPage(
           />
         ) : (
           <p className="mt-2 text-oliva">
-            Escolha uma cidade para ver as atrações com curadoria.
+            {hasStates
+              ? "Escolha um estado para ver as cidades com curadoria."
+              : "Escolha uma cidade para ver as atrações com curadoria."}
           </p>
         )}
 
-        {cities.length === 0 ? (
+        {hasStates ? (
+          <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {states.map((state) => (
+              <StateCard key={state.id} state={state} countrySlug={countrySlug} />
+            ))}
+          </div>
+        ) : cities.length === 0 ? (
           <div className="mt-16 flex flex-col items-center gap-2 py-16 text-center">
             <p className="font-serif text-xl text-tinta">
               Novas cidades em breve

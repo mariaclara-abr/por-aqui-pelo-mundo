@@ -1,35 +1,35 @@
 import Link from "next/link";
-import { getCitiesWithCountry } from "@/lib/queries";
+import { getStatesWithCountry } from "@/lib/queries";
 import DeleteButton from "@/components/admin/DeleteButton";
 
-export default async function AdminCidadesPage() {
-  const cities = await getCitiesWithCountry();
+export default async function AdminEstadosPage() {
+  const states = await getStatesWithCountry();
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-2xl text-tinta">Cidades</h1>
+        <h1 className="font-serif text-2xl text-tinta">Estados</h1>
         <Link
-          href="/admin/cidades/novo"
+          href="/admin/estados/novo"
           className="rounded-full bg-terracota px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
         >
-          + Nova cidade
+          + Novo estado
         </Link>
       </div>
 
-      {cities.length === 0 ? (
-        <p className="mt-8 text-oliva">Nenhuma cidade cadastrada ainda.</p>
+      {states.length === 0 ? (
+        <p className="mt-8 text-oliva">Nenhum estado cadastrado ainda.</p>
       ) : (
         <ul className="mt-6 flex flex-col gap-2">
-          {cities.map((city) => (
+          {states.map((state) => (
             <li
-              key={city.id}
+              key={state.id}
               className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-oliva/15 bg-branco p-3"
             >
               <div className="flex items-center gap-3">
-                {city.cover_image_url ? (
+                {state.cover_image_url ? (
                   <img
-                    src={city.cover_image_url}
+                    src={state.cover_image_url}
                     alt=""
                     className="h-10 w-14 rounded object-cover"
                   />
@@ -37,25 +37,22 @@ export default async function AdminCidadesPage() {
                   <div className="h-10 w-14 rounded bg-areia" />
                 )}
                 <div>
-                  <p className="text-tinta">{city.name}</p>
-                  <p className="text-xs text-oliva">
-                    {city.states ? `${city.states.name}, ` : ""}
-                    {city.countries.name}
-                  </p>
+                  <p className="text-tinta">{state.name}</p>
+                  <p className="text-xs text-oliva">{state.countries.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <Link
-                  href={`/admin/cidades/${city.id}`}
+                  href={`/admin/estados/${state.id}`}
                   className="text-sm text-terracota hover:underline"
                 >
                   Editar
                 </Link>
                 <DeleteButton
-                  table="cities"
-                  id={city.id}
-                  confirmMessage={`Excluir "${city.name}"? Isso também apaga todas as atrações dessa cidade.`}
-                  redirectTo="/admin/cidades"
+                  table="states"
+                  id={state.id}
+                  confirmMessage={`Excluir "${state.name}"? Isso também apaga todas as cidades desse estado.`}
+                  redirectTo="/admin/estados"
                 />
               </div>
             </li>

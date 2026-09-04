@@ -7,29 +7,25 @@ import { slugify } from "@/lib/slugify";
 import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
-import CityPreview from "@/components/admin/previews/CityPreview";
+import StatePreview from "@/components/admin/previews/StatePreview";
 import type { Database } from "@/types/database";
 
-type City = Database["public"]["Tables"]["cities"]["Row"];
-type Country = Database["public"]["Tables"]["countries"]["Row"];
 type State = Database["public"]["Tables"]["states"]["Row"];
+type Country = Database["public"]["Tables"]["countries"]["Row"];
 
-export default function CityForm({
-  city,
+export default function StateForm({
+  state,
   countries,
-  states,
 }: {
-  city?: City;
+  state?: State;
   countries: Country[];
-  states: State[];
 }) {
   const router = useRouter();
-  const [countryId, setCountryId] = useState(city?.country_id ?? "");
-  const [stateId, setStateId] = useState(city?.state_id ?? "");
-  const [name, setName] = useState(city?.name ?? "");
-  const [description, setDescription] = useState(city?.description ?? "");
+  const [countryId, setCountryId] = useState(state?.country_id ?? "");
+  const [name, setName] = useState(state?.name ?? "");
+  const [description, setDescription] = useState(state?.description ?? "");
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
-    city?.cover_image_url ?? null,
+    state?.cover_image_url ?? null,
   );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -38,25 +34,13 @@ export default function CityForm({
   const slug = slugify(name);
   const selectedCountryName =
     countries.find((country) => country.id === countryId)?.name ?? "";
-  const statesForCountry = states.filter(
-    (state) => state.country_id === countryId,
-  );
-
-  function handleCountryChange(newCountryId: string) {
-    setCountryId(newCountryId);
-    // Troca de país invalida o estado escolhido, se o novo país nem tem
-    // estados cadastrados ou se o estado atual pertence a outro país.
-    if (!states.some((state) => state.id === stateId && state.country_id === newCountryId)) {
-      setStateId("");
-    }
-  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
 
     if (!countryId) {
-      setError("Escolha o país dessa cidade.");
+      setError("Escolha o país desse estado.");
       return;
     }
 
@@ -65,29 +49,28 @@ export default function CityForm({
     const supabase = createClient();
     const payload = {
       country_id: countryId,
-      state_id: stateId || null,
       name,
       slug,
       description: description || null,
       cover_image_url: coverImageUrl,
     };
 
-    const { error } = city
-      ? await supabase.from("cities").update(payload).eq("id", city.id)
-      : await supabase.from("cities").insert(payload);
+    const { error } = state
+      ? await supabase.from("states").update(payload).eq("id", state.id)
+      : await supabase.from("states").insert(payload);
 
     setSaving(false);
 
     if (error) {
       setError(
         error.code === "23505"
-          ? "Já existe uma cidade com esse nome."
+          ? "Já existe um estado com esse nome."
           : "Não foi possível salvar. Tente novamente.",
       );
       return;
     }
 
-    router.push("/admin/cidades");
+    router.push("/admin/estados");
     router.refresh();
   }
 
@@ -96,13 +79,13 @@ export default function CityForm({
       <FormField
         label="País"
         htmlFor="country"
-        helpText="A que país essa cidade pertence."
+        helpText="A que país esse estado pertence."
       >
         <select
           id="country"
           className={inputClass}
           value={countryId}
-          onChange={(event) => handleCountryChange(event.target.value)}
+          onChange={(event) => setCountryId(event.target.value)}
           required
         >
           <option value="">Selecione...</option>
@@ -114,33 +97,10 @@ export default function CityForm({
         </select>
       </FormField>
 
-      {statesForCountry.length > 0 && (
-        <FormField
-          label="Estado"
-          htmlFor="state"
-          helpText="A que estado essa cidade pertence."
-        >
-          <select
-            id="state"
-            className={inputClass}
-            value={stateId}
-            onChange={(event) => setStateId(event.target.value)}
-            required
-          >
-            <option value="">Selecione...</option>
-            {statesForCountry.map((state) => (
-              <option key={state.id} value={state.id}>
-                {state.name}
-              </option>
-            ))}
-          </select>
-        </FormField>
-      )}
-
       <FormField
-        label="Nome da cidade"
+        label="Nome do estado"
         htmlFor="name"
-        helpText="Como vai aparecer para os visitantes. Ex: Paris, Roma."
+        helpText="Como vai aparecer para os visitantes. Ex: Santa Catarina, Rio de Janeiro."
       >
         <input
           id="name"
@@ -156,7 +116,7 @@ export default function CityForm({
       <FormField
         label="Descrição"
         htmlFor="description"
-        helpText="Um resumo curto sobre a cidade (opcional)."
+        helpText="Um resumo curto sobre o estado (opcional)."
       >
         <textarea
           id="description"
@@ -175,7 +135,7 @@ export default function CityForm({
         <CoverImageUploader
           value={coverImageUrl}
           onChange={setCoverImageUrl}
-          folder="cities"
+          folder="states"
         />
       </FormField>
 
@@ -200,7 +160,7 @@ export default function CityForm({
 
       {showPreview && (
         <PreviewModal onClose={() => setShowPreview(false)}>
-          <CityPreview
+          <StatePreview
             countryName={selectedCountryName}
             name={name}
             description={description || null}

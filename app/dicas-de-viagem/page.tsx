@@ -61,7 +61,7 @@ export default async function DicasDeViagemPage() {
               <p className="text-left text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
                 Para consultar antes de ir
               </p>
-              <h2 className="mt-3 font-serif text-3xl leading-tight text-tinta sm:text-4xl">
+              <h2 className="mt-3 whitespace-nowrap font-serif text-2xl leading-tight text-tinta sm:text-4xl">
                 Anotações de viagem
               </h2>
             </div>

@@ -22,6 +22,8 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
     setOpenTip(tip);
   }
 
+  const FIRST_CATEGORY = "Planejamento de viagem";
+
   const categories: string[] = [];
   const tipsByCategory = new Map<string, TravelTip[]>();
   for (const tip of tips) {
@@ -31,6 +33,12 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
     }
     tipsByCategory.get(tip.category)!.push(tip);
   }
+
+  categories.sort((a, b) => {
+    if (a === FIRST_CATEGORY) return -1;
+    if (b === FIRST_CATEGORY) return 1;
+    return a.localeCompare(b, "pt-BR");
+  });
 
   return (
     <>

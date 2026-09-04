@@ -54,6 +54,112 @@ export async function getCountryById(id: string) {
   return data;
 }
 
+// Camada opcional entre país e cidade (hoje só usada pelo Brasil). Uma
+// cidade com state_id preenchido só aparece agrupada dentro do seu estado
+// na página do país; getCitiesByCountry continua trazendo todas as cidades
+// do país, com ou sem estado, para quem precisa da lista completa (sitemap,
+// NavDrawer).
+export async function getStatesByCountry(countrySlug: string) {
+  const { data: country, error: countryError } = await supabase
+    .from("countries")
+    .select("id")
+    .eq("slug", countrySlug)
+    .single();
+
+  if (countryError) throw countryError;
+
+  const { data, error } = await supabase
+    .from("states")
+    .select("*")
+    .eq("country_id", country.id)
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
+export const getStateBySlug = cache(async (stateSlug: string) => {
+  const { data, error } = await supabase
+    .from("states")
+    .select("*, countries(*)")
+    .eq("slug", stateSlug)
+    .single();
+
+  if (error) throw error;
+  return data;
+});
+
+export async function getStateById(id: string) {
+  const { data, error } = await supabase
+    .from("states")
+    .select("*, countries(*)")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// Lista enxuta de todos os estados, sem o join de país: usada pelo
+// formulário de cidade, que já tem a lista de países à parte e só precisa
+// filtrar os estados pelo country_id selecionado no próprio formulário.
+export async function getStates() {
+  const { data, error } = await supabase
+    .from("states")
+    .select("*")
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getStatesWithCountry() {
+  const { data, error } = await supabase
+    .from("states")
+    .select("*, countries(*)")
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getCitiesByState(stateSlug: string) {
+  const { data: state, error: stateError } = await supabase
+    .from("states")
+    .select("id")
+    .eq("slug", stateSlug)
+    .single();
+
+  if (stateError) throw stateError;
+
+  const { data, error } = await supabase
+    .from("cities")
+    .select("*")
+    .eq("state_id", state.id)
+    .order("name");
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getCityCountByState(stateSlug: string) {
+  const { data: state, error: stateError } = await supabase
+    .from("states")
+    .select("id")
+    .eq("slug", stateSlug)
+    .single();
+
+  if (stateError) throw stateError;
+
+  const { count, error } = await supabase
+    .from("cities")
+    .select("*", { count: "exact", head: true })
+    .eq("state_id", state.id);
+
+  if (error) throw error;
+  return count ?? 0;
+}
+
 export async function getCitiesByCountry(countrySlug: string) {
   const { data: country, error: countryError } = await supabase
     .from("countries")
@@ -116,7 +222,7 @@ export async function getCityById(id: string) {
 export async function getCitiesWithCountry() {
   const { data, error } = await supabase
     .from("cities")
-    .select("*, countries(*)")
+    .select("*, countries(*), states(name)")
     .order("name");
 
   if (error) throw error;

@@ -59,7 +59,7 @@ cross join (
     ),
     (
       'Mercado Central de Atenas', 'mercado-central-de-atenas', 'compras',
-      'Bons preços — aproveite para comprar chocolates, vinhos e água.',
+      'Bons preços, aproveite para comprar chocolates, vinhos e água.',
       null,
       'Experimente o Three Cents Pink Grapefruit Soda, um refrigerante '
       || 'artesanal premium originário da Grécia.',

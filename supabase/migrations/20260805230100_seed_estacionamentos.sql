@@ -24,7 +24,7 @@ cross join (
       null, 5
     ),
     (
-      'Estacionamento gratuito — Fábrica de Perfumes Fragonard', 'estacionamento-fragonard-eze', 'estacionamentos',
+      'Estacionamento gratuito: Fábrica de Perfumes Fragonard', 'estacionamento-fragonard-eze', 'estacionamentos',
       'Estacionamento na Fragonard L''Usine Laboratoire d''Èze.',
       'É possível estacionar gratuitamente durante a visita à fábrica.', 5
     )
