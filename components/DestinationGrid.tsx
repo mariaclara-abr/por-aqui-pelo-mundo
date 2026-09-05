@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import CountryCard from "@/components/CountryCard";
 import ComingSoonCountryCard from "@/components/ComingSoonCountryCard";
 import Image from "next/image";
 import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
+
+const DESTINATIONS_PER_PAGE = 6;
 
 export default function DestinationGrid({
   countries,
@@ -12,6 +17,20 @@ export default function DestinationGrid({
   countries: Country[];
   comingSoonCountries?: Country[];
 }) {
+  const [showAll, setShowAll] = useState(false);
+
+  const allCards = [
+    ...countries.map((country) => ({ country, comingSoon: false as const })),
+    ...comingSoonCountries.map((country) => ({
+      country,
+      comingSoon: true as const,
+    })),
+  ];
+
+  const visibleCards = showAll
+    ? allCards
+    : allCards.slice(0, DESTINATIONS_PER_PAGE);
+
   return (
     <section
       id="destinos"
@@ -34,7 +53,7 @@ export default function DestinationGrid({
           Menos horas pesquisando, mais dias aproveitando.
         </p>
 
-        {countries.length === 0 && comingSoonCountries.length === 0 ? (
+        {allCards.length === 0 ? (
           <div className="mt-16 flex flex-col items-center gap-2 py-16 text-center">
             <p className="font-serif text-xl text-tinta">
               Novos destinos em breve
@@ -45,14 +64,29 @@ export default function DestinationGrid({
             </p>
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 sm:mt-10 sm:grid-cols-2 sm:gap-y-14 lg:grid-cols-3 xl:grid-cols-4">
-            {countries.map((country) => (
-              <CountryCard key={country.id} country={country} />
-            ))}
-            {comingSoonCountries.map((country) => (
-              <ComingSoonCountryCard key={country.id} country={country} />
-            ))}
-          </div>
+          <>
+            <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 sm:mt-10 sm:grid-cols-2 sm:gap-y-14 lg:grid-cols-3 xl:grid-cols-4">
+              {visibleCards.map(({ country, comingSoon }) =>
+                comingSoon ? (
+                  <ComingSoonCountryCard key={country.id} country={country} />
+                ) : (
+                  <CountryCard key={country.id} country={country} />
+                )
+              )}
+            </div>
+
+            {!showAll && allCards.length > DESTINATIONS_PER_PAGE && (
+              <div className="mt-10 text-center sm:mt-14">
+                <button
+                  type="button"
+                  onClick={() => setShowAll(true)}
+                  className="rounded-full border border-terracota px-6 py-2.5 text-sm font-semibold text-terracota transition-colors hover:bg-terracota hover:text-branco"
+                >
+                  Ver mais destinos
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
