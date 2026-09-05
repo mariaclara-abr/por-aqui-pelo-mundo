@@ -28,10 +28,10 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
 
       <div className="relative mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-6 sm:py-24 lg:px-10">
         <div className="mx-auto flex max-w-[680px] flex-col text-center lg:mx-0 lg:text-left">
-          <h1 className="font-serif text-[2.65rem] leading-[0.98] tracking-[-0.035em] text-white sm:text-6xl lg:text-7xl">
+          <h1 className="font-lora text-[2.65rem] leading-[0.98] tracking-[-0.035em] text-white sm:text-6xl lg:text-7xl">
             Por Aqui Pelo Mundo
           </h1>
-          <p className="mt-4 text-center font-serif text-lg leading-snug text-areia sm:mt-6 sm:text-2xl lg:text-left lg:text-[1.7rem]">
+          <p className="mt-4 text-center font-lora text-lg leading-snug text-areia sm:mt-6 sm:text-2xl lg:text-left lg:text-[1.7rem]">
             Monte seus roteiros de viagem com base na experiência real de quem já
             esteve lá.
           </p>
@@ -61,15 +61,15 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
 
           {showCounter && (
             <p className="mt-5 text-center text-xs text-areia/90 sm:mt-6 sm:text-sm lg:text-left">
-              <span className="font-serif text-base text-white">
+              <span className="font-lora text-base text-white">
                 {counts.countries}
               </span>{" "}
               países ·{" "}
-              <span className="font-serif text-base text-white">
+              <span className="font-lora text-base text-white">
                 {counts.cities}
               </span>{" "}
               cidades ·{" "}
-              <span className="font-serif text-base text-white">
+              <span className="font-lora text-base text-white">
                 {counts.attractions}
               </span>{" "}
               atrações visitadas e avaliadas

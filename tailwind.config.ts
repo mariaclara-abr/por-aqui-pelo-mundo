@@ -17,6 +17,7 @@ const config: Config = {
       fontFamily: {
         serif: ["var(--font-fraunces)", "serif"],
         sans: ["var(--font-inter)", "sans-serif"],
+        lora: ["var(--font-lora)", "serif"],
       },
       borderRadius: {
         card: "10px",
