@@ -4,6 +4,7 @@ import { getAboutPageContent, getAboutVisitedCountries } from "@/lib/queries";
 import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
 import { linkify } from "@/components/Linkify";
 import { buildOpenGraph } from "@/lib/metadata";
+import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
 const TITLE = "Sobre a autora";
 
@@ -49,25 +50,28 @@ export default async function SobrePage() {
     .filter(Boolean);
 
   return (
-    <main className="flex-1 bg-[url('/sobre-autora-background.png')] bg-[length:100%_auto] bg-repeat-y bg-top">
+    <main className="flex-1 bg-[url('/sobre-autora-background-v2.png')] bg-[length:100%_auto] bg-repeat-y bg-top">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="flex flex-col items-center text-center">
-          <div className="relative h-44 w-44 shrink-0 overflow-hidden rounded-full border-4 border-branco bg-branco shadow-sm sm:h-56 sm:w-56">
-            {about.author_photo_url ? (
-              <Image
-                src={about.author_photo_url}
-                alt={about.author_name}
-                fill
-                sizes="224px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <span className="font-serif text-sm text-oliva">
-                  Foto em breve
-                </span>
-              </div>
-            )}
+          <div className="shrink-0 rounded-full border border-oliva/20 bg-branco/70 p-1.5 shadow-sm">
+            <div className="relative h-44 w-44 overflow-hidden rounded-full border-4 border-branco bg-branco sm:h-56 sm:w-56">
+              {about.author_photo_url ? (
+                <Image
+                  src={about.author_photo_url}
+                  alt={about.author_name}
+                  fill
+                  sizes="224px"
+                  className="object-cover"
+                  style={imagePositionStyle(parseImagePosition(about.author_photo_position))}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <span className="font-serif text-sm text-oliva">
+                    Foto em breve
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
           <p className="mt-5 text-xs uppercase tracking-widest text-oliva">
             Sobre a autora
@@ -85,18 +89,21 @@ export default async function SobrePage() {
           </div>
         </div>
 
-        <div className="relative mt-10 flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
-          {about.travel_photo_1_url ? (
-            <Image
-              src={about.travel_photo_1_url}
-              alt={`Foto de viagem de ${about.author_name}`}
-              fill
-              sizes="(min-width: 1024px) 1152px, 100vw"
-              className="rounded-xl object-cover"
-            />
-          ) : (
-            <span className="text-sm text-oliva">Foto de viagem em breve</span>
-          )}
+        <div className="mt-10 rounded-2xl border border-oliva/20 bg-branco/70 p-2 shadow-sm sm:p-3">
+          <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl bg-branco">
+            {about.travel_photo_1_url ? (
+              <Image
+                src={about.travel_photo_1_url}
+                alt={`Foto de viagem de ${about.author_name}`}
+                fill
+                sizes="(min-width: 1024px) 1128px, 96vw"
+                className="object-cover"
+                style={imagePositionStyle(parseImagePosition(about.travel_photo_1_position))}
+              />
+            ) : (
+              <span className="text-sm text-oliva">Foto de viagem em breve</span>
+            )}
+          </div>
         </div>
 
         <div className="mx-auto max-w-2xl">
@@ -135,18 +142,21 @@ export default async function SobrePage() {
           </div>
         </div>
 
-        <div className="relative mt-10 flex aspect-[16/9] w-full items-center justify-center rounded-xl bg-branco">
-          {about.travel_photo_2_url ? (
-            <Image
-              src={about.travel_photo_2_url}
-              alt={`Foto de viagem de ${about.author_name}`}
-              fill
-              sizes="(min-width: 1024px) 1152px, 100vw"
-              className="rounded-xl object-cover"
-            />
-          ) : (
-            <span className="text-sm text-oliva">Foto de viagem em breve</span>
-          )}
+        <div className="mt-10 rounded-2xl border border-oliva/20 bg-branco/70 p-2 shadow-sm sm:p-3">
+          <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl bg-branco">
+            {about.travel_photo_2_url ? (
+              <Image
+                src={about.travel_photo_2_url}
+                alt={`Foto de viagem de ${about.author_name}`}
+                fill
+                sizes="(min-width: 1024px) 1128px, 96vw"
+                className="object-cover"
+                style={imagePositionStyle(parseImagePosition(about.travel_photo_2_position))}
+              />
+            ) : (
+              <span className="text-sm text-oliva">Foto de viagem em breve</span>
+            )}
+          </div>
         </div>
 
         <div className="mx-auto max-w-2xl text-left">

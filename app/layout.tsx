@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { AuthProvider } from "@/lib/auth";
 import { RoteiroProvider } from "@/lib/roteiro";
-import { NotificationsProvider } from "@/lib/notifications-context";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SITE_NAME, SITE_URL, buildOpenGraph } from "@/lib/metadata";
@@ -47,11 +46,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col font-sans">
         <AuthProvider>
           <RoteiroProvider>
-            <NotificationsProvider>
-              <Header />
-              {children}
-              <Footer />
-            </NotificationsProvider>
+            <Header />
+            {children}
+            <Footer />
           </RoteiroProvider>
         </AuthProvider>
       </body>

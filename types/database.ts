@@ -48,9 +48,6 @@ export type ItineraryStatus = "planejando" | "concluida";
 
 export type QuestionStatus = "pendente" | "respondida" | "oculta";
 
-
-export type NotificationType = "bem_vindo" | "pergunta_respondida" | "novo_destino";
-
 export type PlanType =
   | "roteiro_unico_1pais"
   | "premium_mensal"
@@ -146,6 +143,7 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url: string | null;
+          cover_image_position: Json | null;
           description: string | null;
           status: CountryStatus;
           created_at: string;
@@ -155,6 +153,7 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url?: string | null;
+          cover_image_position?: Json | null;
           description?: string | null;
           status?: CountryStatus;
           created_at?: string;
@@ -169,6 +168,7 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url: string | null;
+          cover_image_position: Json | null;
           description: string | null;
           latitude: number | null;
           longitude: number | null;
@@ -180,6 +180,7 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url?: string | null;
+          cover_image_position?: Json | null;
           description?: string | null;
           latitude?: number | null;
           longitude?: number | null;
@@ -204,9 +205,11 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url: string | null;
+          cover_image_position: Json | null;
           description: string | null;
           latitude: number | null;
           longitude: number | null;
+          status: CountryStatus;
           created_at: string;
         };
         Insert: {
@@ -216,9 +219,11 @@ export interface Database {
           name: string;
           slug: string;
           cover_image_url?: string | null;
+          cover_image_position?: Json | null;
           description?: string | null;
           latitude?: number | null;
           longitude?: number | null;
+          status?: CountryStatus;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["cities"]["Insert"]>;
@@ -321,6 +326,7 @@ export interface Database {
           id: string;
           attraction_id: string;
           url: string;
+          position: Json | null;
           order: number;
           caption: string | null;
         };
@@ -328,6 +334,7 @@ export interface Database {
           id?: string;
           attraction_id: string;
           url: string;
+          position?: Json | null;
           order?: number;
           caption?: string | null;
         };
@@ -801,22 +808,28 @@ export interface Database {
           id: number;
           author_name: string;
           author_photo_url: string | null;
+          author_photo_position: Json | null;
           bio: string;
           why_site_text: string;
           quote_text: string;
           travel_photo_1_url: string | null;
+          travel_photo_1_position: Json | null;
           travel_photo_2_url: string | null;
+          travel_photo_2_position: Json | null;
           updated_at: string;
         };
         Insert: {
           id?: number;
           author_name?: string;
           author_photo_url?: string | null;
+          author_photo_position?: Json | null;
           bio?: string;
           why_site_text?: string;
           quote_text?: string;
           travel_photo_1_url?: string | null;
+          travel_photo_1_position?: Json | null;
           travel_photo_2_url?: string | null;
+          travel_photo_2_position?: Json | null;
           updated_at?: string;
         };
         Update: Partial<
@@ -934,52 +947,6 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["login_attempts"]["Insert"]>;
         Relationships: [];
       };
-      notifications: {
-        Row: {
-          id: string;
-          user_id: string | null;
-          type: NotificationType;
-          title: string;
-          message: string;
-          link: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id?: string | null;
-          type: NotificationType;
-          title: string;
-          message: string;
-          link?: string | null;
-          created_at?: string;
-        };
-        Update: Partial<Database["public"]["Tables"]["notifications"]["Insert"]>;
-        Relationships: [];
-      };
-      notification_reads: {
-        Row: {
-          notification_id: string;
-          user_id: string;
-          read_at: string;
-        };
-        Insert: {
-          notification_id: string;
-          user_id: string;
-          read_at?: string;
-        };
-        Update: Partial<
-          Database["public"]["Tables"]["notification_reads"]["Insert"]
-        >;
-        Relationships: [
-          {
-            foreignKeyName: "notification_reads_notification_id_fkey";
-            columns: ["notification_id"];
-            isOneToOne: false;
-            referencedRelation: "notifications";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
     };
     Views: {
       public_profiles: {
@@ -1020,7 +987,6 @@ export interface Database {
       itinerary_status: ItineraryStatus;
       question_status: QuestionStatus;
       plan_type: PlanType;
-      notification_type: NotificationType;
     };
     CompositeTypes: Record<string, never>;
   };

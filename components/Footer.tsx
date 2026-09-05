@@ -2,7 +2,6 @@ import Link from "next/link";
 
 const LINKS = [
   { label: "Meus roteiros", href: "/meu-roteiro" },
-  { label: "Avisos", href: "/notificacoes" },
   { label: "Sobre a autora", href: "/sobre" },
   { label: "Dicas de viagem", href: "/dicas-de-viagem" },
   { label: "Destinos", href: "/#destinos" },

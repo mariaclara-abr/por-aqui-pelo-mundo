@@ -4,6 +4,7 @@ import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import type { Database } from "@/types/database";
 import { linkify } from "@/components/Linkify";
+import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
 type Photo = Database["public"]["Tables"]["attraction_photos"]["Row"];
 
@@ -114,6 +115,7 @@ function PhotoGalleryOverlay({
                     fill
                     sizes="50vw"
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    style={imagePositionStyle(parseImagePosition(photo.position))}
                   />
                 </button>
               ))}
@@ -218,6 +220,7 @@ export default function AttractionPhotos({
             sizes="(min-width: 1024px) 66vw, 100vw"
             preload
             className="object-cover"
+            style={imagePositionStyle(parseImagePosition(photos[0].position))}
           />
         </div>
         {rest.length > 0 && (
@@ -238,6 +241,7 @@ export default function AttractionPhotos({
                     fill
                     sizes="33vw"
                     className="object-cover brightness-[0.2] transition-[filter] group-hover:brightness-[0.15]"
+                    style={imagePositionStyle(parseImagePosition(photo.position))}
                   />
                   <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white">
                     Ver mais
@@ -254,6 +258,7 @@ export default function AttractionPhotos({
                     fill
                     sizes="33vw"
                     className="object-cover"
+                    style={imagePositionStyle(parseImagePosition(photo.position))}
                   />
                 </div>
               );

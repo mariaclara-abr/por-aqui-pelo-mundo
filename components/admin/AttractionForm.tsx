@@ -12,6 +12,7 @@ import { RATING_LABELS } from "@/components/CurationRating";
 import { PRICE_RANGE_LABELS } from "@/components/PriceRange";
 import { ATTRACTION_CATEGORIES, categoryLabels } from "@/types/database";
 import type { AttractionCategory, Database } from "@/types/database";
+import { imagePositionToJson, parseImagePosition } from "@/lib/image-position";
 
 type Attraction = Database["public"]["Tables"]["attractions"]["Row"] & {
   attraction_photos: Database["public"]["Tables"]["attraction_photos"]["Row"][];
@@ -113,7 +114,12 @@ export default function AttractionForm({
   const [photos, setPhotos] = useState<AdminPhoto[]>(
     [...(attraction?.attraction_photos ?? [])]
       .sort((a, b) => a.order - b.order)
-      .map((photo) => ({ id: photo.id, url: photo.url, caption: photo.caption })),
+      .map((photo) => ({
+        id: photo.id,
+        url: photo.url,
+        caption: photo.caption,
+        position: parseImagePosition(photo.position),
+      })),
   );
 
   const [error, setError] = useState<string | null>(null);
@@ -245,6 +251,9 @@ export default function AttractionForm({
               url: photo.url,
               order: index,
               caption: photo.caption || null,
+              position: photo.position
+                ? imagePositionToJson(photo.position)
+                : null,
             })),
           );
         if (insertPhotosError) throw insertPhotosError;

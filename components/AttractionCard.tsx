@@ -4,6 +4,7 @@ import type { Database } from "@/types/database";
 import { categoryLabels } from "@/types/database";
 import CurationRating from "@/components/CurationRating";
 import RoteiroButton from "@/components/RoteiroButton";
+import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
 type Attraction = Database["public"]["Tables"]["attractions"]["Row"] & {
   attraction_photos: Database["public"]["Tables"]["attraction_photos"]["Row"][];
@@ -41,6 +42,7 @@ export default function AttractionCard({
               fill
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
+              style={imagePositionStyle(parseImagePosition(coverPhoto.position))}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">

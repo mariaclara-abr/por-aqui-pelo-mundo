@@ -8,6 +8,7 @@ import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import StatePreview from "@/components/admin/previews/StatePreview";
+import { imagePositionToJson, parseImagePosition, type ImagePosition } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
 type State = Database["public"]["Tables"]["states"]["Row"];
@@ -27,6 +28,10 @@ export default function StateForm({
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
     state?.cover_image_url ?? null,
   );
+  const [coverImagePosition, setCoverImagePosition] =
+    useState<ImagePosition | null>(
+      parseImagePosition(state?.cover_image_position ?? null),
+    );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -53,6 +58,9 @@ export default function StateForm({
       slug,
       description: description || null,
       cover_image_url: coverImageUrl,
+      cover_image_position: coverImagePosition
+        ? imagePositionToJson(coverImagePosition)
+        : null,
     };
 
     const { error } = state
@@ -136,6 +144,8 @@ export default function StateForm({
           value={coverImageUrl}
           onChange={setCoverImageUrl}
           folder="states"
+          position={coverImagePosition}
+          onPositionChange={setCoverImagePosition}
         />
       </FormField>
 
@@ -165,6 +175,7 @@ export default function StateForm({
             name={name}
             description={description || null}
             coverImageUrl={coverImageUrl}
+            coverImagePosition={coverImagePosition}
           />
         </PreviewModal>
       )}

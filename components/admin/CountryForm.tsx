@@ -8,6 +8,7 @@ import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import CountryPreview from "@/components/admin/previews/CountryPreview";
+import { imagePositionToJson, parseImagePosition, type ImagePosition } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
@@ -19,6 +20,10 @@ export default function CountryForm({ country }: { country?: Country }) {
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
     country?.cover_image_url ?? null,
   );
+  const [coverImagePosition, setCoverImagePosition] =
+    useState<ImagePosition | null>(
+      parseImagePosition(country?.cover_image_position ?? null),
+    );
   const [isDraft, setIsDraft] = useState(country?.status === "draft");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -37,6 +42,9 @@ export default function CountryForm({ country }: { country?: Country }) {
       slug,
       description: description || null,
       cover_image_url: coverImageUrl,
+      cover_image_position: coverImagePosition
+        ? imagePositionToJson(coverImagePosition)
+        : null,
       status: isDraft ? ("draft" as const) : ("published" as const),
     };
 
@@ -100,6 +108,8 @@ export default function CountryForm({ country }: { country?: Country }) {
           value={coverImageUrl}
           onChange={setCoverImageUrl}
           folder="countries"
+          position={coverImagePosition}
+          onPositionChange={setCoverImagePosition}
         />
       </FormField>
 
@@ -144,6 +154,7 @@ export default function CountryForm({ country }: { country?: Country }) {
             name={name}
             description={description || null}
             coverImageUrl={coverImageUrl}
+            coverImagePosition={coverImagePosition}
             isDraft={isDraft}
           />
         </PreviewModal>

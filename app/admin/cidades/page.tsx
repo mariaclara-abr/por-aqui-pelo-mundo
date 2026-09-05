@@ -37,7 +37,14 @@ export default async function AdminCidadesPage() {
                   <div className="h-10 w-14 rounded bg-areia" />
                 )}
                 <div>
-                  <p className="text-tinta">{city.name}</p>
+                  <p className="flex items-center gap-2 text-tinta">
+                    {city.name}
+                    {city.status === "draft" && (
+                      <span className="rounded-full bg-terracota/10 px-2.5 py-0.5 text-xs font-medium text-terracota">
+                        Em breve
+                      </span>
+                    )}
+                  </p>
                   <p className="text-xs text-oliva">
                     {city.states ? `${city.states.name}, ` : ""}
                     {city.countries.name}

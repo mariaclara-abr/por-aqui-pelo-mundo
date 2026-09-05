@@ -1,15 +1,18 @@
 import ExpandableText from "@/components/ExpandableText";
+import { imagePositionStyle, type ImagePosition } from "@/lib/image-position";
 
 export default function StatePreview({
   countryName,
   name,
   description,
   coverImageUrl,
+  coverImagePosition = null,
 }: {
   countryName: string;
   name: string;
   description: string | null;
   coverImageUrl: string | null;
+  coverImagePosition?: ImagePosition | null;
 }) {
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
@@ -37,6 +40,7 @@ export default function StatePreview({
                 src={coverImageUrl}
                 alt={name || "Nome do estado"}
                 className="absolute inset-0 h-full w-full object-cover"
+                style={imagePositionStyle(coverImagePosition)}
               />
               <div className="absolute inset-0 bg-tinta/60" />
             </>

@@ -2,11 +2,14 @@
 
 import { useState, type ChangeEvent } from "react";
 import { createClient } from "@/lib/supabase-browser";
+import ImagePositionPicker from "@/components/admin/ImagePositionPicker";
+import { imagePositionStyle, type ImagePosition } from "@/lib/image-position";
 
 export interface AdminPhoto {
   id: string;
   url: string;
   caption?: string | null;
+  position?: ImagePosition | null;
 }
 
 function sanitizeFileName(name: string) {
@@ -36,6 +39,7 @@ export default function PhotoUploader({
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [adjustingId, setAdjustingId] = useState<string | null>(null);
 
   async function handleFilesChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
@@ -100,6 +104,12 @@ export default function PhotoUploader({
     onChange(next);
   }
 
+  function setPosition(index: number, position: ImagePosition) {
+    const next = [...photos];
+    next[index] = { ...next[index], position };
+    onChange(next);
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <input
@@ -125,11 +135,21 @@ export default function PhotoUploader({
                   src={photo.url}
                   alt={photo.caption || `Foto ${index + 1}`}
                   className="h-16 w-24 rounded object-cover"
+                  style={imagePositionStyle(photo.position)}
                 />
                 <span className="text-xs text-oliva">
                   {index === 0 ? "Foto principal" : `Foto ${index + 1}`}
                 </span>
                 <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAdjustingId(adjustingId === photo.id ? null : photo.id)
+                    }
+                    className="text-xs text-terracota hover:underline"
+                  >
+                    {adjustingId === photo.id ? "Fechar" : "Enquadramento"}
+                  </button>
                   <button
                     type="button"
                     onClick={() => moveUp(index)}
@@ -157,6 +177,13 @@ export default function PhotoUploader({
                   </button>
                 </div>
               </div>
+              {adjustingId === photo.id && (
+                <ImagePositionPicker
+                  imageUrl={photo.url}
+                  value={photo.position ?? null}
+                  onChange={(position) => setPosition(index, position)}
+                />
+              )}
               <input
                 type="text"
                 value={photo.caption ?? ""}

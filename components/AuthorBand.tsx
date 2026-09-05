@@ -40,8 +40,17 @@ export default function AuthorBand({
           </Link>
         </div>
 
-        <div className="mx-auto w-full max-w-sm shrink-0 overflow-hidden rounded-2xl border-4 border-branco/15 shadow-sm lg:mx-0 lg:w-2/5">
-          <div className="relative aspect-[9/10]">
+        <div className="relative mx-auto w-full max-w-sm shrink-0 rounded-2xl border border-areia/35 bg-branco/10 p-1.5 shadow-sm sm:p-2 lg:mx-0 lg:w-2/5">
+          <span
+            aria-hidden="true"
+            className="absolute -left-1 -top-1 h-7 w-7 rounded-tl-2xl border-l border-t border-terracota"
+          />
+          <span
+            aria-hidden="true"
+            className="absolute -bottom-1 -right-1 h-7 w-7 rounded-br-2xl border-b border-r border-terracota"
+          />
+
+          <div className="relative aspect-[9/10] overflow-hidden rounded-xl border border-branco/70">
             {authorPhotoUrl ? (
               <Image
                 src={authorPhotoUrl}

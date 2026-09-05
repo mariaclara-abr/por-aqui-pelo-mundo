@@ -13,7 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         "/entrar",
         "/criar-conta",
         "/meu-roteiro",
-        "/notificacoes",
         "/perfil",
       ],
     },

@@ -45,11 +45,11 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
             </Link>
             , que compartilha dicas reais e exclusivas.
           </p>
-          <div className="relative mt-6 w-full max-w-xs self-center sm:mt-8 sm:w-auto lg:self-start">
-            <div className="relative flex w-full sm:inline-flex sm:w-fit">
+          <div className="relative mt-6 w-fit self-center sm:mt-8 lg:self-start">
+            <div className="relative inline-flex w-fit">
               <a
                 href="#destinos"
-                className="relative inline-block min-h-12 w-full rounded-lg bg-terracota px-7 py-3.5 text-center text-base font-medium text-white transition hover:scale-105 hover:bg-terracota/90 active:scale-95 sm:w-auto sm:px-9"
+                className="relative inline-block min-h-12 w-auto rounded-lg bg-terracota px-7 py-3.5 text-center text-base font-medium text-white transition hover:scale-105 hover:bg-terracota/90 active:scale-95 sm:px-9"
               >
                 Monte seu roteiro
               </a>

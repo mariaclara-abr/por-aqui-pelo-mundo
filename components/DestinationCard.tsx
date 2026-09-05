@@ -1,14 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { imagePositionStyle, type ImagePosition } from "@/lib/image-position";
 
 export default function DestinationCard({
   href,
   name,
   imageUrl,
+  imagePosition,
 }: {
   href: string;
   name: string;
   imageUrl: string | null;
+  imagePosition?: ImagePosition | null;
 }) {
   return (
     <Link
@@ -23,6 +26,7 @@ export default function DestinationCard({
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
+            style={imagePositionStyle(imagePosition)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
           <h2 className="absolute bottom-4 left-4 font-serif text-xl text-white transition-colors group-hover:text-terracota">

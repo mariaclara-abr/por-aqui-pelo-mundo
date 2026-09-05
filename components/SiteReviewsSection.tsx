@@ -56,8 +56,20 @@ export default function SiteReviewsSection({
   reviews: SiteReviewWithProfile[];
 }) {
   return (
-    <section id="avaliacoes" className="bg-areia px-4 py-14 sm:px-6 sm:py-24 lg:px-10">
-      <div className="mx-auto max-w-[1440px]">
+    <section
+      id="avaliacoes"
+      className="relative isolate overflow-hidden bg-areia px-4 py-14 sm:px-6 sm:py-24 lg:px-10"
+    >
+      <Image
+        src="/avaliacoes-background.png"
+        alt=""
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover object-center"
+      />
+      <div className="absolute inset-0 -z-10 bg-areia/20" />
+
+      <div className="relative mx-auto max-w-[1440px]">
         <h2 className="text-center font-serif text-3xl text-tinta sm:text-4xl">
           Quem usou, aprova
         </h2>

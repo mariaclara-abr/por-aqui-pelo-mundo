@@ -13,11 +13,14 @@ import {
   getTags,
 } from "@/lib/queries";
 import { getCityQuestions } from "@/lib/questions";
+import { checkIsAuthor } from "@/lib/server-auth";
+import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 import { ATTRACTION_CATEGORIES } from "@/types/database";
 import type { AttractionCategory } from "@/types/database";
 import AttractionFilters from "@/components/AttractionFilters";
 import AttractionCard from "@/components/AttractionCard";
 import CityCard from "@/components/CityCard";
+import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import RelatedContent from "@/components/RelatedContent";
 import ExpandableText from "@/components/ExpandableText";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
@@ -67,6 +70,9 @@ export async function generateMetadata(
       title,
       description,
       alternates: { canonical: `/${countrySlug}/${citySlug}` },
+      ...(city.status === "draft"
+        ? { robots: { index: false, follow: false } }
+        : {}),
       openGraph: buildOpenGraph({
         title,
         description,
@@ -110,6 +116,10 @@ export default async function CityOrStatePage(
   const city = await getCityBySlug(citySlug).catch(() => null);
 
   if (city && city.countries.slug === countrySlug) {
+    if (city.status === "draft" && !(await checkIsAuthor())) {
+      notFound();
+    }
+
     const categoriasParam = firstValue(searchParams.categorias);
     const validCategoryValues = new Set(
       ATTRACTION_CATEGORIES.map((c) => c.value),
@@ -132,10 +142,21 @@ export default async function CityOrStatePage(
     ]);
 
     const coverImage = city.cover_image_url ?? city.countries.cover_image_url ?? undefined;
+    const coverImagePosition = parseImagePosition(
+      city.cover_image_url
+        ? city.cover_image_position
+        : city.countries.cover_image_position,
+    );
 
     return (
       <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
         <div className="mx-auto max-w-[1440px]">
+          {city.status === "draft" && (
+            <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">
+              Prévia: esta cidade ainda está marcada como em breve, só você
+              consegue ver esta página.
+            </p>
+          )}
           <Link
             href={`/${countrySlug}`}
             className="text-sm text-oliva transition-colors hover:text-terracota"
@@ -195,6 +216,7 @@ export default async function CityOrStatePage(
                   fill
                   sizes="100vw"
                   className="object-cover"
+                  style={imagePositionStyle(coverImagePosition)}
                 />
                 <div className="absolute inset-0 bg-tinta/60" />
               </>
@@ -223,14 +245,22 @@ export default async function CityOrStatePage(
   }
 
   const cities = await getCitiesByState(citySlug);
+  const publishedCities = cities.filter((city) => city.status === "published");
+  const comingSoonCities = cities.filter((city) => city.status === "draft");
 
-  // Estados com uma única cidade cadastrada não precisam da etapa
-  // intermediária: vai direto para as atrações dessa cidade.
-  if (cities.length === 1) {
+  // Estados com uma única cidade já publicada não precisam da etapa
+  // intermediária: vai direto para as atrações dessa cidade. Se a única
+  // cidade ainda está "em breve", fica na grade como teaser.
+  if (cities.length === 1 && cities[0].status === "published") {
     redirect(`/${countrySlug}/${cities[0].slug}`);
   }
 
   const coverImage = state.cover_image_url ?? state.countries.cover_image_url ?? undefined;
+  const coverImagePosition = parseImagePosition(
+    state.cover_image_url
+      ? state.cover_image_position
+      : state.countries.cover_image_position,
+  );
 
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
@@ -264,8 +294,15 @@ export default async function CityOrStatePage(
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {cities.map((cityInState) => (
+            {publishedCities.map((cityInState) => (
               <CityCard
+                key={cityInState.id}
+                city={cityInState}
+                countrySlug={countrySlug}
+              />
+            ))}
+            {comingSoonCities.map((cityInState) => (
+              <ComingSoonCityCard
                 key={cityInState.id}
                 city={cityInState}
                 countrySlug={countrySlug}
@@ -283,6 +320,7 @@ export default async function CityOrStatePage(
                 fill
                 sizes="100vw"
                 className="object-cover"
+                style={imagePositionStyle(coverImagePosition)}
               />
               <div className="absolute inset-0 bg-tinta/60" />
             </>

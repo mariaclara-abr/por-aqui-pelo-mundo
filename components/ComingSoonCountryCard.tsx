@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { getOrCreateVisitorId } from "@/lib/visitor-id";
 import { useAuth } from "@/lib/auth";
+import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
@@ -90,6 +91,7 @@ export default function ComingSoonCountryCard({
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover grayscale transition-transform duration-300 group-hover:scale-105"
+          style={imagePositionStyle(parseImagePosition(country.cover_image_position))}
         />
       ) : (
         <div className="h-full w-full bg-areia" />

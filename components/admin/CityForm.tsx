@@ -8,6 +8,7 @@ import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import CityPreview from "@/components/admin/previews/CityPreview";
+import { imagePositionToJson, parseImagePosition, type ImagePosition } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
 type City = Database["public"]["Tables"]["cities"]["Row"];
@@ -31,6 +32,11 @@ export default function CityForm({
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
     city?.cover_image_url ?? null,
   );
+  const [coverImagePosition, setCoverImagePosition] =
+    useState<ImagePosition | null>(
+      parseImagePosition(city?.cover_image_position ?? null),
+    );
+  const [isDraft, setIsDraft] = useState(city?.status === "draft");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -70,6 +76,10 @@ export default function CityForm({
       slug,
       description: description || null,
       cover_image_url: coverImageUrl,
+      cover_image_position: coverImagePosition
+        ? imagePositionToJson(coverImagePosition)
+        : null,
+      status: isDraft ? ("draft" as const) : ("published" as const),
     };
 
     const { error } = city
@@ -176,7 +186,25 @@ export default function CityForm({
           value={coverImageUrl}
           onChange={setCoverImageUrl}
           folder="cities"
+          position={coverImagePosition}
+          onPositionChange={setCoverImagePosition}
         />
+      </FormField>
+
+      <FormField
+        label="Publicação"
+        htmlFor="isDraft"
+        helpText="Enquanto marcado, a cidade aparece na página do país em preto e branco, com o selo 'Em breve'. Ninguém acessa a página da cidade até você desmarcar, mesmo que o país já esteja publicado."
+      >
+        <label className="flex items-center gap-2 text-sm text-tinta">
+          <input
+            id="isDraft"
+            type="checkbox"
+            checked={isDraft}
+            onChange={(event) => setIsDraft(event.target.checked)}
+          />
+          Marcar como &quot;Em breve&quot; (rascunho, ainda não publicada)
+        </label>
       </FormField>
 
       {error && <p className="text-sm text-terracota">{error}</p>}
@@ -205,6 +233,8 @@ export default function CityForm({
             name={name}
             description={description || null}
             coverImageUrl={coverImageUrl}
+            coverImagePosition={coverImagePosition}
+            isDraft={isDraft}
           />
         </PreviewModal>
       )}

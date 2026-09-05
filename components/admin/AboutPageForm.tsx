@@ -7,6 +7,7 @@ import FormField, { inputClass } from "@/components/admin/FormField";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import AboutPreview from "@/components/admin/previews/AboutPreview";
+import { imagePositionToJson, parseImagePosition, type ImagePosition } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
 type AboutPageContent = Database["public"]["Tables"]["about_page_content"]["Row"];
@@ -17,15 +18,27 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
   const [authorPhotoUrl, setAuthorPhotoUrl] = useState<string | null>(
     about.author_photo_url,
   );
+  const [authorPhotoPosition, setAuthorPhotoPosition] =
+    useState<ImagePosition | null>(
+      parseImagePosition(about.author_photo_position),
+    );
   const [bio, setBio] = useState(about.bio);
   const [whySiteText, setWhySiteText] = useState(about.why_site_text);
   const [quoteText, setQuoteText] = useState(about.quote_text);
   const [travelPhoto1Url, setTravelPhoto1Url] = useState<string | null>(
     about.travel_photo_1_url,
   );
+  const [travelPhoto1Position, setTravelPhoto1Position] =
+    useState<ImagePosition | null>(
+      parseImagePosition(about.travel_photo_1_position),
+    );
   const [travelPhoto2Url, setTravelPhoto2Url] = useState<string | null>(
     about.travel_photo_2_url,
   );
+  const [travelPhoto2Position, setTravelPhoto2Position] =
+    useState<ImagePosition | null>(
+      parseImagePosition(about.travel_photo_2_position),
+    );
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -43,11 +56,20 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
       .update({
         author_name: authorName,
         author_photo_url: authorPhotoUrl,
+        author_photo_position: authorPhotoPosition
+          ? imagePositionToJson(authorPhotoPosition)
+          : null,
         bio,
         why_site_text: whySiteText,
         quote_text: quoteText,
         travel_photo_1_url: travelPhoto1Url,
+        travel_photo_1_position: travelPhoto1Position
+          ? imagePositionToJson(travelPhoto1Position)
+          : null,
         travel_photo_2_url: travelPhoto2Url,
+        travel_photo_2_position: travelPhoto2Position
+          ? imagePositionToJson(travelPhoto2Position)
+          : null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", 1);
@@ -88,6 +110,8 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
           value={authorPhotoUrl}
           onChange={setAuthorPhotoUrl}
           folder="about"
+          position={authorPhotoPosition}
+          onPositionChange={setAuthorPhotoPosition}
         />
       </FormField>
 
@@ -115,6 +139,8 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
           value={travelPhoto1Url}
           onChange={setTravelPhoto1Url}
           folder="about"
+          position={travelPhoto1Position}
+          onPositionChange={setTravelPhoto1Position}
         />
       </FormField>
 
@@ -156,6 +182,8 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
           value={travelPhoto2Url}
           onChange={setTravelPhoto2Url}
           folder="about"
+          position={travelPhoto2Position}
+          onPositionChange={setTravelPhoto2Position}
         />
       </FormField>
 
@@ -186,11 +214,14 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
           <AboutPreview
             authorName={authorName}
             authorPhotoUrl={authorPhotoUrl}
+            authorPhotoPosition={authorPhotoPosition}
             bio={bio}
             whySiteText={whySiteText}
             quoteText={quoteText}
             travelPhoto1Url={travelPhoto1Url}
+            travelPhoto1Position={travelPhoto1Position}
             travelPhoto2Url={travelPhoto2Url}
+            travelPhoto2Position={travelPhoto2Position}
           />
         </PreviewModal>
       )}

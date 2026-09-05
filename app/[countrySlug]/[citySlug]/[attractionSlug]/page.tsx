@@ -21,6 +21,7 @@ import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import AffiliateCallout from "@/components/AffiliateCallout";
 import { linkify } from "@/components/Linkify";
 import { buildOpenGraph, truncateToSentence } from "@/lib/metadata";
+import { parseImagePosition } from "@/lib/image-position";
 
 type AttractionWithRelations = Database["public"]["Tables"]["attractions"]["Row"] & {
   cities: Database["public"]["Tables"]["cities"]["Row"] & {
@@ -332,6 +333,7 @@ export default async function AttractionPage(
                         href={`/${countrySlug}/${citySlug}/${child.slug}`}
                         name={child.name}
                         imageUrl={childPhoto?.url ?? null}
+                        imagePosition={parseImagePosition(childPhoto?.position)}
                       />
                     );
                   })

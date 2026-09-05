@@ -1,22 +1,29 @@
 import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
 import { linkify } from "@/components/Linkify";
+import { imagePositionStyle, type ImagePosition } from "@/lib/image-position";
 
 export default function AboutPreview({
   authorName,
   authorPhotoUrl,
+  authorPhotoPosition = null,
   bio,
   whySiteText,
   quoteText,
   travelPhoto1Url,
+  travelPhoto1Position = null,
   travelPhoto2Url,
+  travelPhoto2Position = null,
 }: {
   authorName: string;
   authorPhotoUrl: string | null;
+  authorPhotoPosition?: ImagePosition | null;
   bio: string;
   whySiteText: string;
   quoteText: string;
   travelPhoto1Url: string | null;
+  travelPhoto1Position?: ImagePosition | null;
   travelPhoto2Url: string | null;
+  travelPhoto2Position?: ImagePosition | null;
 }) {
   const bioParagraphs = bio
     .split(/\n\s*\n/)
@@ -33,6 +40,7 @@ export default function AboutPreview({
                 src={authorPhotoUrl}
                 alt={authorName}
                 className="h-full w-full object-cover"
+                style={imagePositionStyle(authorPhotoPosition)}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -64,6 +72,7 @@ export default function AboutPreview({
               src={travelPhoto1Url}
               alt={`Foto de viagem de ${authorName}`}
               className="h-full w-full rounded-xl object-cover"
+              style={imagePositionStyle(travelPhoto1Position)}
             />
           ) : (
             <span className="text-sm text-oliva">Foto de viagem em breve</span>
@@ -112,6 +121,7 @@ export default function AboutPreview({
               src={travelPhoto2Url}
               alt={`Foto de viagem de ${authorName}`}
               className="h-full w-full rounded-xl object-cover"
+              style={imagePositionStyle(travelPhoto2Position)}
             />
           ) : (
             <span className="text-sm text-oliva">Foto de viagem em breve</span>

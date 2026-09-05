@@ -8,29 +8,14 @@ import {
   getStatesByCountry,
 } from "@/lib/queries";
 import { getCountryQuestions } from "@/lib/questions";
-import { createClient } from "@/lib/supabase-server";
+import { checkIsAuthor } from "@/lib/server-auth";
+import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 import CityCard from "@/components/CityCard";
+import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import StateCard from "@/components/StateCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import ExpandableText from "@/components/ExpandableText";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
-
-// Países com status "draft" ("em breve") ficam visíveis só para a autora,
-// que pode assim conferir a prévia da página antes de publicar.
-async function checkIsAuthor(): Promise<boolean> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return false;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-  return profile?.role === "author";
-}
 
 export async function generateMetadata(
   props: PageProps<"/[countrySlug]">,
@@ -93,10 +78,14 @@ export default async function CountryPage(
   const hasStates = states.length > 0;
 
   const cities = hasStates ? [] : await getCitiesByCountry(countrySlug);
+  const publishedCities = cities.filter((city) => city.status === "published");
+  const comingSoonCities = cities.filter((city) => city.status === "draft");
 
-  // Países com uma única cidade (ex: Mônaco) não precisam da etapa
-  // intermediária de escolher a cidade: vai direto para as atrações.
-  if (!hasStates && cities.length === 1) {
+  // Países com uma única cidade já publicada (ex: Mônaco) não precisam da
+  // etapa intermediária de escolher a cidade: vai direto para as atrações.
+  // Se a única cidade ainda está "em breve", fica na grade como teaser em
+  // vez de levar o visitante direto pra uma página bloqueada.
+  if (!hasStates && cities.length === 1 && cities[0].status === "published") {
     redirect(`/${countrySlug}/${cities[0].slug}`);
   }
 
@@ -145,8 +134,15 @@ export default async function CountryPage(
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {cities.map((city) => (
+            {publishedCities.map((city) => (
               <CityCard key={city.id} city={city} countrySlug={countrySlug} />
+            ))}
+            {comingSoonCities.map((city) => (
+              <ComingSoonCityCard
+                key={city.id}
+                city={city}
+                countrySlug={countrySlug}
+              />
             ))}
           </div>
         )}
@@ -160,6 +156,7 @@ export default async function CountryPage(
                 fill
                 sizes="100vw"
                 className="object-cover"
+                style={imagePositionStyle(parseImagePosition(country.cover_image_position))}
               />
               <div className="absolute inset-0 bg-tinta/60" />
             </>

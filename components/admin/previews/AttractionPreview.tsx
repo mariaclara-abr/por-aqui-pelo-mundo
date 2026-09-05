@@ -3,6 +3,7 @@ import PriceRange from "@/components/PriceRange";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import { linkify } from "@/components/Linkify";
 import type { AdminPhoto } from "@/components/admin/PhotoUploader";
+import { imagePositionToJson } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
 type Tag = Database["public"]["Tables"]["tags"]["Row"];
@@ -64,6 +65,7 @@ export default function AttractionPreview({
     url: photo.url,
     order: index,
     caption: photo.caption ?? null,
+    position: photo.position ? imagePositionToJson(photo.position) : null,
   }));
 
   const quickFacts = [

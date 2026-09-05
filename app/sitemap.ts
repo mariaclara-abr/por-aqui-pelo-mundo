@@ -11,10 +11,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const countries = await getPublishedCountries();
   const destinations = await Promise.all(
     countries.map(async (country) => {
-      const [states, cities] = await Promise.all([
+      const [states, allCities] = await Promise.all([
         getStatesByCountry(country.slug),
         getCitiesByCountry(country.slug),
       ]);
+      const cities = allCities.filter((city) => city.status === "published");
       const citiesWithAttractions = await Promise.all(
         cities.map(async (city) => ({
           city,

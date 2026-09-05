@@ -92,14 +92,17 @@ export default function NavDrawer() {
 
   function handleCountryClick(country: CountryItem) {
     if (expandedCountrySlug === country.slug) {
-      navigate(`/${country.slug}`);
+      setExpandedCountry(null);
+      setCities(null);
       return;
     }
     setExpandedCountry(country);
     setLoadingCities(true);
     setCities(null);
     getCitiesByCountry(country.slug)
-      .then(setCities)
+      .then((allCities) =>
+        setCities(allCities.filter((city) => city.status === "published")),
+      )
       .finally(() => setLoadingCities(false));
   }
 
@@ -175,6 +178,9 @@ export default function NavDrawer() {
 
                   {destinosOpen && (
                     <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
+                      <MenuItem onClick={() => navigate("/#destinos")}>
+                        Ver tudo
+                      </MenuItem>
                       {renderList({
                         loading: loadingCountries,
                         items: countries,
@@ -194,6 +200,11 @@ export default function NavDrawer() {
 
                             {expandedCountrySlug === country.slug && (
                               <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
+                                <MenuItem
+                                  onClick={() => navigate(`/${country.slug}`)}
+                                >
+                                  Ver tudo
+                                </MenuItem>
                                 {renderList({
                                   loading: loadingCities,
                                   items: cities,
@@ -222,9 +233,6 @@ export default function NavDrawer() {
 
                   <MenuItem onClick={() => navigate("/meu-roteiro")}>
                     Meus Roteiros
-                  </MenuItem>
-                  <MenuItem onClick={() => navigate("/notificacoes")}>
-                    Avisos
                   </MenuItem>
                   <MenuItem onClick={() => navigate("/sobre")}>
                     Sobre a autora
@@ -312,15 +320,7 @@ function MenuItem({
       onClick={onClick}
       className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-branco/10"
     >
-      <span
-        className={
-          chevron && expanded
-            ? "text-branco transition-colors group-hover:text-terracota group-hover:underline group-hover:underline-offset-2"
-            : "text-branco"
-        }
-      >
-        {children}
-      </span>
+      <span className="text-branco">{children}</span>
       {chevron && (
         <svg
           viewBox="0 0 20 20"
