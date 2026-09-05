@@ -4,7 +4,7 @@ import { useState } from "react";
 import { linkify } from "@/components/Linkify";
 
 const SENTENCE_SPLIT = /(?<=[.!?])\s+(?=[A-ZÀ-Ú0-9])/;
-const VISIBLE_SENTENCES = 3;
+const VISIBLE_SENTENCES = 2;
 
 export default function ExpandableText({
   text,

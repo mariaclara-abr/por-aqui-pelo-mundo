@@ -100,9 +100,16 @@ export default function NavDrawer() {
     setLoadingCities(true);
     setCities(null);
     getCitiesByCountry(country.slug)
-      .then((allCities) =>
-        setCities(allCities.filter((city) => city.status === "published")),
-      )
+      .then((allCities) => {
+        const published = allCities.filter(
+          (city) => city.status === "published",
+        );
+        if (published.length === 1) {
+          navigate(`/${country.slug}/${published[0].slug}`);
+          return;
+        }
+        setCities(published);
+      })
       .finally(() => setLoadingCities(false));
   }
 
