@@ -8,7 +8,6 @@ import FormField, { inputClass } from "@/components/admin/FormField";
 import PhotoUploader, { type AdminPhoto } from "@/components/admin/PhotoUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import AttractionPreview from "@/components/admin/previews/AttractionPreview";
-import { RATING_LABELS } from "@/components/CurationRating";
 import { PRICE_RANGE_LABELS } from "@/components/PriceRange";
 import { ATTRACTION_CATEGORIES, categoryLabels } from "@/types/database";
 import type { AttractionCategory, Database } from "@/types/database";
@@ -89,9 +88,6 @@ export default function AttractionForm({
   );
   const [noAirConditioning, setNoAirConditioning] = useState(
     attraction?.no_air_conditioning ?? false,
-  );
-  const [curationRating, setCurationRating] = useState<number | null>(
-    attraction ? attraction.curation_rating : 5,
   );
   const [latitude, setLatitude] = useState(
     attraction?.latitude != null ? String(attraction.latitude) : "",
@@ -188,7 +184,7 @@ export default function AttractionForm({
       requires_reservation: requiresReservation,
       has_air_conditioning: hasAirConditioning,
       no_air_conditioning: noAirConditioning,
-      curation_rating: curationRating,
+      curation_rating: null,
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
       exclusive_perk_description: exclusivePerkDescription || null,
@@ -604,50 +600,6 @@ export default function AttractionForm({
         </div>
       </div>
 
-      <FormField
-        label="Nota da curadoria"
-        htmlFor="curationRating"
-        helpText="Sua avaliação pessoal do lugar, não é média de avaliações de usuários."
-      >
-        <div className="flex flex-col gap-3">
-          <label className="flex items-center gap-2 text-sm text-tinta">
-            <input
-              type="checkbox"
-              checked={curationRating === null}
-              onChange={(event) =>
-                setCurationRating(event.target.checked ? null : 5)
-              }
-            />
-            Não avaliar esta atração (oculta as estrelas)
-          </label>
-
-          {curationRating !== null && (
-            <div className="flex flex-col gap-2">
-              {[5, 4, 3, 2, 1].map((value) => (
-                <label
-                  key={value}
-                  className="flex items-center gap-2 text-sm text-tinta"
-                >
-                  <input
-                    type="radio"
-                    name="curationRating"
-                    checked={curationRating === value}
-                    onChange={() => setCurationRating(value)}
-                  />
-                  <span className="text-terracota">
-                    {"★".repeat(value)}
-                    <span className="text-tinta/20">
-                      {"★".repeat(5 - value)}
-                    </span>
-                  </span>
-                  {RATING_LABELS[value]}
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-      </FormField>
-
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <FormField
           label="Latitude"
@@ -744,7 +696,6 @@ export default function AttractionForm({
             categoryLabel={categoryLabel}
             cityName={selectedCity?.name ?? ""}
             countryName={selectedCity?.countries.name ?? ""}
-            curationRating={curationRating}
             tags={selectedTags}
             photos={photos}
             description={description}

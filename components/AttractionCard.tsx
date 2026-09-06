@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Database } from "@/types/database";
 import { categoryLabels } from "@/types/database";
-import CurationRating from "@/components/CurationRating";
 import RoteiroButton from "@/components/RoteiroButton";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
@@ -60,13 +59,6 @@ export default function AttractionCard({
           <h2 className="truncate font-serif text-lg text-tinta transition-colors group-hover:text-terracota">
             {attraction.name}
           </h2>
-          <div className="mt-1">
-            <CurationRating
-              rating={attraction.curation_rating}
-              showLabel={false}
-              size="sm"
-            />
-          </div>
           {tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {tags.slice(0, 3).map((tag) => (

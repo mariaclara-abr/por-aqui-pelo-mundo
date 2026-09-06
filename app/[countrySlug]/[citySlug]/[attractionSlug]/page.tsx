@@ -10,7 +10,6 @@ import {
 import { getAttractionQuestions } from "@/lib/questions";
 import { categoryLabels } from "@/types/database";
 import type { Database } from "@/types/database";
-import CurationRating from "@/components/CurationRating";
 import PriceRange from "@/components/PriceRange";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
@@ -218,7 +217,6 @@ export default async function AttractionPage(
 
           {!isContainer && (
             <div className="flex flex-col items-start gap-3 sm:items-end">
-              <CurationRating rating={attraction.curation_rating} alignEnd />
               <RoteiroButton
                 attraction={attraction}
                 countrySlug={countrySlug}

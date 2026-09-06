@@ -1,4 +1,3 @@
-import CurationRating from "@/components/CurationRating";
 import PriceRange from "@/components/PriceRange";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import { linkify } from "@/components/Linkify";
@@ -13,7 +12,6 @@ export default function AttractionPreview({
   categoryLabel,
   cityName,
   countryName,
-  curationRating,
   tags,
   photos,
   description,
@@ -38,7 +36,6 @@ export default function AttractionPreview({
   categoryLabel: string;
   cityName: string;
   countryName: string;
-  curationRating: number | null;
   tags: Tag[];
   photos: AdminPhoto[];
   description: string;
@@ -113,19 +110,13 @@ export default function AttractionPreview({
           <span>{cityName || "Cidade"}</span>
         </div>
 
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="truncate font-serif text-3xl text-tinta sm:text-4xl">
-              {name || "Nome da atração"}
-            </h1>
-            <p className="mt-1 text-xs uppercase tracking-wide text-oliva">
-              {categoryLabel}
-            </p>
-          </div>
-
-          <div className="flex flex-col items-start gap-3 sm:items-end">
-            <CurationRating rating={curationRating} alignEnd />
-          </div>
+        <div className="mt-4">
+          <h1 className="truncate font-serif text-3xl text-tinta sm:text-4xl">
+            {name || "Nome da atração"}
+          </h1>
+          <p className="mt-1 text-xs uppercase tracking-wide text-oliva">
+            {categoryLabel}
+          </p>
         </div>
 
         {tags.length > 0 && (

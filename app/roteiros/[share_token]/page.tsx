@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSharedItineraryByToken } from "@/lib/shared-itinerary";
 import { categoryLabels } from "@/types/database";
-import CurationRating from "@/components/CurationRating";
 import SharedItineraryMap from "@/components/SharedItineraryMap";
 import { buildOpenGraph } from "@/lib/metadata";
 
@@ -131,13 +130,6 @@ export default async function SharedItineraryPage(
                     <p className="text-xs uppercase tracking-wide text-oliva">
                       {categoryLabel} · {attraction.cityName}
                     </p>
-                    <div className="mt-1">
-                      <CurationRating
-                        rating={attraction.curationRating}
-                        showLabel={false}
-                        size="sm"
-                      />
-                    </div>
                   </div>
                 </Link>
               );

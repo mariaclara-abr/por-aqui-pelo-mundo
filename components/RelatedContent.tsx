@@ -23,7 +23,6 @@ import {
   type RecommendedCity,
 } from "@/lib/recommendations";
 import { categoryLabels } from "@/types/database";
-import CurationRating from "@/components/CurationRating";
 import DestinationCard from "@/components/DestinationCard";
 
 type RelatedContentProps =
@@ -291,9 +290,6 @@ function AttractionRecommendationCard({
         <h4 className="truncate font-serif text-base text-tinta transition-colors group-hover:text-terracota">
           {attraction.name}
         </h4>
-        <div className="mt-1">
-          <CurationRating rating={attraction.curationRating} showLabel={false} size="sm" />
-        </div>
         {attraction.distanceKm !== null && (
           <div className="mt-1">
             <AttractionDistance distanceKm={attraction.distanceKm} />

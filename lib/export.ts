@@ -118,9 +118,6 @@ function buildItemCard(item: ExportAttractionItem) {
   info.appendChild(nameRow);
 
   const metaParts = [categoryLabels(item.categories), item.cityName];
-  if (item.curationRating != null) {
-    metaParts.push("★".repeat(item.curationRating));
-  }
   info.appendChild(
     el(
       "p",

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getAboutPageContent, getAboutVisitedCountries } from "@/lib/queries";
-import CurationRating, { RATING_LABELS } from "@/components/CurationRating";
 import { linkify } from "@/components/Linkify";
 import { buildOpenGraph } from "@/lib/metadata";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
@@ -120,26 +119,6 @@ export default async function SobrePage() {
             </p>
           </blockquote>
 
-          <div className="mt-10 flex flex-col gap-5 text-left leading-relaxed text-tinta">
-            <h2 className="font-serif text-2xl text-tinta">
-              Como funciona a nota da curadoria
-            </h2>
-            <p>
-              Cada atração recebe de 1 a 5 estrelas, mas não é uma média de
-              avaliações de usuários, e sim minha opinião pessoal sobre o
-              lugar, com base na experiência de quem realmente esteve lá.
-            </p>
-            <div className="flex flex-col gap-4 rounded-xl bg-branco p-5">
-              {[5, 4, 3, 2, 1].map((value) => (
-                <div key={value} className="flex items-center gap-3">
-                  <CurationRating rating={value} showLabel={false} size="sm" />
-                  <span className="text-sm text-tinta">
-                    {RATING_LABELS[value]}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         <div className="mt-10 rounded-2xl border border-oliva/20 bg-branco/70 p-2 shadow-sm sm:p-3">
