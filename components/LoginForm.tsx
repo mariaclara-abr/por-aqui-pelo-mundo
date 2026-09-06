@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import PasswordInput from "@/components/PasswordInput";
 
@@ -74,6 +75,13 @@ export default function LoginForm() {
         </div>
 
         {error && <p className="text-sm text-terracota">{error}</p>}
+
+        <Link
+          href="/esqueci-senha"
+          className="self-end text-xs text-terracota hover:underline"
+        >
+          Esqueci minha senha
+        </Link>
 
         <button
           type="submit"

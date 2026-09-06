@@ -12,6 +12,7 @@ import {
   type VisitedCountry,
 } from "@/lib/profile-queries";
 import ProfileForm from "@/components/perfil/ProfileForm";
+import PasswordForm from "@/components/perfil/PasswordForm";
 import PreferencesForm from "@/components/perfil/PreferencesForm";
 import VisitedCountriesForm from "@/components/perfil/VisitedCountriesForm";
 import ItineraryHistory from "@/components/perfil/ItineraryHistory";
@@ -118,6 +119,13 @@ export default function PerfilClient() {
           ) : (
             <ItineraryHistory userId={user.id} initialItineraries={itineraries} />
           )}
+        </div>
+      </section>
+
+      <section className="border-t border-tinta/10 pt-8">
+        <h2 className="font-serif text-xl text-tinta">Alterar senha</h2>
+        <div className="mt-4 max-w-xl">
+          <PasswordForm />
         </div>
       </section>
 
