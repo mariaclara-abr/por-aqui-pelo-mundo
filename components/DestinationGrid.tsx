@@ -8,7 +8,7 @@ import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
 
-const DESTINATIONS_PER_PAGE = 6;
+const DESTINATIONS_PER_PAGE = 8;
 
 export default function DestinationGrid({
   countries,

@@ -31,8 +31,9 @@ export default async function DicasDeViagemPage() {
               Dicas de viagem
             </h1>
             <p className="mt-6 max-w-lg text-left text-base leading-relaxed text-areia/85 sm:text-lg">
-              Pequenos detalhes que mudam uma viagem inteira. Achados,
-              atalhos e cuidados reunidos por quem já esteve lá.
+              Pequenos detalhes que mudam uma viagem inteira. Dicas
+              imperdíveis, achados, atalhos e cuidados reunidos por quem já
+              esteve lá.
             </p>
           </div>
 

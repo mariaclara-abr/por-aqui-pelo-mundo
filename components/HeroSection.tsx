@@ -28,7 +28,7 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
 
       <div className="relative mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-6 sm:py-24 lg:px-10">
         <div className="mx-auto flex max-w-[680px] flex-col text-center lg:mx-0 lg:text-left">
-          <h1 className="font-lora text-[2.65rem] leading-[0.98] tracking-[-0.035em] text-white sm:text-6xl lg:text-7xl">
+          <h1 className="font-lora text-[3rem] leading-[0.98] tracking-[-0.035em] text-white sm:text-7xl lg:text-8xl">
             Por Aqui Pelo Mundo
           </h1>
           <p className="mt-4 text-center font-lora text-lg leading-snug text-areia sm:mt-6 sm:text-2xl lg:text-left lg:text-[1.7rem]">
