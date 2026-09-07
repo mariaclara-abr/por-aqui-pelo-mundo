@@ -113,33 +113,33 @@ const PLAN_INFO: Record<
 > = {
   roteiro_unico_1pais: {
     title: "Roteiro Premium Individual",
-    price: "R$ 19,90",
-    originalPrice: "R$ 24,90",
+    price: "R$ 24,90",
+    originalPrice: "R$ 29,90",
     priceSuffix: "",
     detail:
       "Válido para um roteiro (máximo 1 país), cidades e\natrações ilimitadas + todas as dicas desbloqueadas por 10 dias",
   },
   premium_mensal: {
     title: "Premium Mensal",
-    price: "R$ 29,90",
-    originalPrice: "R$ 39,90",
+    price: "R$ 39,90",
+    originalPrice: "R$ 49,90",
     priceSuffix: "/mês",
-    detail: "Acesso ilimitado ao Premium em qualquer roteiro",
+    detail: "Acesso ilimitado ao Premium em qualquer roteiro por um mês",
   },
   premium_anual: {
     title: "Premium Anual",
-    price: "R$ 9,90",
+    price: "R$ 14,90",
     priceSuffix: "/mês",
-    belowPriceNote: "ou R$ 118,80/ano",
-    detail: "Acesso ilimitado ao Premium em qualquer roteiro",
+    belowPriceNote: "ou R$ 178,80/ano",
+    detail: "Acesso ilimitado ao Premium em qualquer roteiro por um ano",
   },
 };
 
 const LOCKED_ROTEIRO_UNICO_DETAIL =
   "Válido apenas para roteiros de até 1 país";
 
-// (29,90 × 12 − 118,80) / (29,90 × 12) ≈ 67% de economia no plano anual.
-const ANNUAL_SAVINGS_LABEL = "Economize 67% em relação ao mensal";
+// (39,90 − 14,90) / 39,90 ≈ 63% de economia no plano anual em relação ao mensal.
+const ANNUAL_SAVINGS_LABEL = "Economize 63% em relação ao mensal";
 
 const PLAN_ORDER: PlanType[] = ["premium_anual", "premium_mensal", "roteiro_unico_1pais"];
 

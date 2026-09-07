@@ -15,18 +15,18 @@ interface PlanConfig {
 export const PLANS: Record<PlanType, PlanConfig> = {
   roteiro_unico_1pais: {
     label: "Roteiro Inteligente",
-    amountCents: 1990,
+    amountCents: 2490,
     mode: "payment",
   },
   premium_mensal: {
     label: "Premium Mensal",
-    amountCents: 2990,
+    amountCents: 3990,
     mode: "subscription",
     interval: "month",
   },
   premium_anual: {
     label: "Premium Anual",
-    amountCents: 11880,
+    amountCents: 17880,
     mode: "subscription",
     interval: "year",
   },
