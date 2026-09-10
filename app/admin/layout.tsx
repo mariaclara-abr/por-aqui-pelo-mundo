@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import { getPendingQuestionsCount } from "@/lib/questions";
 import AdminNav from "@/components/admin/AdminNav";
+import AdminSearchBox from "@/components/admin/AdminSearchBox";
 
 // Painel interno, protegido por login + role "author" abaixo — nunca deve
 // ser indexado. Um título só para todo o painel é suficiente aqui: nenhuma
@@ -42,7 +43,10 @@ export default async function AdminLayout({
   return (
     <div className="flex flex-1 flex-col sm:flex-row">
       <AdminNav pendingQuestionsCount={pendingQuestionsCount} />
-      <main className="flex-1 px-4 py-8 sm:px-8">{children}</main>
+      <main className="flex-1 px-4 py-8 sm:px-8">
+        <AdminSearchBox />
+        <div className="mt-6">{children}</div>
+      </main>
     </div>
   );
 }
