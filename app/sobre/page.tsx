@@ -5,6 +5,8 @@ import { linkify } from "@/components/Linkify";
 import { buildOpenGraph } from "@/lib/metadata";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
+export const revalidate = 60;
+
 const TITLE = "Sobre a autora";
 
 // O campo author_name no banco ainda está com o placeholder "[Nome da
