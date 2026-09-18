@@ -13,6 +13,7 @@ import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
 import ItinerarySwitcherDialog from "@/components/ItinerarySwitcherDialog";
 import PremiumDialog from "@/components/PremiumDialog";
+import CopyProtectionGuard from "@/components/CopyProtectionGuard";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
 import { humanizeSlug } from "@/lib/affiliates";
@@ -500,6 +501,7 @@ export default function MeuRoteiroPage() {
             );
           })()}
 
+        <CopyProtectionGuard onBlocked={() => setPremiumOpen(true)}>
         <div className="mt-4 flex flex-col gap-3">
           {items.map((item, index) => {
             const categoryLabel = categoryLabels(item.attraction.categories);
@@ -628,6 +630,7 @@ export default function MeuRoteiroPage() {
             );
           })}
         </div>
+        </CopyProtectionGuard>
 
         <div className="mt-6 flex justify-center">
           <Link

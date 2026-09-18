@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getSharedItineraryByToken } from "@/lib/shared-itinerary";
 import { categoryLabels } from "@/types/database";
 import SharedItineraryMap from "@/components/SharedItineraryMap";
+import SharedItineraryProtectedList from "@/components/SharedItineraryProtectedList";
 import { buildOpenGraph } from "@/lib/metadata";
 
 // " | Por Aqui Pelo Mundo" acrescentado pelo template do layout raiz.
@@ -96,7 +97,7 @@ export default async function SharedItineraryPage(
             </div>
           )}
 
-          <div
+          <SharedItineraryProtectedList
             className={
               mapPoints.length > 0
                 ? "mt-8 flex min-w-0 flex-col gap-3 lg:mt-0 lg:flex-1"
@@ -134,7 +135,7 @@ export default async function SharedItineraryPage(
                 </Link>
               );
             })}
-          </div>
+          </SharedItineraryProtectedList>
         </div>
 
         <div className="mt-12 rounded-xl border-2 border-terracota bg-terracota/5 p-6 text-center">
