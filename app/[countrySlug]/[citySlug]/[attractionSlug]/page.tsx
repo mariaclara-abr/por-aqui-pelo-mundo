@@ -8,12 +8,14 @@ import {
   getChildAttractions,
 } from "@/lib/queries";
 import { getAttractionQuestions } from "@/lib/questions";
+import { checkIsAuthor } from "@/lib/server-auth";
 import { categoryLabels } from "@/types/database";
 import type { Database } from "@/types/database";
 import PriceRange from "@/components/PriceRange";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
 import AttractionCard from "@/components/AttractionCard";
+import ComingSoonAttractionCard from "@/components/ComingSoonAttractionCard";
 import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
@@ -107,6 +109,10 @@ export default async function AttractionPage(
     notFound();
   }
 
+  if (attraction.status === "draft" && !(await checkIsAuthor())) {
+    notFound();
+  }
+
   const photos = [...attraction.attraction_photos].sort(
     (a, b) => a.order - b.order,
   );
@@ -176,6 +182,12 @@ export default async function AttractionPage(
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-6xl">
+        {attraction.status === "draft" && (
+          <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">
+            Prévia: esta atração ainda está marcada como em breve, só você
+            consegue ver esta página.
+          </p>
+        )}
         <div className="flex flex-wrap items-center gap-1 text-sm text-oliva">
           <Link
             href={`/${countrySlug}`}
@@ -335,14 +347,28 @@ export default async function AttractionPage(
                       />
                     );
                   })
-                : childAttractions.map((child) => (
-                    <AttractionCard
-                      key={child.id}
-                      attraction={child}
-                      countrySlug={countrySlug}
-                      citySlug={citySlug}
-                    />
-                  ))}
+                : [
+                    ...childAttractions
+                      .filter((child) => child.status === "published")
+                      .map((child) => (
+                        <AttractionCard
+                          key={child.id}
+                          attraction={child}
+                          countrySlug={countrySlug}
+                          citySlug={citySlug}
+                        />
+                      )),
+                    ...childAttractions
+                      .filter((child) => child.status === "draft")
+                      .map((child) => (
+                        <ComingSoonAttractionCard
+                          key={child.id}
+                          attraction={child}
+                          countrySlug={countrySlug}
+                          citySlug={citySlug}
+                        />
+                      )),
+                  ]}
             </div>
           </section>
         )}

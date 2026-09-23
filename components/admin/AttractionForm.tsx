@@ -104,6 +104,7 @@ export default function AttractionForm({
   const [exclusivePerkCtaLabel, setExclusivePerkCtaLabel] = useState(
     attraction?.exclusive_perk_cta_label ?? "",
   );
+  const [isDraft, setIsDraft] = useState(attraction?.status === "draft");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     attraction?.attraction_tags.map((entry) => entry.tags.id) ?? [],
   );
@@ -190,6 +191,7 @@ export default function AttractionForm({
       exclusive_perk_description: exclusivePerkDescription || null,
       exclusive_perk_url: exclusivePerkUrl || null,
       exclusive_perk_cta_label: exclusivePerkCtaLabel || null,
+      status: isDraft ? ("draft" as const) : ("published" as const),
     };
 
     try {
@@ -660,6 +662,22 @@ export default function AttractionForm({
             );
           })}
         </div>
+      </FormField>
+
+      <FormField
+        label="Publicação"
+        htmlFor="isDraft"
+        helpText="Enquanto marcado, a atração aparece na grade da cidade em preto e branco, com o selo 'Em breve' e um botão para o visitante registrar interesse. Ninguém acessa a página da atração até você desmarcar."
+      >
+        <label className="flex items-center gap-2 text-sm text-tinta">
+          <input
+            id="isDraft"
+            type="checkbox"
+            checked={isDraft}
+            onChange={(event) => setIsDraft(event.target.checked)}
+          />
+          Marcar como &quot;Em breve&quot; (rascunho, ainda não publicada)
+        </label>
       </FormField>
 
       <FormField

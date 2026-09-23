@@ -272,6 +272,7 @@ export interface Database {
           exclusive_perk_description: string | null;
           exclusive_perk_url: string | null;
           exclusive_perk_cta_label: string | null;
+          status: CountryStatus;
           created_at: string;
         };
         Insert: {
@@ -301,6 +302,7 @@ export interface Database {
           exclusive_perk_description?: string | null;
           exclusive_perk_url?: string | null;
           exclusive_perk_cta_label?: string | null;
+          status?: CountryStatus;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["attractions"]["Insert"]>;
@@ -703,6 +705,34 @@ export interface Database {
             columns: ["country_id"];
             isOneToOne: false;
             referencedRelation: "countries";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      attraction_interest: {
+        Row: {
+          id: string;
+          attraction_id: string;
+          user_id: string | null;
+          visitor_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          attraction_id: string;
+          user_id?: string | null;
+          visitor_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["attraction_interest"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "attraction_interest_attraction_id_fkey";
+            columns: ["attraction_id"];
+            isOneToOne: false;
+            referencedRelation: "attractions";
             referencedColumns: ["id"];
           },
         ];

@@ -30,7 +30,14 @@ function AttractionRow({ attraction }: { attraction: Attraction }) {
           <div className="h-10 w-14 rounded bg-areia" />
         )}
         <div>
-          <p className="text-tinta">{attraction.name}</p>
+          <p className="flex items-center gap-2 text-tinta">
+            {attraction.name}
+            {attraction.status === "draft" && (
+              <span className="rounded-full bg-terracota/10 px-2.5 py-0.5 text-xs font-medium text-terracota">
+                Em breve
+              </span>
+            )}
+          </p>
           <p className="text-xs text-oliva">
             {categoryLabel} · {attraction.cities.name},{" "}
             {attraction.cities.countries.name}

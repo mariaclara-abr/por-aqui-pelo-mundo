@@ -19,6 +19,7 @@ import { ATTRACTION_CATEGORIES } from "@/types/database";
 import type { AttractionCategory } from "@/types/database";
 import AttractionFilters from "@/components/AttractionFilters";
 import AttractionCard from "@/components/AttractionCard";
+import ComingSoonAttractionCard from "@/components/ComingSoonAttractionCard";
 import CityCard from "@/components/CityCard";
 import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import RelatedContent from "@/components/RelatedContent";
@@ -187,14 +188,26 @@ export default async function CityOrStatePage(
             </div>
           ) : (
             <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {attractions.map((attraction) => (
-                <AttractionCard
-                  key={attraction.id}
-                  attraction={attraction}
-                  countrySlug={countrySlug}
-                  citySlug={citySlug}
-                />
-              ))}
+              {attractions
+                .filter((attraction) => attraction.status === "published")
+                .map((attraction) => (
+                  <AttractionCard
+                    key={attraction.id}
+                    attraction={attraction}
+                    countrySlug={countrySlug}
+                    citySlug={citySlug}
+                  />
+                ))}
+              {attractions
+                .filter((attraction) => attraction.status === "draft")
+                .map((attraction) => (
+                  <ComingSoonAttractionCard
+                    key={attraction.id}
+                    attraction={attraction}
+                    countrySlug={countrySlug}
+                    citySlug={citySlug}
+                  />
+                ))}
             </div>
           )}
 
