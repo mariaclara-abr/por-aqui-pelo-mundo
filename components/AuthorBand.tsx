@@ -19,7 +19,7 @@ export default function AuthorBand({
             {authorName}
           </h2>
           <p className="mt-4 max-w-xl text-left text-sm leading-relaxed text-areia/90 sm:mt-5 sm:text-base">
-            Há quase 10 anos, é a responsável por planejar cada detalhe das
+            Desde 2017, é a responsável por planejar cada detalhe das
             viagens da própria família: passagens, seguro, hospedagem,
             transporte e roteiro dia a dia. Formada em Administração, mãe de
             dois filhos, ela monta roteiros equilibrados para todas as

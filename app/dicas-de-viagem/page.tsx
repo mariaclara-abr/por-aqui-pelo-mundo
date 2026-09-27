@@ -4,6 +4,8 @@ import { getTravelTips } from "@/lib/queries";
 import TravelTipsGrid from "@/components/TravelTipsGrid";
 import { buildOpenGraph } from "@/lib/metadata";
 
+export const revalidate = 60;
+
 const TITLE = "Dicas de viagem";
 const DESCRIPTION =
   "Dicas exclusivas de quem viveu cada viagem: truques práticos, curiosidades e detalhes que fazem diferença no dia a dia do roteiro.";

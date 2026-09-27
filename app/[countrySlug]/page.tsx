@@ -128,7 +128,7 @@ export default async function CountryPage(
             <p className="font-serif text-xl text-tinta">
               Novas cidades em breve
             </p>
-            <p className="max-w-sm text-oliva">
+            <p className="max-w-sm text-center text-oliva">
               Estamos preparando a curadoria das primeiras cidades por aqui.
             </p>
           </div>

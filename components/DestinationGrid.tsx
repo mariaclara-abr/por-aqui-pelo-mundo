@@ -58,7 +58,7 @@ export default function DestinationGrid({
             <p className="font-serif text-xl text-tinta">
               Novos destinos em breve
             </p>
-            <p className="max-w-sm text-oliva">
+            <p className="max-w-sm text-center text-oliva">
               Estamos preparando a curadoria dos primeiros países. Volte em
               breve.
             </p>

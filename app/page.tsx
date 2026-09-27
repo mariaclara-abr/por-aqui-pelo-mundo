@@ -15,6 +15,8 @@ import TravelTipsBand from "@/components/TravelTipsBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
 import { buildOpenGraph } from "@/lib/metadata";
 
+export const revalidate = 60;
+
 const TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
 const DESCRIPTION =
   "Monte seu roteiro de viagem com atrações visitadas e avaliadas pessoalmente por Rejane Abrantes. Recomendações reais para famílias, sem lista genérica.";
