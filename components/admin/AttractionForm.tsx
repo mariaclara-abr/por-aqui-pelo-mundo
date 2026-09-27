@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import { slugify } from "@/lib/slugify";
 import FormField, { inputClass } from "@/components/admin/FormField";
+import FormattingToolbarTextarea from "@/components/admin/FormattingToolbarTextarea";
 import PhotoUploader, { type AdminPhoto } from "@/components/admin/PhotoUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import AttractionPreview from "@/components/admin/previews/AttractionPreview";
@@ -369,12 +370,12 @@ export default function AttractionForm({
         htmlFor="description"
         helpText="Um resumo objetivo sobre o que é o lugar."
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="description"
           className={inputClass}
           rows={3}
           value={description ?? ""}
-          onChange={(event) => setDescription(event.target.value)}
+          onChange={setDescription}
         />
       </FormField>
 
@@ -383,12 +384,12 @@ export default function AttractionForm({
         htmlFor="personalExperience"
         helpText="Conte como foi a visita: isso é o coração da curadoria, o que diferencia o site de um guia genérico."
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="personalExperience"
           className={inputClass}
           rows={4}
           value={personalExperience ?? ""}
-          onChange={(event) => setPersonalExperience(event.target.value)}
+          onChange={setPersonalExperience}
         />
       </FormField>
 
@@ -397,12 +398,12 @@ export default function AttractionForm({
         htmlFor="importantTips"
         helpText="Dicas práticas pra quem for visitar. Ex: melhor horário pra evitar fila, o que levar."
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="importantTips"
           className={inputClass}
           rows={3}
           value={importantTips ?? ""}
-          onChange={(event) => setImportantTips(event.target.value)}
+          onChange={setImportantTips}
         />
       </FormField>
 
@@ -563,12 +564,12 @@ export default function AttractionForm({
           htmlFor="exclusivePerkDescription"
           helpText="Só aparece na página se for preenchido. Ex: Reserve com 10% de desconto exclusivo para leitores do Por Aqui Pelo Mundo."
         >
-          <textarea
+          <FormattingToolbarTextarea
             id="exclusivePerkDescription"
             className={inputClass}
             rows={2}
             value={exclusivePerkDescription}
-            onChange={(event) => setExclusivePerkDescription(event.target.value)}
+            onChange={setExclusivePerkDescription}
           />
         </FormField>
 

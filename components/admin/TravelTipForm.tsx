@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import FormField, { inputClass } from "@/components/admin/FormField";
+import FormattingToolbarTextarea from "@/components/admin/FormattingToolbarTextarea";
 import PreviewModal from "@/components/admin/PreviewModal";
 import TravelTipCard from "@/components/TravelTipCard";
 import type { Database } from "@/types/database";
@@ -80,12 +81,12 @@ export default function TravelTipForm({ tip }: { tip?: TravelTip }) {
         htmlFor="content"
         helpText="Revelado quando a pessoa clica no card. Pode ter várias linhas e links."
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="content"
           className={inputClass}
           rows={8}
           value={content}
-          onChange={(event) => setContent(event.target.value)}
+          onChange={setContent}
           required
         />
       </FormField>

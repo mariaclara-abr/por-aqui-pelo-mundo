@@ -1,17 +1,28 @@
-const URL_PATTERN = /(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/gi;
+import type { ReactNode } from "react";
+
+const TOKEN_PATTERN = /(\*\*.+?\*\*|__.+?__|\*.+?\*|https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/g;
 
 function toHref(match: string) {
   return match.startsWith("www.") ? `https://${match}` : match;
 }
 
-// Quebra o texto em partes, transformando URLs em links clicáveis, mas
-// preservando o restante como texto puro (o texto vem da curadoria, nunca
-// deve ser interpretado como HTML).
-export function linkify(text: string, linkClassName = "text-terracota underline-offset-2 hover:underline") {
-  const parts = text.split(URL_PATTERN);
+// Interpreta um texto vindo da curadoria (nunca HTML): reconhece apenas
+// **negrito**, *itálico*, __sublinhado__ e URLs, mantendo o resto como
+// texto puro.
+export function linkify(text: string, linkClassName = "text-terracota underline-offset-2 hover:underline"): ReactNode[] {
+  const parts = text.split(TOKEN_PATTERN);
 
   return parts.map((part, index) => {
-    if (part.match(URL_PATTERN)) {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 3) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("__") && part.endsWith("__") && part.length > 3) {
+      return <u key={index}>{part.slice(2, -2)}</u>;
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 1) {
+      return <em key={index}>{part.slice(1, -1)}</em>;
+    }
+    if (/^(https?:\/\/|www\.)/.test(part)) {
       return (
         <a
           key={index}

@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import FormField, { inputClass } from "@/components/admin/FormField";
+import FormattingToolbarTextarea from "@/components/admin/FormattingToolbarTextarea";
 import CoverImageUploader from "@/components/admin/CoverImageUploader";
 import PreviewModal from "@/components/admin/PreviewModal";
 import AboutPreview from "@/components/admin/previews/AboutPreview";
@@ -120,12 +121,12 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
         htmlFor="bio"
         helpText="Deixe uma linha em branco entre parágrafos."
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="bio"
           className={inputClass}
           rows={8}
           value={bio}
-          onChange={(event) => setBio(event.target.value)}
+          onChange={setBio}
           required
         />
       </FormField>
@@ -148,12 +149,12 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
         label="Por que esse site existe"
         htmlFor="whySiteText"
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="whySiteText"
           className={inputClass}
           rows={4}
           value={whySiteText}
-          onChange={(event) => setWhySiteText(event.target.value)}
+          onChange={setWhySiteText}
           required
         />
       </FormField>
@@ -163,12 +164,12 @@ export default function AboutPageForm({ about }: { about: AboutPageContent }) {
         htmlFor="quoteText"
         helpText="Aparece em destaque, entre aspas."
       >
-        <textarea
+        <FormattingToolbarTextarea
           id="quoteText"
           className={inputClass}
           rows={2}
           value={quoteText}
-          onChange={(event) => setQuoteText(event.target.value)}
+          onChange={setQuoteText}
           required
         />
       </FormField>
