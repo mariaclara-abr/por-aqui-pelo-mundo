@@ -94,6 +94,7 @@ async function fetchItineraryAttractions(
 // inventa lugares fora do que já está cadastrado no banco.
 export async function getCandidateAttractions(
   itinerary: ItineraryForAI,
+  maxPerCity = MAX_CANDIDATES_PER_CITY,
 ): Promise<AIAttraction[]> {
   const supabase = await createClient();
   const citySlugs = [...new Set(itinerary.attractions.map((a) => a.citySlug))];
@@ -131,7 +132,7 @@ export async function getCandidateAttractions(
   const candidates: AIAttraction[] = [];
   for (const list of byCity.values()) {
     list.sort((a, b) => (b.curationRating ?? 0) - (a.curationRating ?? 0));
-    candidates.push(...list.slice(0, MAX_CANDIDATES_PER_CITY));
+    candidates.push(...list.slice(0, maxPerCity));
   }
   return candidates;
 }

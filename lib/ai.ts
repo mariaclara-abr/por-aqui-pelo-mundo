@@ -7,12 +7,23 @@
 // Distâncias reais são calculadas separadamente (lib/recommendations.ts), não
 // pela IA.
 
+import { getSystemPrompt, type TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
+
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-5";
 
 // Quantas atrações sugeridas (fora das confirmadas pelo viajante) a IA pode
 // encaixar por dia, no máximo — mantém o roteiro sob controle do usuário.
 export const MAX_SUGGESTIONS_PER_DAY = 2;
+
+// Meta mínima de atrações por dia. Se o viajante escolheu poucas, a IA precisa
+// completar os dias com sugestões do catálogo (sempre marcadas como sugestão).
+export const MIN_ITEMS_PER_DAY = 3;
+
+export function suggestionsPerDayLimit(confirmedCount: number, numDays: number): number {
+  const needed = Math.max(0, numDays * MIN_ITEMS_PER_DAY - confirmedCount);
+  return Math.max(MAX_SUGGESTIONS_PER_DAY, Math.ceil(needed / numDays));
+}
 
 export interface OrganizeAttractionInput {
   id: string;
@@ -32,9 +43,12 @@ export interface OrganizePreferencesInput {
   childrenAgeRanges: string[];
   interestCategories: string[];
   notes: string | null;
+  // Campos específicos do tipo de roteiro, já com rótulo legível.
+  extras: { label: string; value: string }[];
 }
 
 export interface OrganizeItineraryInput {
+  tipoRoteiro: TipoRoteiro;
   attractions: OrganizeAttractionInput[];
   candidates: OrganizeAttractionInput[];
   numDays: number;
@@ -43,6 +57,7 @@ export interface OrganizeItineraryInput {
 }
 
 export interface FromScratchItineraryInput {
+  tipoRoteiro: TipoRoteiro;
   candidates: OrganizeAttractionInput[];
   numDays: number;
   startDate: string | null;
@@ -89,6 +104,7 @@ function buildPreferenceLines(preferences: OrganizePreferencesInput): string[] {
       }`,
     preferences.interestCategories.length > 0 &&
       `Interesses prioritários: ${preferences.interestCategories.join(", ")}`,
+    ...preferences.extras.map((e) => `${e.label}: ${e.value}`),
     preferences.notes && `Observações adicionais do viajante: ${preferences.notes}`,
   ].filter((line): line is string => Boolean(line));
 }
@@ -97,6 +113,8 @@ function buildPrompt(input: OrganizeItineraryInput): string {
   const attractionsList = input.attractions.map(describeAttraction).join("\n");
   const candidatesList = input.candidates.map(describeAttraction).join("\n");
   const preferenceLines = buildPreferenceLines(input.preferences);
+  const perDay = suggestionsPerDayLimit(input.attractions.length, input.numDays);
+  const mustFill = input.attractions.length < input.numDays * MIN_ITEMS_PER_DAY;
 
   return `Tenho ${input.attractions.length} atrações já cadastradas e confirmadas em um roteiro de viagem de ${input.numDays} dia(s)${
     input.startDate ? `, começando em ${input.startDate}` : ""
@@ -106,7 +124,11 @@ Atrações CONFIRMADAS pelo viajante: todas devem aparecer em algum dia do rotei
 ${attractionsList}
 ${
   input.candidates.length > 0
-    ? `\nAtrações SUGERIDAS: já são curadoria real cadastrada nas mesmas cidades do roteiro, mas o viajante ainda não escolheu nenhuma delas. Você PODE (não é obrigatório) encaixar até ${MAX_SUGGESTIONS_PER_DAY} delas por dia, só quando combinarem bem (mesma cidade do dia, ritmo compatível, sem lotar a agenda). Use exatamente os "id" fornecidos:\n${candidatesList}\n`
+    ? `\nAtrações SUGERIDAS: já são curadoria real cadastrada nas mesmas cidades do roteiro, mas o viajante ainda não escolheu nenhuma delas. ${
+        mustFill
+          ? `Como há poucas atrações confirmadas para ${input.numDays} dia(s), é OBRIGATÓRIO completar o roteiro com sugestões: nenhum dia pode ficar vazio, e cada dia deve ter pelo menos ${MIN_ITEMS_PER_DAY} atrações no total (confirmadas mais sugeridas), com até ${perDay} sugeridas por dia. Escolha as que combinem melhor (mesma cidade do dia, perto das confirmadas).`
+          : `Você PODE (não é obrigatório) encaixar até ${perDay} delas por dia, só quando combinarem bem (mesma cidade do dia, ritmo compatível, sem lotar a agenda).`
+      } Use exatamente os "id" fornecidos:\n${candidatesList}\n`
     : ""
 }
 ${
@@ -198,7 +220,7 @@ Responda APENAS com um JSON válido, sem nenhum texto antes ou depois e sem mark
 {"days":[{"day_number":1,"items":[{"attraction_id":"...","order":0,"suggested_start_time":"09:00","suggested_duration_minutes":90}]}]}`;
 }
 
-async function callAnthropicForItinerary(prompt: string): Promise<unknown> {
+async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro): Promise<unknown> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error("ANTHROPIC_API_KEY não configurada no servidor.");
@@ -214,8 +236,7 @@ async function callAnthropicForItinerary(prompt: string): Promise<unknown> {
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 4096,
-      system:
-        "Você organiza roteiros de viagem usando apenas os lugares fornecidos pelo usuário. Nunca invente atrações, ids ou dados que não foram fornecidos. Responda sempre em JSON puro, sem markdown e sem texto fora do JSON.",
+      system: getSystemPrompt(tipo),
       messages: [
         { role: "user", content: prompt },
         // Prefill do turno do assistente: força a resposta a começar direto
@@ -248,7 +269,7 @@ async function callAnthropicForItinerary(prompt: string): Promise<unknown> {
 export async function organizeItineraryWithAI(
   input: OrganizeItineraryInput,
 ): Promise<OrganizedDay[]> {
-  const parsed = await callAnthropicForItinerary(buildPrompt(input));
+  const parsed = await callAnthropicForItinerary(buildPrompt(input), input.tipoRoteiro);
 
   return validateOrganizedDays(parsed, [
     ...input.attractions.map((a) => a.id),
@@ -261,7 +282,10 @@ export async function organizeItineraryWithAI(
 export async function buildItineraryFromScratchWithAI(
   input: FromScratchItineraryInput,
 ): Promise<OrganizedDay[]> {
-  const parsed = await callAnthropicForItinerary(buildFromScratchPrompt(input));
+  const parsed = await callAnthropicForItinerary(
+    buildFromScratchPrompt(input),
+    input.tipoRoteiro,
+  );
 
   return validateOrganizedDays(
     parsed,

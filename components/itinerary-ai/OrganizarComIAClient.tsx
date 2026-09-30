@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PillButton from "@/components/PillButton";
@@ -26,6 +26,14 @@ import {
   type TravelProfile,
   type UserPreferences,
 } from "@/types/database";
+import type { TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
+import {
+  FIELDS_BY_TIPO,
+  SHOWS,
+  TIPO_HELP,
+  TIPO_TABS,
+  type ExtraField,
+} from "./tipo-roteiro-fields";
 import type { AIAttraction, ItineraryForAI } from "@/lib/itinerary-ai";
 import { exportItineraryToPDF, exportToGoogleCalendar } from "@/lib/export";
 
@@ -127,7 +135,12 @@ export default function OrganizarComIAClient({
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const attractions = itinerary?.attractions ?? [];
   const cityCount = new Set(attractions.map((a) => a.citySlug)).size;
-  const isFromScratch = attractions.length === 0;
+  const hasCurrent = attractions.length > 0;
+  // Com roteiro em andamento o padrão é partir dele; a pessoa pode preferir um roteiro do zero.
+  const [startMode, setStartMode] = useState<"current" | "scratch">(
+    hasCurrent ? "current" : "scratch",
+  );
+  const isFromScratch = startMode === "scratch";
 
   const [numDays, setNumDays] = useState(() =>
     attractions.length > 0 ? defaultNumDays(attractions) : 3,
@@ -148,6 +161,11 @@ export default function OrganizarComIAClient({
     preferences.interestCategories,
   );
   const [notes, setNotes] = useState("");
+  const [tipo, setTipo] = useState<TipoRoteiro>("internacional");
+  // Respostas dos campos específicos de cada tipo, num objeto único: trocar de
+  // aba não apaga nada. Texto livre de opções "Outra/Alergia" fica em "chave::opção".
+  const [extra, setExtra] = useState<Record<string, string[]>>({});
+  const extraFields = FIELDS_BY_TIPO[tipo];
   const [selectedCitySlugs, setSelectedCitySlugs] = useState<Set<string>>(new Set());
 
   const [loading, setLoading] = useState(false);
@@ -208,6 +226,78 @@ export default function OrganizarComIAClient({
     setExcludedSuggestionIds((prev) => new Set(prev).add(attractionId));
   }
 
+  function toggleExtra(field: ExtraField, option: string) {
+    setExtra((prev) => {
+      const current = prev[field.key] ?? [];
+      const next = current.includes(option)
+        ? current.filter((v) => v !== option)
+        : field.multi
+          ? [...current, option]
+          : [option];
+      return { ...prev, [field.key]: next };
+    });
+  }
+
+  function extraLines() {
+    const lines: { label: string; value: string }[] = [];
+    for (const field of extraFields) {
+      const chosen = extra[field.key] ?? [];
+      if (chosen.length === 0) continue;
+      const value = chosen
+        .map((option) => {
+          const text = extra[`${field.key}::${option}`]?.[0]?.trim();
+          return text ? `${option} (${text})` : option;
+        })
+        .join(", ");
+      lines.push({ label: field.label, value });
+    }
+    const dias = extra.dias_parque?.[0];
+    if (tipo === "parque_disney" && dias) {
+      lines.push({ label: "Dias dedicados a parques", value: dias });
+    }
+    return lines;
+  }
+
+  function renderExtraField(field: ExtraField) {
+    const chosen = extra[field.key] ?? [];
+    return (
+      <div className="rounded-2xl bg-areia/45 p-4">
+        <p className="text-sm font-medium text-tinta">{field.label}</p>
+        {field.hint && <p className="mt-0.5 text-xs text-oliva">{field.hint}</p>}
+        <div className="mt-2 flex flex-wrap gap-2">
+          {field.options.map((option) => (
+            <PillButton
+              key={option}
+              active={chosen.includes(option)}
+              onClick={() => toggleExtra(field, option)}
+            >
+              {option}
+            </PillButton>
+          ))}
+        </div>
+        {(field.textOn ?? [])
+          .filter((option) => chosen.includes(option))
+          .map((option) => (
+            <input
+              key={option}
+              type="text"
+              maxLength={200}
+              aria-label={`${field.label}: detalhe de ${option}`}
+              placeholder={`Conte mais: ${option.toLowerCase()}`}
+              value={extra[`${field.key}::${option}`]?.[0] ?? ""}
+              onChange={(event) =>
+                setExtra((prev) => ({
+                  ...prev,
+                  [`${field.key}::${option}`]: [event.target.value],
+                }))
+              }
+              className="mt-2 w-full rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+            />
+          ))}
+      </div>
+    );
+  }
+
   function toggleAgeRange(value: string) {
     setChildrenAgeRanges((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
@@ -243,15 +333,18 @@ export default function OrganizarComIAClient({
           itinerary_id: itinerary.itineraryId,
           num_days: numDays,
           start_date: startDate || null,
+          tipo_roteiro: tipo,
           city_slugs: isFromScratch ? Array.from(selectedCitySlugs) : undefined,
+          from_scratch: isFromScratch,
           preferences: {
-            budget,
-            travel_pace: pace,
-            travel_profile: travelProfile,
+            budget: SHOWS.budget(tipo) ? budget : null,
+            travel_pace: SHOWS.pace(tipo) ? pace : null,
+            travel_profile: SHOWS.profile(tipo) ? travelProfile : null,
             traveling_with_kids: travelingWithKids,
             children_age_ranges: childrenAgeRanges,
-            interest_categories: interestCategories,
+            interest_categories: SHOWS.interests(tipo) ? interestCategories : [],
             notes: notes.trim() || null,
+            extras: extraLines(),
           },
         }),
       });
@@ -381,6 +474,35 @@ export default function OrganizarComIAClient({
 
   return (
     <div className="flex flex-col gap-8">
+      <section aria-labelledby="tipo-roteiro-titulo">
+        <h2 id="tipo-roteiro-titulo" className="font-serif text-2xl text-branco">
+          Que tipo de roteiro você quer?
+        </h2>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {TIPO_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setTipo(tab.value)}
+              aria-pressed={tipo === tab.value}
+              className={`rounded-xl border-2 p-4 text-left transition-colors ${
+                tipo === tab.value
+                  ? "border-terracota bg-terracota text-white"
+                  : "border-terracota/30 bg-branco text-tinta hover:border-terracota"
+              }`}
+            >
+              <span className="block font-serif text-lg">{tab.label}</span>
+              <span
+                className={`mt-1 block text-sm ${tipo === tab.value ? "text-white/90" : "text-oliva"}`}
+              >
+                {tab.description}
+              </span>
+            </button>
+          ))}
+        </div>
+        <p className="mt-3 text-xs leading-5 text-areia/90">{TIPO_HELP}</p>
+      </section>
+
       {showPaywall && (
         <PremiumDialog
           itineraryId={itinerary.itineraryId}
@@ -402,8 +524,8 @@ export default function OrganizarComIAClient({
         />
       )}
 
-      <div className="overflow-hidden rounded-[28px] border border-tinta/10 bg-branco shadow-[0_18px_45px_-34px_rgba(43,38,32,0.55)]">
-        <div className="flex flex-col gap-5 border-b border-tinta/10 bg-[linear-gradient(110deg,#fff_5%,#f7efe1_100%)] px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <div className="overflow-hidden rounded-2xl border border-areia/70 bg-branco shadow-[0_8px_30px_-20px_rgba(43,38,32,0.3)]">
+        <div className="flex flex-col gap-5 border-b border-oliva/15 bg-areia/55 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           {isFromScratch ? (
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-terracota">Roteiro do zero</p>
@@ -435,6 +557,16 @@ export default function OrganizarComIAClient({
         </div>
 
         <div className="p-5 sm:p-8">
+        {hasCurrent && (
+          <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Ponto de partida">
+            <PillButton active={startMode === "current"} onClick={() => setStartMode("current")}>
+              Partir do meu roteiro
+            </PillButton>
+            <PillButton active={startMode === "scratch"} onClick={() => setStartMode("scratch")}>
+              Gerar um roteiro do zero
+            </PillButton>
+          </div>
+        )}
         {isFromScratch && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Para onde você quer ir?</p>
@@ -521,6 +653,7 @@ export default function OrganizarComIAClient({
         <div className="mt-8 border-t border-tinta/10 pt-7">
           <div className="flex items-end justify-between gap-4"><div><p className="font-serif text-xl text-tinta">Personalize a experiência</p><p className="mt-1 text-sm text-oliva">Você pode usar as preferências salvas ou ajustar para esta viagem.</p></div><span className="hidden text-2xl text-terracota sm:block">✦</span></div>
         <div className="mt-6 flex flex-col gap-5">
+          {SHOWS.profile(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Perfil de viagem</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -537,7 +670,9 @@ export default function OrganizarComIAClient({
               ))}
             </div>
           </div>
+          )}
 
+          {SHOWS.pace(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Ritmo preferido</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -552,7 +687,9 @@ export default function OrganizarComIAClient({
               ))}
             </div>
           </div>
+          )}
 
+          {SHOWS.budget(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Faixa de orçamento</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -567,7 +704,9 @@ export default function OrganizarComIAClient({
               ))}
             </div>
           </div>
+          )}
 
+          {SHOWS.interests(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Interesses</p>
             <p className="mt-0.5 text-xs text-oliva">O que não pode faltar no seu roteiro?</p>
@@ -583,6 +722,38 @@ export default function OrganizarComIAClient({
               ))}
             </div>
           </div>
+          )}
+
+          {extraFields.map((field) => (
+            <Fragment key={field.key}>
+              {renderExtraField(field)}
+              {tipo === "parque_disney" && field.key === "parques" && (
+                <div className="rounded-2xl bg-areia/45 p-4">
+                  <label htmlFor="dias-parque" className="text-sm font-medium text-tinta">
+                    Quantos dias dedicados a parque(s)?
+                  </label>
+                  <p className="mt-0.5 text-xs text-oliva">
+                    Pode ser igual ou menor que o total de dias da viagem.
+                  </p>
+                  <input
+                    id="dias-parque"
+                    type="number"
+                    min={1}
+                    max={numDays}
+                    value={extra.dias_parque?.[0] ?? ""}
+                    onChange={(event) => {
+                      const n = Math.min(numDays, Math.max(1, Number(event.target.value) || 0));
+                      setExtra((prev) => ({
+                        ...prev,
+                        dias_parque: event.target.value === "" ? [] : [String(n)],
+                      }));
+                    }}
+                    className="mt-2 w-32 rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+                  />
+                </div>
+              )}
+            </Fragment>
+          ))}
 
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Viaja com crianças?</p>
@@ -674,7 +845,7 @@ export default function OrganizarComIAClient({
                   : "Baixe um PDF, adicione à sua agenda ou compartilhe."}
               </p>
             </div>
-            <div className="flex shrink-0 flex-wrap gap-2">
+            <div className="flex max-w-full flex-wrap gap-2">
               {isFromScratch && (
                 <button
                   type="button"
@@ -705,7 +876,7 @@ export default function OrganizarComIAClient({
             </div>
           </div>
           {saved && (
-            <p className="-mt-3 text-sm text-oliva">
+            <p className="-mt-3 rounded-xl bg-branco px-5 py-3 text-sm text-oliva">
               Roteiro salvo! Você já pode ver e ajustar tudo em{" "}
               <Link href="/meu-roteiro" className="text-terracota hover:underline">
                 Meu Roteiro
@@ -713,12 +884,12 @@ export default function OrganizarComIAClient({
               .
             </p>
           )}
-          {saveError && <p className="-mt-3 text-sm text-terracota">{saveError}</p>}
+          {saveError && <p className="-mt-3 rounded-xl bg-branco px-5 py-3 text-sm text-terracota">{saveError}</p>}
           {exportError && (
-            <p className="-mt-3 text-sm text-terracota">{exportError}</p>
+            <p className="-mt-3 rounded-xl bg-branco px-5 py-3 text-sm text-terracota">{exportError}</p>
           )}
           {calendarError && (
-            <p className="-mt-3 text-sm text-terracota">{calendarError}</p>
+            <p className="-mt-3 rounded-xl bg-branco px-5 py-3 text-sm text-terracota">{calendarError}</p>
           )}
 
           {result.days.map((day) => (

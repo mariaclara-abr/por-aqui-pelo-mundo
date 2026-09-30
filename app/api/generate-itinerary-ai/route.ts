@@ -11,10 +11,12 @@ import { canUseAIForItinerary, countDistinctCountries } from "@/lib/subscription
 import {
   buildItineraryFromScratchWithAI,
   organizeItineraryWithAI,
-  MAX_SUGGESTIONS_PER_DAY,
+  MIN_ITEMS_PER_DAY,
+  suggestionsPerDayLimit,
   type OrganizeAttractionInput,
   type OrganizedDay,
 } from "@/lib/ai";
+import { TIPOS_ROTEIRO, type TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
 import type {
   BudgetRange,
   TravelPace,
@@ -25,6 +27,8 @@ interface RequestBody {
   itinerary_id?: string;
   num_days?: number;
   start_date?: string | null;
+  tipo_roteiro?: string;
+  from_scratch?: boolean;
   city_slugs?: string[];
   preferences?: {
     budget?: BudgetRange | null;
@@ -34,6 +38,7 @@ interface RequestBody {
     children_age_ranges?: string[];
     interest_categories?: string[];
     notes?: string | null;
+    extras?: { label?: unknown; value?: unknown }[];
   };
 }
 
@@ -78,6 +83,10 @@ export async function POST(request: Request) {
     );
   }
 
+  const tipoRoteiro: TipoRoteiro = TIPOS_ROTEIRO.includes(body.tipo_roteiro as TipoRoteiro)
+    ? (body.tipo_roteiro as TipoRoteiro)
+    : "internacional";
+
   let itinerary;
   try {
     itinerary = await getItineraryForAIById(body.itinerary_id);
@@ -95,7 +104,7 @@ export async function POST(request: Request) {
   // Sem nenhuma atração confirmada, este é um roteiro "do zero": a IA monta
   // tudo a partir dos destinos escolhidos pelo viajante, em vez de organizar
   // atrações já escolhidas.
-  const isFromScratch = itinerary.attractions.length === 0;
+  const isFromScratch = body.from_scratch === true || itinerary.attractions.length === 0;
 
   const fromScratchCitySlugs = Array.isArray(body.city_slugs)
     ? [...new Set(body.city_slugs.filter((slug): slug is string => typeof slug === "string" && slug.length > 0))]
@@ -167,7 +176,11 @@ export async function POST(request: Request) {
     }
   } else {
     try {
-      candidates = await getCandidateAttractions(itinerary);
+      const cityCount = new Set(itinerary.attractions.map((a) => a.citySlug)).size;
+      candidates = await getCandidateAttractions(
+        itinerary,
+        Math.max(6, Math.ceil((numDays * MIN_ITEMS_PER_DAY) / Math.max(1, cityCount))),
+      );
     } catch {
       // Sugestões são um bônus opcional — se a busca de candidatas falhar, a
       // organização das atrações confirmadas segue normalmente sem sugestões.
@@ -183,18 +196,27 @@ export async function POST(request: Request) {
     childrenAgeRanges: body.preferences?.children_age_ranges ?? [],
     interestCategories: body.preferences?.interest_categories ?? [],
     notes: body.preferences?.notes ?? null,
+    extras: (Array.isArray(body.preferences?.extras) ? body.preferences.extras : [])
+      .filter(
+        (e): e is { label: string; value: string } =>
+          typeof e?.label === "string" && typeof e?.value === "string" && e.value.trim() !== "",
+      )
+      .slice(0, 30)
+      .map((e) => ({ label: e.label.slice(0, 80), value: e.value.slice(0, 300) })),
   };
 
   let organizedDays: OrganizedDay[];
   try {
     organizedDays = isFromScratch
       ? await buildItineraryFromScratchWithAI({
+          tipoRoteiro,
           candidates: candidates.map(toOrganizeAttractionInput),
           numDays,
           startDate: body.start_date ?? null,
           preferences,
         })
       : await organizeItineraryWithAI({
+          tipoRoteiro,
           attractions: itinerary.attractions.map(toOrganizeAttractionInput),
           candidates: candidates.map(toOrganizeAttractionInput),
           numDays,
@@ -207,7 +229,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 502 });
   }
 
-  const confirmedIds = new Set(itinerary.attractions.map((a) => a.id));
+  // No modo "do zero" as atrações já salvas no roteiro são ignoradas nesta geração.
+  const confirmedIds = new Set(isFromScratch ? [] : itinerary.attractions.map((a) => a.id));
 
   // Garante que nenhuma atração CONFIRMADA fique de fora, mesmo que a IA
   // tenha esquecido de posicionar alguma — sugestão é opcional, mas o que o
@@ -215,7 +238,7 @@ export async function POST(request: Request) {
   const placedIds = new Set(
     organizedDays.flatMap((day) => day.items.map((item) => item.attractionId)),
   );
-  const missing = itinerary.attractions.filter((a) => !placedIds.has(a.id));
+  const missing = isFromScratch ? [] : itinerary.attractions.filter((a) => !placedIds.has(a.id));
   if (missing.length > 0) {
     const lastDay = organizedDays[organizedDays.length - 1];
     for (const attraction of missing) {
@@ -234,12 +257,13 @@ export async function POST(request: Request) {
   // confirmada nenhuma — todo o roteiro é feito de "sugestões" por
   // definição, então esse limite não se aplica.
   if (!isFromScratch) {
+    const suggestionLimit = suggestionsPerDayLimit(itinerary.attractions.length, numDays);
     for (const day of organizedDays) {
       let suggestionCount = 0;
       day.items = day.items.filter((item) => {
         if (confirmedIds.has(item.attractionId)) return true;
         suggestionCount += 1;
-        return suggestionCount <= MAX_SUGGESTIONS_PER_DAY;
+        return suggestionCount <= suggestionLimit;
       });
     }
   }
