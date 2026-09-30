@@ -33,6 +33,25 @@ export interface OrganizeAttractionInput {
   curationRating: number | null;
   averageVisitTime: string | null;
   bestTimeOfDay: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
+// Hospedagem informada no questionário. hasHotel null = não respondeu.
+export interface LodgingInput {
+  hasHotel: boolean | null;
+  hotelDetails: string | null;
+}
+
+export interface LodgingSuggestion {
+  cityName: string;
+  neighborhood: string;
+  reason: string;
+}
+
+export interface AIItineraryResult {
+  days: OrganizedDay[];
+  lodging: LodgingSuggestion[];
 }
 
 export interface OrganizePreferencesInput {
@@ -54,14 +73,23 @@ export interface OrganizeItineraryInput {
   numDays: number;
   startDate: string | null;
   preferences: OrganizePreferencesInput;
+  lodging: LodgingInput;
 }
 
 export interface FromScratchItineraryInput {
   tipoRoteiro: TipoRoteiro;
+  // Cidades que o viajante escolheu, na ordem em que ele as listou.
+  chosenCityNames: string[];
+  // true: o viajante já tem uma ordem e a IA deve respeitá-la.
+  userDefinedOrder: boolean;
+  // true: a IA pode incluir cidades extras presentes em `candidates`.
+  allowExtraCities: boolean;
+  allowExtraCountries: boolean;
   candidates: OrganizeAttractionInput[];
   numDays: number;
   startDate: string | null;
   preferences: OrganizePreferencesInput;
+  lodging: LodgingInput;
 }
 
 export interface OrganizedDayItem {
@@ -88,6 +116,9 @@ function describeAttraction(a: OrganizeAttractionInput, index: number): string {
   }
   if (a.averageVisitTime) parts.push(`| tempo médio de visita: ${a.averageVisitTime}`);
   if (a.bestTimeOfDay) parts.push(`| melhor horário: ${a.bestTimeOfDay}`);
+  if (a.latitude != null && a.longitude != null) {
+    parts.push(`| coordenadas: ${a.latitude}, ${a.longitude}`);
+  }
   return parts.join(" ");
 }
 
@@ -104,9 +135,39 @@ function buildPreferenceLines(preferences: OrganizePreferencesInput): string[] {
       }`,
     preferences.interestCategories.length > 0 &&
       `Interesses prioritários: ${preferences.interestCategories.join(", ")}`,
-    ...preferences.extras.map((e) => `${e.label}: ${e.value}`),
+    ...preferences.extras.map((e) =>
+      e.value.includes("A IA pode recomendar")
+        ? `${e.label}: ${e.value}. Onde o viajante pediu recomendação, sugira o melhor meio de deslocamento para cada trecho do roteiro, considerando faixa de custo, distância entre as atrações e o orçamento informado`
+        : `${e.label}: ${e.value}`,
+    ),
     preferences.notes && `Observações adicionais do viajante: ${preferences.notes}`,
   ].filter((line): line is string => Boolean(line));
+}
+
+function jsonFormat(withLodging: boolean): string {
+  const days =
+    '[{"day_number":1,"items":[{"attraction_id":"...","order":0,"suggested_start_time":"09:00","suggested_duration_minutes":90}]}]';
+  return withLodging
+    ? `{"days":${days},"lodging":[{"city_name":"...","neighborhood":"...","reason":"..."}]}`
+    : `{"days":${days}}`;
+}
+
+// Bloco do prompt sobre hospedagem + o que a IA deve devolver a mais no JSON.
+function buildLodgingBlock(lodging: LodgingInput): { text: string; wantsLodging: boolean } {
+  if (lodging.hasHotel === true) {
+    const hotel = lodging.hotelDetails ?? "(o viajante não informou o nome)";
+    return {
+      wantsLodging: false,
+      text: `\nHospedagem: o viajante JÁ TEM hotel: ${hotel}. Monte o roteiro a partir dele: cada dia deve começar e terminar perto do hotel, agrupando as atrações mais próximas dele no mesmo dia e evitando idas e vindas longas. Use as coordenadas das atrações e o que você souber sobre a localização do hotel.\n`,
+    };
+  }
+  if (lodging.hasHotel === false) {
+    return {
+      wantsLodging: true,
+      text: `\nHospedagem: o viajante AINDA NÃO TEM hotel. Para cada cidade do roteiro, indique no campo "lodging" UM bairro bem localizado para se hospedar, o mais próximo possível do conjunto de atrações que ele vai visitar naquela cidade (use as coordenadas das atrações). Em "reason", explique em uma frase curta, sem travessões, por que esse bairro é prático. Não cite nomes de hotéis.\n`,
+    };
+  }
+  return { text: "", wantsLodging: false };
 }
 
 function buildPrompt(input: OrganizeItineraryInput): string {
@@ -115,6 +176,7 @@ function buildPrompt(input: OrganizeItineraryInput): string {
   const preferenceLines = buildPreferenceLines(input.preferences);
   const perDay = suggestionsPerDayLimit(input.attractions.length, input.numDays);
   const mustFill = input.attractions.length < input.numDays * MIN_ITEMS_PER_DAY;
+  const lodgingBlock = buildLodgingBlock(input.lodging);
 
   return `Tenho ${input.attractions.length} atrações já cadastradas e confirmadas em um roteiro de viagem de ${input.numDays} dia(s)${
     input.startDate ? `, começando em ${input.startDate}` : ""
@@ -136,10 +198,11 @@ ${
     ? `\nPreferências do viajante:\n${preferenceLines.join("\n")}\n`
     : ""
 }
+${lodgingBlock.text}
 Organize a ordem ideal de visita, dividindo as atrações confirmadas (e as sugeridas que você escolher incluir) entre os ${input.numDays} dia(s) de forma equilibrada. Considere o tempo médio de visita, o melhor horário sugerido de cada atração, e agrupe por proximidade (mesma cidade) sempre que possível. Sugira um horário de início (formato "HH:MM") para cada atração, normalmente começando por volta das 09:00.
 
 Responda APENAS com um JSON válido, sem nenhum texto antes ou depois e sem markdown, seguindo exatamente este formato:
-{"days":[{"day_number":1,"items":[{"attraction_id":"...","order":0,"suggested_start_time":"09:00","suggested_duration_minutes":90}]}]}`;
+${jsonFormat(lodgingBlock.wantsLodging)}`;
 }
 
 function validateOrganizedDays(value: unknown, validIds: string[]): OrganizedDay[] {
@@ -186,19 +249,62 @@ function validateOrganizedDays(value: unknown, validIds: string[]): OrganizedDay
   return days;
 }
 
+function parseLodging(value: unknown): LodgingSuggestion[] {
+  const raw = (value as { lodging?: unknown })?.lodging;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((entry) => entry as Record<string, unknown>)
+    .filter(
+      (e) => typeof e.city_name === "string" && typeof e.neighborhood === "string" && e.neighborhood.trim(),
+    )
+    .slice(0, 10)
+    .map((e) => ({
+      cityName: (e.city_name as string).slice(0, 80),
+      neighborhood: (e.neighborhood as string).slice(0, 80),
+      reason: typeof e.reason === "string" ? e.reason.slice(0, 300) : "",
+    }));
+}
+
 // Ritmo escolhido define quantas atrações por dia pedimos à IA quando não
 // há nenhuma atração confirmada (roteiro do zero) — sem confirmadas, não há
 // como calcular uma quantidade "natural" a partir do que já foi escolhido.
 const FROM_SCRATCH_DAILY_COUNT_BY_PACE: Record<string, string> = {
+  // Calibrado nos roteiros reais da curadoria: dias de serra/ilha têm 2 a 3
+  // paradas; cidades europeias (Atenas, Florença, Nice) chegam a 7 a 10
+  // (complexos como a Acrópole contam como 1; refeições não contam).
   tranquilo: "2 a 3",
-  moderado: "3 a 4",
-  intenso: "4 a 5",
+  moderado: "4 a 6",
+  intenso: "7 a 10",
 };
+
+function buildDestinationBlock(input: FromScratchItineraryInput): string {
+  const chosen = input.chosenCityNames.join(", ");
+  const lines: string[] = [];
+  if (input.chosenCityNames.length > 1) {
+    lines.push(
+      input.userDefinedOrder
+        ? `Ordem dos destinos definida pelo viajante (respeite exatamente, sem reordenar): ${input.chosenCityNames.join(" > ")}.`
+        : `A ordem dos destinos fica por sua conta: defina a melhor sequência de visita entre ${chosen}, pensando numa rota lógica com deslocamentos curtos entre uma cidade e a próxima.`,
+    );
+  }
+  if (input.allowExtraCities) {
+    lines.push(
+      `O viajante AUTORIZOU você a incluir cidades extras além de ${chosen}; as atrações delas estão na lista abaixo. Inclua uma cidade extra apenas se combinar de verdade com o perfil, os interesses, o ritmo, o orçamento e as observações do viajante e ficar no caminho das cidades escolhidas. As cidades escolhidas continuam sendo a base do roteiro.`,
+    );
+  }
+  if (input.allowExtraCountries) {
+    lines.push(
+      `O viajante também AUTORIZOU incluir OUTRO país além dos escolhidos; as atrações de cidades de outros países estão na lista abaixo. Inclua um país extra apenas se combinar de verdade com o destino, o perfil, o ritmo e o orçamento e for um deslocamento razoável a partir dos países escolhidos. Não é obrigatório incluir.`,
+    );
+  }
+  return lines.length > 0 ? `\n${lines.join("\n")}\n` : "";
+}
 
 function buildFromScratchPrompt(input: FromScratchItineraryInput): string {
   const candidatesList = input.candidates.map(describeAttraction).join("\n");
-  const cityNames = [...new Set(input.candidates.map((a) => a.cityName))];
+  const cityNames = input.chosenCityNames;
   const preferenceLines = buildPreferenceLines(input.preferences);
+  const lodgingBlock = buildLodgingBlock(input.lodging);
   const dailyCount =
     (input.preferences.pace && FROM_SCRATCH_DAILY_COUNT_BY_PACE[input.preferences.pace]) ||
     "3 a 4";
@@ -214,13 +320,14 @@ ${
     ? `\nPreferências do viajante:\n${preferenceLines.join("\n")}\n`
     : ""
 }
+${buildDestinationBlock(input)}${lodgingBlock.text}
 Escolha cerca de ${dailyCount} atrações por dia. Se houver mais de uma cidade entre as opções, agrupe dias consecutivos na mesma cidade em vez de intercalar cidades diferentes no mesmo dia. Priorize atrações com nota de curadoria mais alta e que combinem com o perfil, o ritmo e os interesses do viajante. Considere o tempo médio de visita e o melhor horário sugerido de cada atração. Sugira um horário de início (formato "HH:MM") para cada atração, normalmente começando por volta das 09:00.
 
 Responda APENAS com um JSON válido, sem nenhum texto antes ou depois e sem markdown, seguindo exatamente este formato:
-{"days":[{"day_number":1,"items":[{"attraction_id":"...","order":0,"suggested_start_time":"09:00","suggested_duration_minutes":90}]}]}`;
+${jsonFormat(lodgingBlock.wantsLodging)}`;
 }
 
-async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro): Promise<unknown> {
+async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro, numDays: number): Promise<unknown> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error("ANTHROPIC_API_KEY não configurada no servidor.");
@@ -235,7 +342,8 @@ async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro): Pro
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 4096,
+      // Cresce com o nº de dias: roteiros longos têm muitos itens em JSON.
+      max_tokens: Math.min(16000, 2048 + numDays * 450),
       system: getSystemPrompt(tipo),
       messages: [
         { role: "user", content: prompt },
@@ -268,27 +376,34 @@ async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro): Pro
 
 export async function organizeItineraryWithAI(
   input: OrganizeItineraryInput,
-): Promise<OrganizedDay[]> {
-  const parsed = await callAnthropicForItinerary(buildPrompt(input), input.tipoRoteiro);
+): Promise<AIItineraryResult> {
+  const parsed = await callAnthropicForItinerary(buildPrompt(input), input.tipoRoteiro, input.numDays);
 
-  return validateOrganizedDays(parsed, [
-    ...input.attractions.map((a) => a.id),
-    ...input.candidates.map((a) => a.id),
-  ]);
+  return {
+    days: validateOrganizedDays(parsed, [
+      ...input.attractions.map((a) => a.id),
+      ...input.candidates.map((a) => a.id),
+    ]),
+    lodging: input.lodging.hasHotel === false ? parseLodging(parsed) : [],
+  };
 }
 
 // Roteiro do zero: sem nenhuma atração confirmada, a IA escolhe livremente
 // dentro do pool de candidatas (curadoria real das cidades escolhidas).
 export async function buildItineraryFromScratchWithAI(
   input: FromScratchItineraryInput,
-): Promise<OrganizedDay[]> {
+): Promise<AIItineraryResult> {
   const parsed = await callAnthropicForItinerary(
     buildFromScratchPrompt(input),
     input.tipoRoteiro,
+    input.numDays,
   );
 
-  return validateOrganizedDays(
-    parsed,
-    input.candidates.map((a) => a.id),
-  );
+  return {
+    days: validateOrganizedDays(
+      parsed,
+      input.candidates.map((a) => a.id),
+    ),
+    lodging: input.lodging.hasHotel === false ? parseLodging(parsed) : [],
+  };
 }

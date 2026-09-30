@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import PillButton from "@/components/PillButton";
 import PremiumDialog from "@/components/PremiumDialog";
 import ItinerarySwitcherDialog from "@/components/ItinerarySwitcherDialog";
+import { useUserSubscription } from "@/lib/useUserSubscription";
 import { addAccountItem } from "@/lib/itinerary-queries";
 import {
   estimateWalkMinutes,
@@ -28,7 +29,10 @@ import {
 } from "@/types/database";
 import type { TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
 import {
+  budgetHint,
+  MAX_DAYS_WITH_BUDGET_RANGE,
   FIELDS_BY_TIPO,
+  PACE_HINTS,
   SHOWS,
   TIPO_HELP,
   TIPO_TABS,
@@ -72,9 +76,24 @@ interface OrganizedDayResult {
   items: OrganizedItem[];
 }
 
+interface LodgingResult {
+  hasHotel: boolean;
+  hotelDetails: string | null;
+  neighborhoods: { cityName: string; neighborhood: string; reason: string }[];
+  siteHotels: {
+    name: string;
+    slug: string;
+    citySlug: string;
+    countrySlug: string;
+    cityName: string;
+  }[];
+}
+
 interface OrganizeResponse {
+  addedCities?: string[];
   itineraryTitle: string;
   days: OrganizedDayResult[];
+  lodging: LodgingResult | null;
 }
 
 interface GenerateErrorResponse {
@@ -140,7 +159,6 @@ export default function OrganizarComIAClient({
   const [startMode, setStartMode] = useState<"current" | "scratch">(
     hasCurrent ? "current" : "scratch",
   );
-  const isFromScratch = startMode === "scratch";
 
   const [numDays, setNumDays] = useState(() =>
     attractions.length > 0 ? defaultNumDays(attractions) : 3,
@@ -161,12 +179,23 @@ export default function OrganizarComIAClient({
     preferences.interestCategories,
   );
   const [notes, setNotes] = useState("");
+  const [interestOther, setInterestOther] = useState("");
+  const [customBudget, setCustomBudget] = useState("");
   const [tipo, setTipo] = useState<TipoRoteiro>("internacional");
   // Respostas dos campos específicos de cada tipo, num objeto único: trocar de
   // aba não apaga nada. Texto livre de opções "Outra/Alergia" fica em "chave::opção".
   const [extra, setExtra] = useState<Record<string, string[]>>({});
   const extraFields = FIELDS_BY_TIPO[tipo];
+  // Em "Viagem nacional", um roteiro com atrações fora do Brasil só pode ser refeito do zero.
+  const currentHasForeign = attractions.some((a) => a.countrySlug !== "brasil");
+  const canStartFromCurrent = hasCurrent && !(tipo === "nacional" && currentHasForeign);
+  const isFromScratch = startMode === "scratch" || !canStartFromCurrent;
   const [selectedCitySlugs, setSelectedCitySlugs] = useState<Set<string>>(new Set());
+  const [orderMode, setOrderMode] = useState<"ai" | "user">("ai");
+  // Ordem manual dos destinos; slugs novos entram no fim (ver orderedCitySlugs).
+  const [manualOrder, setManualOrder] = useState<string[]>([]);
+  const [suggestCities, setSuggestCities] = useState(false);
+  const [suggestCountries, setSuggestCountries] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -183,12 +212,28 @@ export default function OrganizarComIAClient({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
+  // Roteiro Único vale para 1 país só: bloqueia escolher destinos de outro país.
+  const subscription = useUserSubscription();
+  const limitOneCountry =
+    !subscription.loading &&
+    !subscription.isPremium &&
+    !!itinerary &&
+    subscription.hasRoteiroUnicoFor(itinerary.itineraryId);
+  const selectedCountrySlugs = new Set(
+    destinationCities.filter((c) => selectedCitySlugs.has(c.slug)).map((c) => c.countrySlug),
+  );
+  const isCountryLocked = (countrySlug: string) =>
+    limitOneCountry && selectedCountrySlugs.size > 0 && !selectedCountrySlugs.has(countrySlug);
+
   const citiesByCountry = useMemo(() => {
     const map = new Map<
       string,
       { countryName: string; cities: DestinationPickerCity[] }
     >();
     for (const city of destinationCities) {
+      // Brasil só aparece em "Viagem nacional", e ela só mostra o Brasil.
+      if (tipo === "internacional" && city.countrySlug === "brasil") continue;
+      if (tipo === "nacional" && city.countrySlug !== "brasil") continue;
       const entry = map.get(city.countrySlug) ?? {
         countryName: city.countryName,
         cities: [],
@@ -199,7 +244,35 @@ export default function OrganizarComIAClient({
     return [...map.entries()].sort((a, b) =>
       a[1].countryName.localeCompare(b[1].countryName),
     );
-  }, [destinationCities]);
+  }, [destinationCities, tipo]);
+
+  // Busca sem diferenciar maiúsculas nem acentos; bater no país mostra todas as cidades dele.
+  const [destinationQuery, setDestinationQuery] = useState("");
+  const visibleCountries = useMemo(() => {
+    const normalize = (text: string) =>
+      text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+    const query = normalize(destinationQuery.trim());
+    if (!query) return citiesByCountry;
+    return citiesByCountry.flatMap(([slug, entry]) => {
+      if (normalize(entry.countryName).includes(query)) return [[slug, entry] as const];
+      const cities = entry.cities.filter((c) => normalize(c.name).includes(query));
+      return cities.length > 0 ? [[slug, { ...entry, cities }] as const] : [];
+    });
+  }, [citiesByCountry, destinationQuery]);
+
+  const orderedCitySlugs = [
+    ...manualOrder.filter((slug) => selectedCitySlugs.has(slug)),
+    ...[...selectedCitySlugs].filter((slug) => !manualOrder.includes(slug)),
+  ];
+
+  function moveCity(slug: string, direction: -1 | 1) {
+    const list = [...orderedCitySlugs];
+    const from = list.indexOf(slug);
+    const to = from + direction;
+    if (to < 0 || to >= list.length) return;
+    [list[from], list[to]] = [list[to], list[from]];
+    setManualOrder(list);
+  }
 
   function toggleCity(slug: string) {
     setSelectedCitySlugs((prev) => {
@@ -240,7 +313,15 @@ export default function OrganizarComIAClient({
 
   function extraLines() {
     const lines: { label: string; value: string }[] = [];
+    if (SHOWS.budget(tipo) && numDays > MAX_DAYS_WITH_BUDGET_RANGE && customBudget) {
+      lines.push({
+        label: "Orçamento médio por pessoa (sem passagens)",
+        value: `R$ ${Number(customBudget).toLocaleString("pt-BR")}`,
+      });
+    }
     for (const field of extraFields) {
+      // O hotel vai num campo próprio da requisição (lodging), não em extras.
+      if (field.key === "tem_hotel") continue;
       const chosen = extra[field.key] ?? [];
       if (chosen.length === 0) continue;
       const value = chosen
@@ -251,11 +332,26 @@ export default function OrganizarComIAClient({
         .join(", ");
       lines.push({ label: field.label, value });
     }
+    if (SHOWS.interests(tipo) && interestCategories.includes("outro") && interestOther.trim()) {
+      lines.push({ label: "Outro interesse do viajante", value: interestOther.trim() });
+    }
     const dias = extra.dias_parque?.[0];
     if (tipo === "parque_disney" && dias) {
       lines.push({ label: "Dias dedicados a parques", value: dias });
     }
     return lines;
+  }
+
+  // null quando a aba não pergunta de hotel ou a pessoa ainda não respondeu.
+  function lodgingAnswer() {
+    if (!extraFields.some((f) => f.key === "tem_hotel")) return null;
+    const choice = extra.tem_hotel?.[0];
+    if (!choice) return null;
+    const hasHotel = choice === "Sim, já escolhi";
+    return {
+      has_hotel: hasHotel,
+      hotel_details: hasHotel ? extra[`tem_hotel::${choice}`]?.[0]?.trim() || null : null,
+    };
   }
 
   function renderExtraField(field: ExtraField) {
@@ -283,7 +379,7 @@ export default function OrganizarComIAClient({
               type="text"
               maxLength={200}
               aria-label={`${field.label}: detalhe de ${option}`}
-              placeholder={`Conte mais: ${option.toLowerCase()}`}
+              placeholder={field.placeholder ?? `Conte mais: ${option.toLowerCase()}`}
               value={extra[`${field.key}::${option}`]?.[0] ?? ""}
               onChange={(event) =>
                 setExtra((prev) => ({
@@ -334,10 +430,14 @@ export default function OrganizarComIAClient({
           num_days: numDays,
           start_date: startDate || null,
           tipo_roteiro: tipo,
-          city_slugs: isFromScratch ? Array.from(selectedCitySlugs) : undefined,
+          city_slugs: isFromScratch ? orderedCitySlugs : undefined,
+          destination_order: orderMode,
+          suggest_cities: isFromScratch && suggestCities,
+          suggest_countries:
+            isFromScratch && tipo === "internacional" && !limitOneCountry && suggestCountries,
           from_scratch: isFromScratch,
           preferences: {
-            budget: SHOWS.budget(tipo) ? budget : null,
+            budget: SHOWS.budget(tipo) && numDays <= MAX_DAYS_WITH_BUDGET_RANGE ? budget : null,
             travel_pace: SHOWS.pace(tipo) ? pace : null,
             travel_profile: SHOWS.profile(tipo) ? travelProfile : null,
             traveling_with_kids: travelingWithKids,
@@ -346,6 +446,7 @@ export default function OrganizarComIAClient({
             notes: notes.trim() || null,
             extras: extraLines(),
           },
+          lodging: lodgingAnswer(),
         }),
       });
 
@@ -483,7 +584,16 @@ export default function OrganizarComIAClient({
             <button
               key={tab.value}
               type="button"
-              onClick={() => setTipo(tab.value)}
+              onClick={() => {
+                setTipo(tab.value);
+                const hiddenByTab = (countrySlug: string) =>
+                  (tab.value === "internacional" && countrySlug === "brasil") ||
+                  (tab.value === "nacional" && countrySlug !== "brasil");
+                const hidden = new Set(
+                  destinationCities.filter((c) => hiddenByTab(c.countrySlug)).map((c) => c.slug),
+                );
+                setSelectedCitySlugs((prev) => new Set([...prev].filter((slug) => !hidden.has(slug))));
+              }}
               aria-pressed={tipo === tab.value}
               className={`rounded-xl border-2 p-4 text-left transition-colors ${
                 tipo === tab.value
@@ -524,6 +634,53 @@ export default function OrganizarComIAClient({
         />
       )}
 
+      {hasCurrent && (
+        <section aria-labelledby="ponto-partida-titulo">
+          <h2 id="ponto-partida-titulo" className="font-serif text-2xl text-branco">
+            Por onde começar?
+          </h2>
+          {canStartFromCurrent ? (
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {[
+                {
+                  value: "current" as const,
+                  label: "Partir do meu roteiro",
+                  description: `${attractions.length} ${attractions.length === 1 ? "lugar" : "lugares"} em ${cityCount} ${cityCount === 1 ? "cidade" : "cidades"}, organizados pela IA.`,
+                },
+                {
+                  value: "scratch" as const,
+                  label: "Gerar um roteiro do zero",
+                  description: "A IA monta tudo a partir dos destinos que você escolher.",
+                },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setStartMode(option.value)}
+                  aria-pressed={startMode === option.value}
+                  className={`rounded-xl border-2 p-4 text-left transition-colors ${
+                    startMode === option.value
+                      ? "border-terracota bg-terracota text-white"
+                      : "border-terracota/30 bg-branco text-tinta hover:border-terracota"
+                  }`}
+                >
+                  <span className="block font-serif text-lg">{option.label}</span>
+                  <span
+                    className={`mt-1 block text-sm ${startMode === option.value ? "text-white/90" : "text-oliva"}`}
+                  >
+                    {option.description}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-2 text-sm text-areia/90">
+              Seu roteiro atual tem destinos fora do Brasil, então na viagem nacional só dá para gerar um roteiro do zero.
+            </p>
+          )}
+        </section>
+      )}
+
       <div className="overflow-hidden rounded-2xl border border-areia/70 bg-branco shadow-[0_8px_30px_-20px_rgba(43,38,32,0.3)]">
         <div className="flex flex-col gap-5 border-b border-oliva/15 bg-areia/55 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           {isFromScratch ? (
@@ -549,7 +706,7 @@ export default function OrganizarComIAClient({
             <button
               type="button"
               onClick={() => setSwitcherOpen(true)}
-              className="text-sm text-terracota hover:underline"
+              className="flex min-h-11 items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-semibold text-terracota transition-colors hover:bg-terracota hover:text-white"
             >
               Trocar de roteiro
             </button>
@@ -557,39 +714,76 @@ export default function OrganizarComIAClient({
         </div>
 
         <div className="p-5 sm:p-8">
-        {hasCurrent && (
-          <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Ponto de partida">
-            <PillButton active={startMode === "current"} onClick={() => setStartMode("current")}>
-              Partir do meu roteiro
-            </PillButton>
-            <PillButton active={startMode === "scratch"} onClick={() => setStartMode("scratch")}>
-              Gerar um roteiro do zero
-            </PillButton>
-          </div>
-        )}
         {isFromScratch && (
           <div className="rounded-2xl bg-areia/45 p-4">
-            <p className="text-sm font-medium text-tinta">Para onde você quer ir?</p>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <p className="text-sm font-medium text-tinta">Para onde você quer ir?</p>
+              <Link
+                href="/#destinos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-terracota underline-offset-2 hover:underline"
+              >
+                Conhecer melhor os destinos ↗
+              </Link>
+            </div>
             <p className="mt-1 text-xs text-oliva">
-              Escolha um ou mais países ou cidades. A IA sugere atrações só dentro da curadoria desses destinos.
+              {tipo === "nacional"
+                ? "Escolha uma ou mais cidades do Brasil. A IA sugere atrações só dentro da curadoria desses destinos."
+                : "Escolha um ou mais países ou cidades. A IA sugere atrações só dentro da curadoria desses destinos."}
             </p>
+            {limitOneCountry && (
+              <p className="mt-2 text-xs text-terracota">
+                Seu Roteiro Único vale para 1 país. Para combinar países, assine o Premium.
+              </p>
+            )}
+            <div className="relative mt-3">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-oliva"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                type="search"
+                value={destinationQuery}
+                onChange={(event) => setDestinationQuery(event.target.value)}
+                aria-label="Pesquisar destino pelo nome"
+                placeholder="Pesquisar país ou cidade"
+                className="w-full rounded-xl border border-oliva/25 bg-branco py-2.5 pr-3.5 pl-10 text-sm text-tinta focus:border-terracota focus:outline-none"
+              />
+            </div>
             <div className="mt-3 flex max-h-72 flex-col gap-3 overflow-y-auto pr-1">
               {citiesByCountry.length === 0 && (
                 <p className="text-sm text-oliva">Ainda não temos destinos cadastrados.</p>
               )}
-              {citiesByCountry.map(([countrySlug, { countryName, cities }]) => {
+              {citiesByCountry.length > 0 && visibleCountries.length === 0 && (
+                <p className="text-sm text-oliva">Nenhum destino encontrado para essa busca.</p>
+              )}
+              {visibleCountries.map(([countrySlug, { countryName, cities }]) => {
                 const citySlugs = cities.map((c) => c.slug);
                 const allSelected = citySlugs.every((slug) => selectedCitySlugs.has(slug));
                 const someSelected = citySlugs.some((slug) => selectedCitySlugs.has(slug));
+                const locked = isCountryLocked(countrySlug);
                 return (
                   <div
                     key={countrySlug}
-                    className="rounded-xl border border-oliva/15 bg-branco/60 p-3"
+                    className={`rounded-xl border border-oliva/15 bg-branco/60 p-3 ${locked ? "opacity-50" : ""}`}
                   >
+                    {tipo === "nacional" ? (
+                      <p className="text-sm font-medium text-tinta">{countryName}</p>
+                    ) : (
                     <label className="flex items-center gap-2 text-sm font-medium text-tinta">
                       <input
                         type="checkbox"
                         checked={allSelected}
+                        disabled={locked}
                         ref={(el) => {
                           if (el) el.indeterminate = someSelected && !allSelected;
                         }}
@@ -598,6 +792,7 @@ export default function OrganizarComIAClient({
                       />
                       {countryName}
                     </label>
+                    )}
                     <div className="mt-2 ml-6 flex flex-wrap gap-x-4 gap-y-1.5">
                       {cities.map((city) => (
                         <label
@@ -607,6 +802,7 @@ export default function OrganizarComIAClient({
                           <input
                             type="checkbox"
                             checked={selectedCitySlugs.has(city.slug)}
+                            disabled={locked}
                             onChange={() => toggleCity(city.slug)}
                             className="h-3.5 w-3.5 rounded border-oliva/40 text-terracota focus:ring-terracota"
                           />
@@ -621,6 +817,101 @@ export default function OrganizarComIAClient({
           </div>
         )}
 
+        {isFromScratch && (
+          <div className="mt-4 flex flex-col gap-4">
+            {selectedCitySlugs.size > 1 && (
+              <div className="rounded-2xl bg-areia/45 p-4">
+                <p className="text-sm font-medium text-tinta">Em que ordem visitar os destinos?</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <PillButton active={orderMode === "ai"} onClick={() => setOrderMode("ai")}>
+                    A IA pode sugerir a ordem
+                  </PillButton>
+                  <PillButton active={orderMode === "user"} onClick={() => setOrderMode("user")}>
+                    Já tenho uma ordem em mente
+                  </PillButton>
+                </div>
+                {orderMode === "user" && (
+                  <ol className="mt-3 flex flex-col gap-1.5">
+                    {orderedCitySlugs.map((slug, index) => {
+                      const name = destinationCities.find((c) => c.slug === slug)?.name ?? slug;
+                      return (
+                        <li
+                          key={slug}
+                          className="flex items-center gap-2 rounded-xl bg-branco/70 px-3 py-1.5 text-sm text-tinta"
+                        >
+                          <span className="w-5 text-oliva">{index + 1}.</span>
+                          <span className="flex-1">{name}</span>
+                          <button
+                            type="button"
+                            onClick={() => moveCity(slug, -1)}
+                            disabled={index === 0}
+                            aria-label={`Subir ${name}`}
+                            className="min-h-8 min-w-8 rounded-full text-terracota disabled:opacity-30"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveCity(slug, 1)}
+                            disabled={index === orderedCitySlugs.length - 1}
+                            aria-label={`Descer ${name}`}
+                            className="min-h-8 min-w-8 rounded-full text-terracota disabled:opacity-30"
+                          >
+                            ↓
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                )}
+              </div>
+            )}
+            <div className="rounded-2xl bg-areia/45 p-4">
+              <p className="text-sm font-medium text-tinta">
+                A IA pode sugerir outras cidades que combinem?
+              </p>
+              <p className="mt-0.5 text-xs text-oliva">
+                Ela escolhe só entre as cidades da nossa curadoria nos mesmos países, de acordo
+                com o que você pediu para a viagem.
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <PillButton active={suggestCities} onClick={() => setSuggestCities(true)}>
+                  Sim, pode sugerir
+                </PillButton>
+                <PillButton active={!suggestCities} onClick={() => setSuggestCities(false)}>
+                  Não, só as que escolhi
+                </PillButton>
+              </div>
+            </div>
+            {tipo === "internacional" && (
+              <div className="rounded-2xl bg-areia/45 p-4">
+                <p className="text-sm font-medium text-tinta">
+                  A IA pode sugerir outro país que combine?
+                </p>
+                <p className="mt-0.5 text-xs text-oliva">
+                  {limitOneCountry
+                    ? "Seu Roteiro Único vale para 1 país. Para combinar países, assine o Premium."
+                    : "Ela escolhe só entre os países da nossa curadoria, de acordo com o que você pediu para a viagem."}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <PillButton
+                    active={suggestCountries && !limitOneCountry}
+                    onClick={() => !limitOneCountry && setSuggestCountries(true)}
+                  >
+                    Sim, pode sugerir
+                  </PillButton>
+                  <PillButton
+                    active={!suggestCountries || limitOneCountry}
+                    onClick={() => setSuggestCountries(false)}
+                  >
+                    Não, só os que escolhi
+                  </PillButton>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${isFromScratch ? "mt-6" : ""}`}>
           <div>
             <label htmlFor="num-days" className="text-sm font-medium text-tinta">
@@ -630,7 +921,7 @@ export default function OrganizarComIAClient({
               id="num-days"
               type="number"
               min={1}
-              max={30}
+              max={90}
               value={numDays}
               onChange={(event) => setNumDays(Number(event.target.value) || 1)}
               className="mt-1 w-full rounded-xl border border-oliva/25 bg-areia/25 px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
@@ -686,23 +977,46 @@ export default function OrganizarComIAClient({
                 </PillButton>
               ))}
             </div>
+            {pace && (
+              <p className="mt-2 text-xs text-oliva">{PACE_HINTS[pace]}</p>
+            )}
           </div>
           )}
 
           {SHOWS.budget(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Faixa de orçamento</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {BUDGET_RANGES.map((option) => (
-                <PillButton
-                  key={option.value}
-                  active={budget === option.value}
-                  onClick={() => setBudget(budget === option.value ? null : option.value)}
-                >
-                  {option.label}
-                </PillButton>
-              ))}
-            </div>
+            {numDays > MAX_DAYS_WITH_BUDGET_RANGE ? (
+              <>
+                <p className="mt-0.5 text-xs text-oliva">
+                  Para viagens longas, informe o valor médio por pessoa, em reais, sem contar passagens.
+                </p>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  aria-label="Valor médio por pessoa, em reais"
+                  placeholder="Ex.: 30000"
+                  value={customBudget}
+                  onChange={(event) => setCustomBudget(event.target.value.replace(/\D/g, "").slice(0, 9))}
+                  className="mt-2 w-full max-w-xs rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+                />
+              </>
+            ) : (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {BUDGET_RANGES.map((option) => (
+                  <PillButton
+                    key={option.value}
+                    active={budget === option.value}
+                    onClick={() => setBudget(budget === option.value ? null : option.value)}
+                  >
+                    {option.label}
+                  </PillButton>
+                ))}
+              </div>
+            )}
+            {numDays <= MAX_DAYS_WITH_BUDGET_RANGE && budget && (
+              <p className="mt-2 text-xs text-oliva">{budgetHint(tipo, budget, numDays)}</p>
+            )}
           </div>
           )}
 
@@ -721,6 +1035,17 @@ export default function OrganizarComIAClient({
                 </PillButton>
               ))}
             </div>
+            {interestCategories.includes("outro") && (
+              <input
+                type="text"
+                maxLength={200}
+                aria-label="Interesses: detalhe de Outro"
+                placeholder="Escreva o que você quer no roteiro"
+                value={interestOther}
+                onChange={(event) => setInterestOther(event.target.value)}
+                className="mt-2 w-full rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+              />
+            )}
           </div>
           )}
 
@@ -890,6 +1215,45 @@ export default function OrganizarComIAClient({
           )}
           {calendarError && (
             <p className="-mt-3 rounded-xl bg-branco px-5 py-3 text-sm text-terracota">{calendarError}</p>
+          )}
+
+          {result.addedCities && result.addedCities.length > 0 && (
+            <p className="rounded-xl bg-branco px-5 py-3 text-sm text-oliva">
+              A IA incluiu {result.addedCities.join(", ")} no roteiro por combinar com o que você
+              pediu.
+            </p>
+          )}
+
+          {result.lodging && !result.lodging.hasHotel && (
+            <div className="rounded-[22px] border border-tinta/10 bg-branco p-5 shadow-[0_14px_35px_-28px_rgba(43,38,32,0.55)]">
+              <h3 className="font-serif text-lg text-tinta">Onde ficar</h3>
+              {result.lodging.neighborhoods.map((n) => (
+                <p key={n.cityName} className="mt-2 text-sm text-tinta">
+                  <span className="font-medium">{n.cityName}: {n.neighborhood}.</span>{" "}
+                  <span className="text-oliva">{n.reason}</span>
+                </p>
+              ))}
+              {result.lodging.siteHotels.length > 0 && (
+                <>
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-oliva">
+                    Hotéis da nossa curadoria
+                  </p>
+                  <ul className="mt-2 flex flex-col gap-1.5">
+                    {result.lodging.siteHotels.map((hotel) => (
+                      <li key={hotel.slug} className="text-sm">
+                        <Link
+                          href={`/${hotel.countrySlug}/${hotel.citySlug}/${hotel.slug}`}
+                          className="text-terracota hover:underline"
+                        >
+                          {hotel.name}
+                        </Link>{" "}
+                        <span className="text-oliva">({hotel.cityName})</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
           )}
 
           {result.days.map((day) => (

@@ -178,7 +178,7 @@ function QuestionCard({
               </button>
             )}
           </div>
-          <p className="mt-2 leading-relaxed text-tinta">{linkify(question.answer.answer)}</p>
+          <p className="mt-2 leading-relaxed text-tinta whitespace-pre-line">{linkify(question.answer.answer)}</p>
         </div>
       )}
 

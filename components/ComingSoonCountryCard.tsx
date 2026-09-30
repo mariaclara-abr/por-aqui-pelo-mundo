@@ -1,5 +1,6 @@
 "use client";
 
+import { countryFlag } from "@/lib/country-flag";
 import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,7 +104,12 @@ export default function ComingSoonCountryCard({
       </span>
 
       <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3">
-        <h2 className="font-serif text-xl text-white">{country.name}</h2>
+        <h2 className="font-serif text-xl text-white">
+          {country.name}
+          {countryFlag(country.slug) && (
+            <span aria-hidden="true"> {countryFlag(country.slug)}</span>
+          )}
+        </h2>
 
         <button
           type="button"

@@ -1,4 +1,5 @@
 import DestinationCard from "@/components/DestinationCard";
+import { countryFlag } from "@/lib/country-flag";
 import { parseImagePosition } from "@/lib/image-position";
 import type { Database } from "@/types/database";
 
@@ -9,6 +10,7 @@ export default function CountryCard({ country }: { country: Country }) {
     <DestinationCard
       href={`/${country.slug}`}
       name={country.name}
+      flag={countryFlag(country.slug)}
       imageUrl={country.cover_image_url}
       imagePosition={parseImagePosition(country.cover_image_position)}
     />

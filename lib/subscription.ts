@@ -5,7 +5,7 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 // A compra do "Roteiro Inteligente" avulso libera todas as dicas Premium do
 // site por um período limitado, diferente do acesso ao próprio roteiro (que
 // não expira).
-export const ROTEIRO_UNICO_TIPS_UNLOCK_DAYS = 10;
+export const ROTEIRO_UNICO_TIPS_UNLOCK_DAYS = 7;
 
 export function computeTipsUnlockExpiration(
   purchaseDate: Date = new Date(),

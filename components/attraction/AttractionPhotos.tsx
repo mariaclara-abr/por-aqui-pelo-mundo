@@ -176,7 +176,7 @@ function PhotoGalleryOverlay({
             />
           </div>
           {focusedPhoto.caption && (
-            <p className="shrink-0 px-6 pb-6 text-center text-sm leading-relaxed text-white/90">
+            <p className="shrink-0 px-6 pb-6 text-center text-sm leading-relaxed text-white/90 whitespace-pre-line">
               {linkify(focusedPhoto.caption)}
             </p>
           )}

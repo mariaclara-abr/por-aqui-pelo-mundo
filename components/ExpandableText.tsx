@@ -15,16 +15,18 @@ export default function ExpandableText({
 }) {
   const [expanded, setExpanded] = useState(false);
 
-  const sentences = text.split(SENTENCE_SPLIT).filter(Boolean);
+  // Corta o texto original (não recompõe as frases) para manter as quebras de linha.
+  const boundaries = [...text.matchAll(new RegExp(SENTENCE_SPLIT, "g"))];
+  const lineClass = `${className} whitespace-pre-line`;
 
-  if (sentences.length <= VISIBLE_SENTENCES) {
-    return <p className={className}>{linkify(text)}</p>;
+  if (boundaries.length < VISIBLE_SENTENCES) {
+    return <p className={lineClass}>{linkify(text)}</p>;
   }
 
-  const preview = sentences.slice(0, VISIBLE_SENTENCES).join(" ");
+  const preview = text.slice(0, boundaries[VISIBLE_SENTENCES - 1].index);
 
   return (
-    <p className={className}>
+    <p className={lineClass}>
       {linkify(expanded ? text : preview)}{" "}
       <button
         type="button"

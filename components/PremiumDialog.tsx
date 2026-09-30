@@ -66,16 +66,16 @@ const HERO_BENEFITS: {
   detail: string;
 }[] = [
   {
-    id: "dicas",
-    icon: LightbulbIcon,
-    title: "Todas as dicas do site",
-    detail: "acesso completo às dicas imperdíveis, sem cards bloqueados",
-  },
-  {
     id: "ia",
     icon: SparkleIcon,
     title: "IA organiza tudo por você",
     detail: "define ordem, horário e tempo ideal em cada atração do roteiro",
+  },
+  {
+    id: "dicas",
+    icon: LightbulbIcon,
+    title: "Todas as dicas do site",
+    detail: "acesso completo às dicas imperdíveis, sem cards bloqueados",
   },
   {
     id: "download",
@@ -112,26 +112,25 @@ const PLAN_INFO: Record<
   }
 > = {
   roteiro_unico_1pais: {
-    title: "Roteiro Premium Individual",
-    price: "R$ 24,90",
-    originalPrice: "R$ 29,90",
+    title: "Roteiro Único",
+    price: "R$ 49,90",
     priceSuffix: "",
     detail:
-      "Válido para um roteiro (máximo 1 país), cidades e\natrações ilimitadas + todas as dicas desbloqueadas por 10 dias",
+      "Um roteiro premium (até 1 país com cidades e\natrações ilimitadas) + todas as dicas desbloqueadas por 7 dias",
   },
   premium_mensal: {
-    title: "Premium Mensal",
-    price: "R$ 39,90",
-    originalPrice: "R$ 49,90",
-    priceSuffix: "/mês",
-    detail: "Acesso ilimitado ao Premium em qualquer roteiro por um mês",
+    title: "1 mês Ilimitado",
+    price: "R$ 69,90",
+    originalPrice: "R$ 79,90",
+    priceSuffix: "",
+    detail: "Acesso a roteiros premium e a todas as dicas por um mês",
   },
   premium_anual: {
     title: "Premium Anual",
-    price: "R$ 14,90",
+    price: "R$ 24,90",
     priceSuffix: "/mês",
-    belowPriceNote: "ou R$ 178,80/ano",
-    detail: "Acesso ilimitado ao Premium em qualquer roteiro por um ano",
+    belowPriceNote: "R$ 298,80 ao ano",
+    detail: "Acesso a roteiros premium e a todas as dicas por um ano",
   },
 };
 
@@ -442,13 +441,20 @@ export default function PremiumDialog({
                   return (
                     <div
                       key={plan}
-                      className={
+                      onClick={
+                        isLocked || loadingPlan !== null
+                          ? undefined
+                          : noItinerary
+                            ? goToDestinos
+                            : () => handleCheckout(plan)
+                      }
+                      className={`transition-transform duration-200 ${isLocked ? "" : "cursor-pointer hover:scale-[1.02]"} ${
                         isLocked
                           ? "relative rounded-xl border border-oliva/15 bg-areia/40 p-4"
                           : isFeatured
                             ? "relative rounded-xl border-2 border-terracota bg-terracota/5 p-4"
                             : "relative rounded-xl border border-oliva/20 p-4"
-                      }
+                      }`}
                     >
                       {isFeatured && (
                         <span className="absolute -top-3 left-4 rounded-full border border-terracota bg-branco px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-terracota">
@@ -464,7 +470,7 @@ export default function PremiumDialog({
                           </p>
                           <p className="mt-1 whitespace-pre-line text-xs text-oliva">
                             {noItinerary
-                              ? "Faça um roteiro premium limitado a um país. Tenha acesso a todas as dicas por 10 dias."
+                              ? "Faça um roteiro premium limitado a um país. Tenha acesso a todas as dicas por 7 dias."
                               : isLocked
                                 ? `${LOCKED_ROTEIRO_UNICO_DETAIL}: seu roteiro atual tem atrações em ${countryCount} países.`
                                 : info.detail}
@@ -474,6 +480,11 @@ export default function PremiumDialog({
                           {info.originalPrice && !isLocked && (
                             <p className="text-center text-xs text-oliva/50 line-through">
                               {info.originalPrice}
+                            </p>
+                          )}
+                          {info.belowPriceNote && !isLocked && (
+                            <p className="text-center text-xs font-medium text-oliva">
+                              {info.belowPriceNote}
                             </p>
                           )}
                           <p
@@ -486,11 +497,6 @@ export default function PremiumDialog({
                               </span>
                             )}
                           </p>
-                          {info.belowPriceNote && !isLocked && (
-                            <p className="text-center text-xs font-medium text-oliva">
-                              {info.belowPriceNote}
-                            </p>
-                          )}
                         </div>
                       </div>
                       {isAnnual && (
@@ -501,7 +507,6 @@ export default function PremiumDialog({
                       {noItinerary ? (
                         <button
                           type="button"
-                          onClick={goToDestinos}
                           className="mt-3 flex w-full items-center justify-center rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
                         >
                           Montar meu roteiro
@@ -509,7 +514,6 @@ export default function PremiumDialog({
                       ) : (
                         <button
                           type="button"
-                          onClick={isLocked ? undefined : () => handleCheckout(plan)}
                           disabled={isLocked || loadingPlan !== null}
                           className={
                             isLocked

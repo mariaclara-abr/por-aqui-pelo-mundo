@@ -59,12 +59,13 @@ export default async function OrganizarComIAPage() {
               Sua viagem, no ritmo certo.
             </h1>
             <p className="mt-5 max-w-xl text-left text-sm leading-6 text-areia/90 sm:text-base sm:leading-7">
-              A IA transforma suas escolhas em um roteiro fluido: encontra a melhor ordem,
-              distribui os dias e sugere horários para você aproveitar cada lugar com calma.
+              Uma IA treinada com o método da Rejane, que planeja viagens há mais de 10 anos. A
+              IA monta tudo só com lugares que a Rejane visitou e avaliou, definindo a ordem, os
+              dias e os horários que combinam com o seu jeito de viajar.
             </p>
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3 text-xs text-areia sm:text-sm">
               <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Trajetos mais inteligentes</span>
-              <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Sugestões da curadoria</span>
+              <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Sugestões e dicas da curadoria</span>
               <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Seu jeito de viajar</span>
             </div>
           </div>

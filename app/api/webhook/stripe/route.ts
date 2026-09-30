@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { stripe, PLANS } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { computeTipsUnlockExpiration } from "@/lib/subscription";
 import type { PlanType } from "@/types/database";
@@ -35,6 +35,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     expirationDate = toIso(subscriptionPeriodEnd(subscription));
     stripeSubscriptionId = subscription.id;
+  } else {
+    const months = PLANS[planType]?.accessMonths;
+    if (months) {
+      const end = new Date();
+      end.setMonth(end.getMonth() + months);
+      expirationDate = end.toISOString();
+    }
   }
 
   const tipsUnlockExpiration =

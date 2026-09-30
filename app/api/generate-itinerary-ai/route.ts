@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase-server";
 import {
   getAttractionsForCities,
   getCandidateAttractions,
+  getHotelsForCities,
+  getCitySlugsInOtherCountries,
+  getOtherCitySlugsInCountries,
   getCountrySlugsForCities,
   getItineraryForAIById,
   type AIAttraction,
@@ -14,6 +17,7 @@ import {
   MIN_ITEMS_PER_DAY,
   suggestionsPerDayLimit,
   type OrganizeAttractionInput,
+  type LodgingSuggestion,
   type OrganizedDay,
 } from "@/lib/ai";
 import { TIPOS_ROTEIRO, type TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
@@ -30,6 +34,10 @@ interface RequestBody {
   tipo_roteiro?: string;
   from_scratch?: boolean;
   city_slugs?: string[];
+  destination_order?: "ai" | "user";
+  suggest_cities?: boolean;
+  suggest_countries?: boolean;
+  lodging?: { has_hotel?: boolean | null; hotel_details?: string | null } | null;
   preferences?: {
     budget?: BudgetRange | null;
     travel_pace?: TravelPace | null;
@@ -42,7 +50,7 @@ interface RequestBody {
   };
 }
 
-const MAX_DAYS = 30;
+const MAX_DAYS = 90;
 
 function toOrganizeAttractionInput(a: AIAttraction): OrganizeAttractionInput {
   return {
@@ -53,6 +61,8 @@ function toOrganizeAttractionInput(a: AIAttraction): OrganizeAttractionInput {
     curationRating: a.curationRating,
     averageVisitTime: a.averageVisitTime,
     bestTimeOfDay: a.bestTimeOfDay,
+    latitude: a.latitude,
+    longitude: a.longitude,
   };
 }
 
@@ -118,6 +128,7 @@ export async function POST(request: Request) {
   }
 
   let countryCount: number;
+  let fromScratchCountrySlugs: string[] = [];
   if (isFromScratch) {
     let countrySlugs: string[];
     try {
@@ -132,6 +143,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Destinos inválidos." }, { status: 400 });
     }
     countryCount = countrySlugs.length;
+    fromScratchCountrySlugs = countrySlugs;
   } else {
     countryCount = countDistinctCountries(itinerary.attractions);
   }
@@ -159,9 +171,31 @@ export async function POST(request: Request) {
   }
 
   let candidates: AIAttraction[] = [];
+  const allowExtraCities = isFromScratch && body.suggest_cities === true;
+  // Outro país só para Premium (Roteiro Único vale para 1 país) e só em viagem internacional.
+  const allowExtraCountries =
+    isFromScratch &&
+    body.suggest_countries === true &&
+    access.reason === "premium" &&
+    tipoRoteiro === "internacional";
   if (isFromScratch) {
     try {
-      candidates = await getAttractionsForCities(fromScratchCitySlugs);
+      // Ritmo intenso chega a 10 atrações por dia: o pool precisa comportar isso.
+      candidates = await getAttractionsForCities(
+        fromScratchCitySlugs,
+        Math.max(15, Math.ceil((numDays * 10) / fromScratchCitySlugs.length)),
+      );
+      if (allowExtraCities) {
+        const extraSlugs = await getOtherCitySlugsInCountries(
+          fromScratchCountrySlugs,
+          fromScratchCitySlugs,
+        );
+        candidates.push(...(await getAttractionsForCities(extraSlugs, 4)));
+      }
+      if (allowExtraCountries) {
+        const otherSlugs = await getCitySlugsInOtherCountries(fromScratchCountrySlugs);
+        candidates.push(...(await getAttractionsForCities(otherSlugs, 3)));
+      }
     } catch {
       return NextResponse.json(
         { error: "Não foi possível buscar as atrações da curadoria para esses destinos." },
@@ -205,15 +239,31 @@ export async function POST(request: Request) {
       .map((e) => ({ label: e.label.slice(0, 80), value: e.value.slice(0, 300) })),
   };
 
+  const lodging = {
+    hasHotel: typeof body.lodging?.has_hotel === "boolean" ? body.lodging.has_hotel : null,
+    hotelDetails:
+      typeof body.lodging?.hotel_details === "string"
+        ? body.lodging.hotel_details.trim().slice(0, 300) || null
+        : null,
+  };
+
   let organizedDays: OrganizedDay[];
+  let lodgingSuggestions: LodgingSuggestion[];
   try {
-    organizedDays = isFromScratch
+    const generated = isFromScratch
       ? await buildItineraryFromScratchWithAI({
           tipoRoteiro,
+          chosenCityNames: fromScratchCitySlugs
+            .map((slug) => candidates.find((a) => a.citySlug === slug)?.cityName)
+            .filter((name): name is string => !!name),
+          userDefinedOrder: body.destination_order === "user",
+          allowExtraCities,
+          allowExtraCountries,
           candidates: candidates.map(toOrganizeAttractionInput),
           numDays,
           startDate: body.start_date ?? null,
           preferences,
+          lodging,
         })
       : await organizeItineraryWithAI({
           tipoRoteiro,
@@ -222,7 +272,10 @@ export async function POST(request: Request) {
           numDays,
           startDate: body.start_date ?? null,
           preferences,
+          lodging,
         });
+    organizedDays = generated.days;
+    lodgingSuggestions = generated.lodging;
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Erro ao gerar o roteiro com IA.";
@@ -314,5 +367,46 @@ export async function POST(request: Request) {
       return { dayNumber: day.dayNumber, date, items };
     });
 
-  return NextResponse.json({ itineraryTitle: itinerary.title, days });
+  // Sem hotel: além do bairro sugerido pela IA, lista os hotéis da curadoria
+  // nas cidades do roteiro (vêm do banco, nunca inventados).
+  let siteHotels: AIAttraction[] = [];
+  if (lodging.hasHotel === false) {
+    const citySlugs = isFromScratch
+      ? fromScratchCitySlugs
+      : [...new Set(itinerary.attractions.map((a) => a.citySlug))];
+    siteHotels = await getHotelsForCities(citySlugs).catch(() => []);
+  }
+
+  // Cidades que a IA incluiu por conta própria (só existe com suggest_cities).
+  const chosenSet = new Set(fromScratchCitySlugs);
+  const addedCities = allowExtraCities || allowExtraCountries
+    ? [
+        ...new Set(
+          days.flatMap((d) =>
+            d.items.filter((i) => !chosenSet.has(i.citySlug)).map((i) => i.cityName),
+          ),
+        ),
+      ]
+    : [];
+
+  return NextResponse.json({
+    itineraryTitle: itinerary.title,
+    days,
+    addedCities,
+    lodging:
+      lodging.hasHotel === null
+        ? null
+        : {
+            hasHotel: lodging.hasHotel,
+            hotelDetails: lodging.hotelDetails,
+            neighborhoods: lodgingSuggestions,
+            siteHotels: siteHotels.map((h) => ({
+              name: h.name,
+              slug: h.slug,
+              citySlug: h.citySlug,
+              countrySlug: h.countrySlug,
+              cityName: h.cityName,
+            })),
+          },
+  });
 }

@@ -123,7 +123,8 @@ export async function getCandidateAttractions(
   for (const row of data) {
     if (existingIds.has(row.id)) continue;
     const attraction = mapAttractionRow(row);
-    if (!attraction) continue;
+    // Hotel não é parada de passeio: fica de fora dos dias e vai na seção "Onde ficar".
+    if (!attraction || attraction.categories.includes("hotel")) continue;
     const list = byCity.get(attraction.citySlug) ?? [];
     list.push(attraction);
     byCity.set(attraction.citySlug, list);
@@ -146,6 +147,7 @@ const MAX_CANDIDATES_PER_CITY_FROM_SCRATCH = 15;
 // inventa lugares fora do que já está cadastrado no banco.
 export async function getAttractionsForCities(
   citySlugs: string[],
+  maxPerCity = MAX_CANDIDATES_PER_CITY_FROM_SCRATCH,
 ): Promise<AIAttraction[]> {
   const supabase = await createClient();
   if (citySlugs.length === 0) return [];
@@ -170,7 +172,8 @@ export async function getAttractionsForCities(
   const byCity = new Map<string, AIAttraction[]>();
   for (const row of data) {
     const attraction = mapAttractionRow(row);
-    if (!attraction) continue;
+    // Hotel não é parada de passeio: fica de fora dos dias e vai na seção "Onde ficar".
+    if (!attraction || attraction.categories.includes("hotel")) continue;
     const list = byCity.get(attraction.citySlug) ?? [];
     list.push(attraction);
     byCity.set(attraction.citySlug, list);
@@ -179,9 +182,98 @@ export async function getAttractionsForCities(
   const candidates: AIAttraction[] = [];
   for (const list of byCity.values()) {
     list.sort((a, b) => (b.curationRating ?? 0) - (a.curationRating ?? 0));
-    candidates.push(...list.slice(0, MAX_CANDIDATES_PER_CITY_FROM_SCRATCH));
+    candidates.push(...list.slice(0, maxPerCity));
   }
   return candidates;
+}
+
+// Outras cidades cadastradas nos MESMOS países dos destinos escolhidos: é de
+// onde a IA pode sugerir cidades extras. Fica restrito aos países já
+// escolhidos para não burlar o limite de 1 país do Roteiro Único.
+// ponytail: corta em 25 cidades (ordem alfabética); ranquear por nota se o catálogo crescer.
+export async function getOtherCitySlugsInCountries(
+  countrySlugs: string[],
+  excludeCitySlugs: string[],
+  limit = 25,
+): Promise<string[]> {
+  const supabase = await createClient();
+  if (countrySlugs.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("cities")
+    .select("slug, countries!inner(slug)")
+    .in("countries.slug", countrySlugs)
+    .order("name");
+  if (error) throw error;
+
+  const excluded = new Set(excludeCitySlugs);
+  return data.map((c) => c.slug).filter((slug) => !excluded.has(slug)).slice(0, limit);
+}
+
+// Cidades de OUTROS países (fora do Brasil), de onde a IA pode sugerir um país
+// extra que combine. Só deve ser usado para contas Premium, que não têm o
+// limite de 1 país. Até 3 cidades por país, para o pool não ficar num país só.
+export async function getCitySlugsInOtherCountries(
+  excludeCountrySlugs: string[],
+  limit = 30,
+): Promise<string[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("cities")
+    .select("slug, countries!inner(slug)")
+    .order("name");
+  if (error) throw error;
+
+  const excluded = new Set([...excludeCountrySlugs, "brasil"]);
+  const perCountry = new Map<string, number>();
+  const slugs: string[] = [];
+  for (const c of data) {
+    const country = (c.countries as unknown as { slug: string }).slug;
+    if (excluded.has(country)) continue;
+    const count = perCountry.get(country) ?? 0;
+    if (count >= 3) continue;
+    perCountry.set(country, count + 1);
+    slugs.push(c.slug);
+  }
+  return slugs.slice(0, limit);
+}
+
+// Hotéis da curadoria nas cidades do roteiro (melhor nota primeiro), para
+// indicar a quem ainda não tem hospedagem.
+export async function getHotelsForCities(
+  citySlugs: string[],
+  maxPerCity = 3,
+): Promise<AIAttraction[]> {
+  const supabase = await createClient();
+  if (citySlugs.length === 0) return [];
+
+  const { data: cities, error: citiesError } = await supabase
+    .from("cities")
+    .select("id")
+    .in("slug", citySlugs);
+  if (citiesError) throw citiesError;
+  if (cities.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("attractions")
+    .select(
+      "id, name, slug, categories, curation_rating, latitude, longitude, average_visit_time, best_time_of_day, description, attraction_photos(url, order), cities(name, slug, countries(slug))",
+    )
+    .in("city_id", cities.map((c) => c.id))
+    .contains("categories", ["hotel"]);
+  if (error) throw error;
+
+  const byCity = new Map<string, AIAttraction[]>();
+  for (const row of data) {
+    const hotel = mapAttractionRow(row);
+    if (!hotel) continue;
+    byCity.set(hotel.citySlug, [...(byCity.get(hotel.citySlug) ?? []), hotel]);
+  }
+  return [...byCity.values()].flatMap((list) =>
+    list
+      .sort((a, b) => (b.curationRating ?? 0) - (a.curationRating ?? 0))
+      .slice(0, maxPerCity),
+  );
 }
 
 // Países distintos das cidades escolhidas — usado para decidir acesso

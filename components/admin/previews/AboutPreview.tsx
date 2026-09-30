@@ -60,7 +60,7 @@ export default function AboutPreview({
         <div className="mx-auto mt-10 max-w-2xl">
           <div className="flex flex-col gap-5 text-left leading-relaxed text-tinta">
             {bioParagraphs.map((paragraph, index) => (
-              <p key={index}>{linkify(paragraph)}</p>
+              <p key={index} className="whitespace-pre-line">{linkify(paragraph)}</p>
             ))}
           </div>
         </div>
@@ -83,11 +83,11 @@ export default function AboutPreview({
             <h2 className="font-serif text-2xl text-tinta">
               Por que esse site existe
             </h2>
-            <p>{linkify(whySiteText)}</p>
+            <p className="whitespace-pre-line">{linkify(whySiteText)}</p>
           </div>
 
           <blockquote className="mt-10 border-l-4 border-terracota pl-5 text-left">
-            <p className="font-serif text-xl italic text-tinta sm:text-2xl">
+            <p className="font-serif text-xl italic text-tinta whitespace-pre-line sm:text-2xl">
               &ldquo;{linkify(quoteText)}&rdquo;
             </p>
           </blockquote>
