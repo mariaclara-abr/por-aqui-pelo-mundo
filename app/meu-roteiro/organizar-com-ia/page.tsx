@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase-server";
 import { getActiveItineraryForAI } from "@/lib/itinerary-ai";
 import { getDestinationPickerCities } from "@/lib/queries";
@@ -39,37 +40,43 @@ export default async function OrganizarComIAPage() {
   const preferences = parseUserPreferences(profile?.preferences);
 
   return (
-    <main className="relative flex-1 overflow-hidden px-4 py-7 sm:px-6 sm:py-10 lg:px-10">
-      <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[440px] w-[min(1100px,120vw)] -translate-x-1/2 rounded-b-[48%] bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.92),_rgba(255,255,255,0)_68%)]" />
+    <main className="relative flex-1 bg-oliva bg-[url('/itinerary-atlas.svg')] bg-[length:960px_640px] bg-top-left bg-repeat-y px-4 pt-7 pb-12 sm:bg-[length:100%_auto] sm:bg-top sm:px-6 sm:pt-10 sm:pb-16 lg:px-10">
       <div className="mx-auto max-w-6xl">
         <Link
           href="/meu-roteiro"
-          className="text-sm text-oliva transition-colors hover:text-terracota"
+          className="inline-flex min-h-11 items-center text-sm text-areia/85 transition-colors hover:text-branco focus-visible:outline-areia"
         >
           ← Voltar para o roteiro
         </Link>
 
-        <section className="relative mt-5 overflow-hidden rounded-[28px] border border-white/80 bg-tinta px-6 py-9 text-branco shadow-[0_22px_55px_-30px_rgba(43,38,32,0.75)] sm:px-10 sm:py-12">
-          <div className="absolute -top-24 -right-20 h-64 w-64 rounded-full border border-areia/20" />
-          <div className="absolute top-12 right-10 h-36 w-36 rounded-full border border-terracota/50" />
-          <div className="absolute right-24 bottom-[-72px] h-48 w-48 rounded-full bg-terracota/20 blur-2xl" />
+        <section className="relative grid items-center gap-8 border-b border-areia/25 pt-6 pb-9 text-branco sm:pt-8 sm:pb-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.55fr)] lg:gap-12">
           <div className="relative max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-areia/25 bg-branco/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-areia">
-              <span className="h-1.5 w-1.5 rounded-full bg-terracota" />
+            <span className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-areia">
+              <span aria-hidden="true" className="h-px w-8 bg-areia/60" />
               Experiência premium
             </span>
-            <h1 className="mt-5 font-serif text-4xl leading-[1.02] sm:text-5xl">
+            <h1 className="mt-5 max-w-xl text-balance font-serif text-4xl leading-[1.08] sm:text-5xl lg:text-[3.5rem]">
               Sua viagem, no ritmo certo.
             </h1>
-            <p className="mt-5 max-w-xl text-sm leading-6 text-areia/85 sm:text-base">
+            <p className="mt-5 max-w-xl text-left text-sm leading-6 text-areia/90 sm:text-base sm:leading-7">
               A IA transforma suas escolhas em um roteiro fluido: encontra a melhor ordem,
               distribui os dias e sugere horários para você aproveitar cada lugar com calma.
             </p>
-            <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-areia/90">
-              <span className="flex items-center gap-2"><span className="text-terracota">✦</span> Trajetos mais inteligentes</span>
-              <span className="flex items-center gap-2"><span className="text-terracota">✦</span> Sugestões da curadoria</span>
-              <span className="flex items-center gap-2"><span className="text-terracota">✦</span> Seu jeito de viajar</span>
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3 text-xs text-areia sm:text-sm">
+              <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Trajetos mais inteligentes</span>
+              <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Sugestões da curadoria</span>
+              <span className="flex items-center gap-2"><span aria-hidden="true" className="text-areia/65">✦</span> Seu jeito de viajar</span>
             </div>
+          </div>
+          <div aria-hidden="true" className="pointer-events-none hidden select-none md:block">
+            <Image
+              src="/ia-roteiro-ilustracao.png"
+              alt=""
+              width={620}
+              height={628}
+              sizes="(min-width: 1280px) 360px, (min-width: 768px) 30vw, 1px"
+              className="mx-auto h-auto w-full max-w-[360px]"
+            />
           </div>
         </section>
 
