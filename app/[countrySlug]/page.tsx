@@ -81,11 +81,16 @@ export default async function CountryPage(
   const publishedCities = cities.filter((city) => city.status === "published");
   const comingSoonCities = cities.filter((city) => city.status === "draft");
 
-  // Países com uma única cidade já publicada (ex: Mônaco) não precisam da
-  // etapa intermediária de escolher a cidade: vai direto para as atrações.
-  // Se a única cidade ainda está "em breve", fica na grade como teaser em
-  // vez de levar o visitante direto pra uma página bloqueada.
-  if (!hasStates && cities.length === 1 && cities[0].status === "published") {
+  // Mônaco é cidade-estado: pula a etapa intermediária de escolher a cidade
+  // e vai direto para as atrações. Essa exceção é só para Mônaco, não para
+  // qualquer país que hoje tenha apenas uma cidade cadastrada (outros países
+  // podem ganhar mais cidades no futuro e devem manter o fluxo normal).
+  if (
+    !hasStates &&
+    countrySlug === "monaco" &&
+    cities.length === 1 &&
+    cities[0].status === "published"
+  ) {
     redirect(`/${countrySlug}/${cities[0].slug}`);
   }
 
