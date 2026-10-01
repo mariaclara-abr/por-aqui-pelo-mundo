@@ -59,7 +59,7 @@ function LightbulbIcon({ className }: { className?: string }) {
 
 type PremiumHighlight = "dicas" | "ia" | "download";
 
-const HERO_BENEFITS: {
+export const HERO_BENEFITS: {
   id: PremiumHighlight | "economia";
   icon: (props: { className?: string }) => ReactElement;
   title: string;
@@ -91,7 +91,7 @@ const HERO_BENEFITS: {
   },
 ];
 
-const COMPACT_BENEFITS = [
+export const COMPACT_BENEFITS = [
   "Roteiro sob medida: montado com base no seu estilo e ritmo de viagem, não um modelo genérico",
   "A IA sugere atrações além das que você escolheu, alinhadas ao seu perfil",
   "Roteiro completo, dia a dia: sem lacunas, sem inventar na hora",

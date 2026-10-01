@@ -190,8 +190,12 @@ interface Dash {
 
 export default function PlaneLaunchIcon({
   size = DEFAULT_ICON_SIZE,
+  autoPlayDelay,
 }: {
   size?: number;
+  // Quando definido, o avião decola sozinho depois desse atraso (em ms), a
+  // menos que a pessoa tenha pedido menos movimento no sistema.
+  autoPlayDelay?: number;
 }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -207,6 +211,16 @@ export default function PlaneLaunchIcon({
       timeoutIds.forEach((id) => window.clearTimeout(id));
     };
   }, []);
+
+  useEffect(() => {
+    if (autoPlayDelay === undefined) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setTimeout(
+      () => buttonRef.current?.click(),
+      autoPlayDelay,
+    );
+    return () => window.clearTimeout(id);
+  }, [autoPlayDelay]);
 
   const handleClick = () => {
     if (flight) return;

@@ -17,8 +17,15 @@ import PreferencesForm from "@/components/perfil/PreferencesForm";
 import VisitedCountriesForm from "@/components/perfil/VisitedCountriesForm";
 import ItineraryHistory from "@/components/perfil/ItineraryHistory";
 import SignOutButton from "@/components/perfil/SignOutButton";
+import PremiumMembershipCard, {
+  type PremiumMembership,
+} from "@/components/perfil/PremiumMembershipCard";
 
-export default function PerfilClient() {
+export default function PerfilClient({
+  premium,
+}: {
+  premium: PremiumMembership | null;
+}) {
   const { user, profile, loading } = useAuth();
   const [itineraries, setItineraries] = useState<ItinerarySummary[] | null>(
     null,
@@ -58,6 +65,8 @@ export default function PerfilClient() {
 
   return (
     <div className="mt-8 flex flex-col gap-12">
+      {premium && <PremiumMembershipCard premium={premium} />}
+
       <section>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="font-serif text-xl text-tinta">Dados do perfil</h2>
