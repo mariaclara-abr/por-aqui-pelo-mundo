@@ -1,0 +1,12 @@
+# Convite premium para organizar o roteiro
+
+A faixa no topo de `/meu-roteiro` apresenta o planejamento com IA como uma abertura de diário de bordo. Preserva a identidade editorial, as fontes e a paleta do site. O CTA mantém o destino `/meu-roteiro/organizar-com-ia`.
+
+- Componente: `components/itinerary-ai/ItineraryPremiumBanner.tsx`.
+- Arte: `public/ia-caderno-premium.webp`, 1200 × 800, com transparência.
+- Criação: ferramenta integrada ImageGen, em 30/09/2026. Otimizada para WebP com o canal alpha preservado.
+- Uso: ilustração decorativa, sem representar um roteiro real ou atrações cadastradas.
+
+## Prompt da arte
+
+Use case: illustration-story. Asset type: a premium travel-planning invitation banner on an editorial Brazilian travel website, "Por Aqui Pelo Mundo". Generate ONE standalone decorative watercolor and fine gouache cutout illustration, landscape 3:2 composition, on a truly transparent alpha background. Subject: an open elegant olive-green linen travel journal viewed from slightly above at a three-quarter angle, revealing thick warm ivory pages. On the left page, a delicate watercolor map with a fine terracotta itinerary line and three small points. On the right page, a beautifully spaced arrangement of very fine olive horizontal handwritten-looking lines and three tiny terracotta dots, no readable words. A terracotta ribbon bookmark drapes out of the bottom of the journal. A single slim dark olive pencil lies diagonally along its lower right side. One understated olive sprig lies partially behind the far left corner. Make the notebook the clear hero, occupying most of the composition with all edges fully visible and a small margin. Premium contemporary illustrated travel journal, exceptionally refined restrained botanical travel stationery, tactile handmade paper, delicate organic pigment variation, crisp silhouettes, realistic dimensional book folds, softly painted minimal contact shadow, sophisticated understated visual character. Palette ONLY muted deep olive #4A5D43, warm ivory #F0E6D2, terracotta #C1653A, dark ink #2B2620, natural neutral highlights. No passports, airplanes, compass, stamps, frame, background environment, people, readable text, logos, typography, watermark, glitter, gold foil, UI, fake screenshot, sticker outline, or gradients. This will sit over a muted olive webpage panel; keep ivory pages luminous and the surrounding background fully transparent.
