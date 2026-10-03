@@ -238,6 +238,9 @@ export default function NavDrawer() {
                     </div>
                   )}
 
+                  <MenuItem onClick={() => navigate("/meu-roteiro/organizar-com-ia")}>
+                    Monte seu roteiro com IA
+                  </MenuItem>
                   <MenuItem onClick={() => navigate("/meu-roteiro")}>
                     Meus Roteiros
                   </MenuItem>

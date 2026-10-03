@@ -2,7 +2,7 @@ export type AffiliateProgramId =
   | "booking"
   | "getyourguide"
   | "safetywing"
-  | "travelsim"
+  | "easysim"
   | "rentcars";
 
 export interface AffiliateLocation {
@@ -17,6 +17,10 @@ export interface AffiliateProgram {
   checklistLabel: string;
   // Rótulo usado na página de atração, quando difere do label do programa.
   attractionCtaLabel?: string;
+  // Rótulo do botão no checklist, quando difere de "Ver opções".
+  checklistCtaLabel?: string;
+  // Benefício exibido junto ao botão (ex: cupom de desconto).
+  benefit?: string;
   isConfigured: boolean;
   buildUrl?: (location: AffiliateLocation) => string;
 }
@@ -24,10 +28,9 @@ export interface AffiliateProgram {
 const bookingAffiliateId = process.env.NEXT_PUBLIC_BOOKING_AFFILIATE_ID;
 const getYourGuidePartnerId = process.env.NEXT_PUBLIC_GETYOURGUIDE_PARTNER_ID;
 
-// Só Booking.com e GetYourGuide têm link real por enquanto (cobrem hospedagem
-// e ingressos, as duas fontes de receita priorizadas). Os outros três ficam
-// no checklist como "em breve": quando a conta de afiliado existir, basta
-// setar a env var e trocar isConfigured/buildUrl aqui — nenhuma outra
+// Booking.com, GetYourGuide e EasySim têm link real por enquanto. Os outros
+// ficam no checklist como "em breve": quando a conta de afiliado existir,
+// basta setar a env var e trocar isConfigured/buildUrl aqui, nenhuma outra
 // mudança de UI é necessária.
 export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
   {
@@ -59,10 +62,16 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     isConfigured: false,
   },
   {
-    id: "travelsim",
-    label: "TravelSIM",
-    checklistLabel: "eSIM",
-    isConfigured: false,
+    id: "easysim",
+    label: "EasySim",
+    checklistLabel: "eSIM ou chip físico",
+    attractionCtaLabel: "Internet no destino (eSIM ou chip físico)",
+    checklistCtaLabel: "Comprar com desconto",
+    benefit: "40% de desconto com o cupom Poraquipelomundo",
+    isConfigured: true,
+    // Link fixo e público da parceria, não depende do destino.
+    buildUrl: () =>
+      "https://www.easysim4u.com/?ref=HODESLJQ&utm_source=affiliate&utm_medium=referral&utm_campaign=poraquipelomundo&link_id=54",
   },
   {
     id: "rentcars",

@@ -31,16 +31,6 @@ export default function AIRoteiroBand() {
           </p>
 
           <div className="relative mt-8 inline-flex w-fit">
-            <motion.span
-              aria-hidden="true"
-              className="absolute inset-0 rounded-lg bg-branco"
-              animate={
-                prefersReducedMotion
-                  ? undefined
-                  : { opacity: [0.35, 0, 0.35], scale: [1, 1.12, 1] }
-              }
-              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            />
             <button
               type="button"
               onClick={() => router.push("/meu-roteiro/organizar-com-ia")}

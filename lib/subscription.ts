@@ -44,7 +44,7 @@ export async function getActivePremium(
   return data;
 }
 
-// Compra avulsa do "Roteiro Inteligente" — só vale para o roteiro específico
+// Compra avulsa do "Roteiro Inteligente", só vale para o roteiro específico
 // para o qual foi comprada (ver comentário na migration de subscriptions).
 export async function hasRoteiroUnicoAccess(
   supabase: SupabaseServerClient,

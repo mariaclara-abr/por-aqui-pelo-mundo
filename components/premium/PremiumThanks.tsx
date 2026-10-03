@@ -111,7 +111,7 @@ export default function PremiumThanks({
             >
               {firstName ? `Obrigado, ${firstName}.` : "Obrigado por embarcar."}
               <span className="mt-1 block whitespace-nowrap leading-[1.15] text-areia [font-size:min(1em,7.2vw)]">
-                Sua viagem começa agora.
+                Sua viagem começa agora!
               </span>
             </motion.h1>
 

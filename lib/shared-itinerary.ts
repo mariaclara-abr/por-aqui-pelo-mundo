@@ -23,7 +23,7 @@ export interface SharedItinerary {
 }
 
 // Busca um roteiro pelo token de compartilhamento. Só retorna algo se o
-// compartilhamento existir e estiver ativo (is_public = true) — a RLS de
+// compartilhamento existir e estiver ativo (is_public = true), a RLS de
 // `itineraries`/`itinerary_items` também depende dessa mesma condição, então
 // um link desativado já vem bloqueado no banco, não só aqui.
 export const getSharedItineraryByToken = cache(async (

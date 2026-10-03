@@ -15,7 +15,7 @@ function isPlanType(value: string): value is PlanType {
   return value in PLANS;
 }
 
-// Só aceita caminhos relativos internos como destino pós-checkout — evita
+// Só aceita caminhos relativos internos como destino pós-checkout, evita
 // que o parâmetro vindo do cliente vire um open redirect.
 function sanitizeReturnPath(path: string | undefined): string {
   if (path && path.startsWith("/") && !path.startsWith("//")) return path;

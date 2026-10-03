@@ -24,7 +24,7 @@ export interface ExportItinerary {
   days: ExportDay[];
 }
 
-// Dimensões de uma página A4 a 96dpi — usar essa largura fixa no container
+// Dimensões de uma página A4 a 96dpi, usar essa largura fixa no container
 // deixa a conversão pixel→mm previsível independente do `scale` do
 // html2canvas (ver exportItineraryToPDF).
 const PAGE_WIDTH_PX = 794;
@@ -178,7 +178,7 @@ function waitForImages(container: HTMLElement, timeoutMs = 8000): Promise<void> 
       return new Promise<void>((resolve) => {
         const done = () => resolve();
         img.addEventListener("load", done, { once: true });
-        // Uma foto que falha (rede/CORS) nunca deve travar o PDF inteiro —
+        // Uma foto que falha (rede/CORS) nunca deve travar o PDF inteiro,
         // ela só fica em branco.
         img.addEventListener("error", done, { once: true });
         setTimeout(done, timeoutMs);
@@ -202,8 +202,8 @@ export function exportToGoogleMaps(points: GoogleMapsPoint[]): string {
 
 // Gera o PDF a partir do resultado de "Organizar com IA" (título + dias com
 // horários), renderizando cada página como um elemento HTML off-screen com as
-// mesmas classes Tailwind do site — herda as fontes (Fraunces/Inter) e cores
-// da identidade visual automaticamente — e rasterizando com html2canvas.
+// mesmas classes Tailwind do site, herda as fontes (Fraunces/Inter) e cores
+// da identidade visual automaticamente, e rasterizando com html2canvas.
 export async function exportItineraryToPDF(itinerary: ExportItinerary): Promise<void> {
   const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
     import("jspdf"),
@@ -290,7 +290,7 @@ function icsTimestampNow() {
   return `${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z`;
 }
 
-// Escapa texto conforme RFC 5545 — vírgula, ponto e vírgula e barra invertida
+// Escapa texto conforme RFC 5545, vírgula, ponto e vírgula e barra invertida
 // precisam de escape, e quebras de linha viram "\n" literal (uma quebra de
 // linha de verdade encerraria a propriedade no meio).
 function escapeICSText(text: string) {
@@ -301,7 +301,7 @@ function escapeICSText(text: string) {
     .replace(/\r?\n/g, "\\n");
 }
 
-// Quebra linhas maiores que 75 octets, como pede o RFC 5545 — alguns
+// Quebra linhas maiores que 75 octets, como pede o RFC 5545, alguns
 // clientes de agenda mais estritos ignoram a linha inteira se ela vier maior.
 function foldICSLine(line: string) {
   if (line.length <= 75) return line;

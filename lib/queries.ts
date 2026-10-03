@@ -30,7 +30,7 @@ export async function getPublishedCountries() {
 // Envolvidas em React cache(): tanto generateMetadata quanto o page.tsx da
 // mesma rota chamam essas funções, e cache() garante que rodem só uma vez
 // por request em vez de duas idas ao banco. Só as usadas em Server
-// Components — getCitiesByCountry também é chamada por um Client Component
+// Components, getCitiesByCountry também é chamada por um Client Component
 // (NavDrawer), então fica de fora.
 export const getCountryBySlug = cache(async (countrySlug: string) => {
   const { data, error } = await supabase
@@ -237,7 +237,7 @@ export interface DestinationPickerCity {
 }
 
 // Lista enxuta de cidades + país usada pelo seletor de destinos do roteiro
-// "do zero" com IA (components/itinerary-ai) — só os campos necessários
+// "do zero" com IA (components/itinerary-ai), só os campos necessários
 // pra montar a lista, sem o resto das colunas de cities/countries.
 export async function getDestinationPickerCities(): Promise<
   DestinationPickerCity[]

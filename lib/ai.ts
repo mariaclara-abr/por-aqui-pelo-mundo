@@ -1,7 +1,7 @@
 // Orquestração da IA que organiza roteiros já montados pelo usuário. A IA
 // nunca inventa lugares fora do banco: ela reordena e agrupa por dia as
 // atrações CONFIRMADAS pelo viajante e, opcionalmente, pode sugerir atrações
-// extras — mas só a partir de um pool de "candidatas" que já é curadoria real
+// extras, mas só a partir de um pool de "candidatas" que já é curadoria real
 // do banco (mesma cidade do roteiro). Quem decide o que é confirmado ou
 // sugestão é o servidor (por pertencimento ao conjunto de ids), nunca a IA.
 // Distâncias reais são calculadas separadamente (lib/recommendations.ts), não
@@ -13,7 +13,7 @@ const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-5";
 
 // Quantas atrações sugeridas (fora das confirmadas pelo viajante) a IA pode
-// encaixar por dia, no máximo — mantém o roteiro sob controle do usuário.
+// encaixar por dia, no máximo, mantém o roteiro sob controle do usuário.
 export const MAX_SUGGESTIONS_PER_DAY = 2;
 
 // Meta mínima de atrações por dia. Se o viajante escolheu poucas, a IA precisa
@@ -52,6 +52,20 @@ export interface LodgingSuggestion {
 export interface AIItineraryResult {
   days: OrganizedDay[];
   lodging: LodgingSuggestion[];
+  // Justificativa da ordem das cidades (recomendada + alternativa), quando a IA define a ordem.
+  orderNote: string | null;
+}
+
+// Regra zero: faltou informação ou há inconsistência, então a IA pergunta em vez de gerar.
+export class AIQuestionsError extends Error {
+  constructor(public questions: string[]) {
+    super("A IA precisa de mais informações antes de gerar o roteiro.");
+  }
+}
+
+function parseOrderNote(value: unknown): string | null {
+  const note = (value as { order_note?: unknown })?.order_note;
+  return typeof note === "string" && note.trim() ? note.trim().slice(0, 1200) : null;
 }
 
 export interface OrganizePreferencesInput {
@@ -221,7 +235,7 @@ function validateOrganizedDays(value: unknown, validIds: string[]): OrganizedDay
     for (const rawItem of day.items) {
       const item = rawItem as Record<string, unknown>;
       const attractionId = item.attraction_id;
-      // Nunca confia em ids que a IA possa ter inventado — descarta qualquer
+      // Nunca confia em ids que a IA possa ter inventado, descarta qualquer
       // item que não corresponda a uma atração realmente cadastrada no roteiro.
       if (typeof attractionId !== "string" || !validIdSet.has(attractionId)) continue;
 
@@ -266,7 +280,7 @@ function parseLodging(value: unknown): LodgingSuggestion[] {
 }
 
 // Ritmo escolhido define quantas atrações por dia pedimos à IA quando não
-// há nenhuma atração confirmada (roteiro do zero) — sem confirmadas, não há
+// há nenhuma atração confirmada (roteiro do zero), sem confirmadas, não há
 // como calcular uma quantidade "natural" a partir do que já foi escolhido.
 const FROM_SCRATCH_DAILY_COUNT_BY_PACE: Record<string, string> = {
   // Calibrado nos roteiros reais da curadoria: dias de serra/ilha têm 2 a 3
@@ -367,11 +381,17 @@ async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro, numD
     throw new Error("Resposta inesperada da API da Anthropic.");
   }
 
+  let parsed: { questions?: unknown };
   try {
-    return JSON.parse(`{${text}`);
+    parsed = JSON.parse(`{${text}`);
   } catch {
     throw new Error("Não foi possível interpretar a resposta da IA como JSON.");
   }
+  const questions = Array.isArray(parsed.questions)
+    ? parsed.questions.filter((q): q is string => typeof q === "string" && q.trim() !== "")
+    : [];
+  if (questions.length > 0) throw new AIQuestionsError(questions.slice(0, 6).map((q) => q.slice(0, 300)));
+  return parsed;
 }
 
 export async function organizeItineraryWithAI(
@@ -385,6 +405,7 @@ export async function organizeItineraryWithAI(
       ...input.candidates.map((a) => a.id),
     ]),
     lodging: input.lodging.hasHotel === false ? parseLodging(parsed) : [],
+    orderNote: parseOrderNote(parsed),
   };
 }
 
@@ -405,5 +426,6 @@ export async function buildItineraryFromScratchWithAI(
       input.candidates.map((a) => a.id),
     ),
     lodging: input.lodging.hasHotel === false ? parseLodging(parsed) : [],
+    orderNote: parseOrderNote(parsed),
   };
 }

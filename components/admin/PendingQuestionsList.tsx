@@ -17,12 +17,14 @@ type PendingQuestion = Awaited<ReturnType<typeof getAllPendingQuestions>>[number
 const removedSubjectLabel: Record<AdminQuestionSubjectType, string> = {
   attraction: "Atração removida",
   city: "Cidade removida",
+  state: "Estado removido",
   country: "País removido",
 };
 
 const subjectLinkLabel: Record<AdminQuestionSubjectType, string> = {
   attraction: "Ver página da atração",
   city: "Ver página da cidade",
+  state: "Ver página do estado",
   country: "Ver página do país",
 };
 

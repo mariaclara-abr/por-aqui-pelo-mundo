@@ -242,7 +242,7 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
   async function addItem(attraction: RoteiroAttraction) {
     if (isInRoteiro(attraction.id)) return;
 
-    // O limite de 1 país por roteiro só vale pra quem tem conta — visitante
+    // O limite de 1 país por roteiro só vale pra quem tem conta, visitante
     // usa uma lista local sem conceito de "vários roteiros" pra dividir.
     if (user && items.length > 0) {
       const existingCountrySlugs = items.map(
@@ -333,7 +333,7 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
     await renameItineraryQuery(itineraryId, nextTitle);
   }
 
-  // Recarrega itens e título do roteiro atual direto do banco — usada depois
+  // Recarrega itens e título do roteiro atual direto do banco, usada depois
   // que algo fora deste contexto (como o chat de edição por IA) altera o
   // roteiro do usuário, para refletir o estado real na tela.
   async function refresh() {
@@ -355,7 +355,7 @@ export function RoteiroProvider({ children }: { children: ReactNode }) {
     setItems(loaded);
   }
 
-  // Troca qual roteiro está sendo editado — usada pelo seletor de roteiros
+  // Troca qual roteiro está sendo editado, usada pelo seletor de roteiros
   // e por "Continuar roteiro" no histórico de /perfil.
   async function switchItinerary(nextItineraryId: string, nextTitle: string) {
     if (!user) return;

@@ -58,7 +58,7 @@ export async function setCurrentItineraryId(
 // Resolve qual roteiro deve abrir em /meu-roteiro: o que estiver marcado como
 // atual no perfil (se ainda for um roteiro "planejando" do usuário), ou o
 // fallback de sempre (o mais antigo em planejamento, criando um se não
-// houver nenhum) — e, nesse caso, já grava essa escolha como a atual, pra
+// houver nenhum), e, nesse caso, já grava essa escolha como a atual, pra
 // contas antigas (de antes dessa coluna existir) se auto-corrigirem.
 export async function getOrCreateCurrentItinerary(userId: string) {
   const supabase = createClient();
@@ -343,7 +343,7 @@ export interface ItineraryShare {
 }
 
 const SHARE_FIELDS = "share_token, is_public, show_author_name";
-// Código do Postgres pra violação de unique constraint — usado abaixo pra
+// Código do Postgres pra violação de unique constraint, usado abaixo pra
 // lidar com a corrida rara de duas abas criando o compartilhamento juntas.
 const UNIQUE_VIOLATION = "23505";
 

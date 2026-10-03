@@ -56,7 +56,7 @@ function deriveState(rows: SubscriptionRow[]): SubscriptionState {
 
 // Espelha o padrão de lib/auth.tsx: consulta `subscriptions` direto pelo
 // client do Supabase (RLS só deixa o usuário ver as próprias linhas), sempre
-// resolvendo o novo estado dentro de um .then() — nunca chamando setState de
+// resolvendo o novo estado dentro de um .then(), nunca chamando setState de
 // forma síncrona a partir do efeito.
 export function useUserSubscription() {
   const { user } = useAuth();

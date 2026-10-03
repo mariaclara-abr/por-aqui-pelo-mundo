@@ -76,7 +76,7 @@ function buildFlightPath(x0: number, y0: number, corner: Corner) {
 
   // Heading from the click point straight toward the exit target. Only used
   // to orient the loop when there's no approach segment (loop sits right on
-  // the click point, see `entryHeadingDeg` below) — reusing it whenever an
+  // the click point, see `entryHeadingDeg` below), reusing it whenever an
   // approach segment exists would aim that segment's arrival at the exit
   // corner instead of at the loop it's actually flying into, which can point
   // in a completely different (even near-opposite) direction and forces a
@@ -112,8 +112,8 @@ function buildFlightPath(x0: number, y0: number, corner: Corner) {
   const approachDist = Math.hypot(loopX - x0, loopY - y0);
   // The loop is oriented to enter (and, since it's a closed loop, exit)
   // along this heading. When there's a real approach segment, that heading
-  // must be the direction the plane is actually already travelling in — the
-  // straight line from the click point to the loop — so the approach curve
+  // must be the direction the plane is actually already travelling in, the
+  // straight line from the click point to the loop, so the approach curve
   // arrives with a matching tangent instead of swerving into some unrelated
   // direction right before the loop. Only when the loop sits on the click
   // point itself (no approach) is there no such constraint, so it's free to

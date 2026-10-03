@@ -38,6 +38,10 @@ export interface CityQuestion extends BaseQuestion {
   cityId: string;
 }
 
+export interface StateQuestion extends BaseQuestion {
+  stateId: string;
+}
+
 function toProfile(
   profile: PublicProfile | undefined,
   fallbackId: string,
@@ -72,7 +76,7 @@ export async function getAttractionQuestions(
       "id, attraction_id, question, status, created_at, user_id, attraction_answers(id, answer, created_at, updated_at, author_id)",
     )
     .eq("attraction_id", attractionId)
-    // Perguntas ocultas nunca reaparecem, nem para a autora — mesmo que a RLS
+    // Perguntas ocultas nunca reaparecem, nem para a autora, mesmo que a RLS
     // permita a ela enxergar essas linhas (necessário para a operação de
     // ocultar funcionar), a UI trata "oculta" como definitivo.
     .in("status", ["pendente", "respondida"])
@@ -123,9 +127,13 @@ export async function getAttractionQuestions(
   return sortQuestions(mapped);
 }
 
-// Painel da autora: perguntas de atrações, cidades e países combinadas numa
-// única lista, para ela não precisar visitar três telas separadas.
-export type AdminQuestionSubjectType = "attraction" | "city" | "country";
+// Painel da autora: perguntas de atrações, cidades, estados e países combinadas
+// numa única lista, para ela não precisar visitar quatro telas separadas.
+export type AdminQuestionSubjectType =
+  | "attraction"
+  | "city"
+  | "state"
+  | "country";
 
 interface AdminQuestionSubject {
   name: string;
@@ -194,6 +202,21 @@ function toCitySubject(
   };
 }
 
+function toStateSubject(
+  state: {
+    name: string;
+    slug: string;
+    countries: { name: string; slug: string } | null;
+  } | null,
+): AdminQuestionSubject | null {
+  if (!state?.countries) return null;
+  return {
+    name: state.name,
+    breadcrumb: state.countries.name,
+    href: `/${state.countries.slug}/${state.slug}`,
+  };
+}
+
 function toCountrySubject(
   country: { name: string; slug: string } | null,
 ): AdminQuestionSubject | null {
@@ -225,7 +248,7 @@ interface RawAdminQuestion {
 async function fetchAdminQuestions(
   status: "pendente" | "respondida",
 ): Promise<RawAdminQuestion[]> {
-  const [attractionRes, cityRes, countryRes] = await Promise.all([
+  const [attractionRes, cityRes, stateRes, countryRes] = await Promise.all([
     supabase
       .from("attraction_questions")
       .select(
@@ -239,6 +262,12 @@ async function fetchAdminQuestions(
       )
       .eq("status", status),
     supabase
+      .from("state_questions")
+      .select(
+        "id, question, created_at, user_id, states(name, slug, countries(name, slug)), state_answers(id, answer, created_at, updated_at, author_id)",
+      )
+      .eq("status", status),
+    supabase
       .from("country_questions")
       .select(
         "id, question, created_at, user_id, countries(name, slug), country_answers(id, answer, created_at, updated_at, author_id)",
@@ -248,6 +277,7 @@ async function fetchAdminQuestions(
 
   if (attractionRes.error) throw attractionRes.error;
   if (cityRes.error) throw cityRes.error;
+  if (stateRes.error) throw stateRes.error;
   if (countryRes.error) throw countryRes.error;
 
   function toAnswer(
@@ -283,6 +313,16 @@ async function fetchAdminQuestions(
     answer: toAnswer(q.city_answers),
   }));
 
+  const stateRows: RawAdminQuestion[] = stateRes.data.map((q) => ({
+    id: q.id,
+    subjectType: "state",
+    question: q.question,
+    createdAt: q.created_at,
+    userId: q.user_id,
+    subject: toStateSubject(q.states),
+    answer: toAnswer(q.state_answers),
+  }));
+
   const countryRows: RawAdminQuestion[] = countryRes.data.map((q) => ({
     id: q.id,
     subjectType: "country",
@@ -293,7 +333,7 @@ async function fetchAdminQuestions(
     answer: toAnswer(q.country_answers),
   }));
 
-  return [...attractionRows, ...cityRows, ...countryRows];
+  return [...attractionRows, ...cityRows, ...stateRows, ...countryRows];
 }
 
 export async function getAllPendingQuestions(): Promise<AdminPendingQuestion[]> {
@@ -353,13 +393,17 @@ export async function getAllAnsweredQuestions(): Promise<AdminAnsweredQuestion[]
 }
 
 export async function getPendingQuestionsCount() {
-  const [attraction, city, country] = await Promise.all([
+  const [attraction, city, state, country] = await Promise.all([
     supabase
       .from("attraction_questions")
       .select("*", { count: "exact", head: true })
       .eq("status", "pendente"),
     supabase
       .from("city_questions")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pendente"),
+    supabase
+      .from("state_questions")
       .select("*", { count: "exact", head: true })
       .eq("status", "pendente"),
     supabase
@@ -370,12 +414,18 @@ export async function getPendingQuestionsCount() {
 
   if (attraction.error) throw attraction.error;
   if (city.error) throw city.error;
+  if (state.error) throw state.error;
   if (country.error) throw country.error;
 
-  return (attraction.count ?? 0) + (city.count ?? 0) + (country.count ?? 0);
+  return (
+    (attraction.count ?? 0) +
+    (city.count ?? 0) +
+    (state.count ?? 0) +
+    (country.count ?? 0)
+  );
 }
 
-// Dispara a mutação certa (attraction/city/country) a partir do subjectType
+// Dispara a mutação certa (attraction/city/state/country) a partir do subjectType
 // unificado usado pelo painel da autora.
 export async function submitAdminAnswer(
   subjectType: AdminQuestionSubjectType,
@@ -385,6 +435,7 @@ export async function submitAdminAnswer(
 ) {
   if (subjectType === "attraction") return submitAnswer(questionId, authorId, answer);
   if (subjectType === "city") return submitCityAnswer(questionId, authorId, answer);
+  if (subjectType === "state") return submitStateAnswer(questionId, authorId, answer);
   return submitCountryAnswer(questionId, authorId, answer);
 }
 
@@ -395,6 +446,7 @@ export async function editAdminAnswer(
 ) {
   if (subjectType === "attraction") return editAnswer(answerId, answer);
   if (subjectType === "city") return editCityAnswer(answerId, answer);
+  if (subjectType === "state") return editStateAnswer(answerId, answer);
   return editCountryAnswer(answerId, answer);
 }
 
@@ -404,6 +456,7 @@ export async function hideAdminQuestion(
 ) {
   if (subjectType === "attraction") return hideQuestion(questionId);
   if (subjectType === "city") return hideCityQuestion(questionId);
+  if (subjectType === "state") return hideStateQuestion(questionId);
   return hideCountryQuestion(questionId);
 }
 
@@ -551,6 +604,109 @@ export async function hideCityQuestion(questionId: string) {
   const client = createClient();
   const { error } = await client
     .from("city_questions")
+    .update({ status: "oculta" })
+    .eq("id", questionId);
+  if (error) throw error;
+}
+
+export async function getStateQuestions(
+  stateId: string,
+): Promise<StateQuestion[]> {
+  const { data: questions, error } = await supabase
+    .from("state_questions")
+    .select(
+      "id, state_id, question, status, created_at, user_id, state_answers(id, answer, created_at, updated_at, author_id)",
+    )
+    .eq("state_id", stateId)
+    .in("status", ["pendente", "respondida"])
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  const profileIds = new Set<string>();
+  for (const question of questions) {
+    profileIds.add(question.user_id);
+    if (question.state_answers) {
+      profileIds.add(question.state_answers.author_id);
+    }
+  }
+
+  const { data: profiles, error: profilesError } =
+    profileIds.size === 0
+      ? { data: [] as PublicProfile[], error: null }
+      : await supabase
+          .from("public_profiles")
+          .select("*")
+          .in("id", [...profileIds]);
+
+  if (profilesError) throw profilesError;
+  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
+
+  const mapped = questions.map((question): StateQuestion => {
+    const answer = question.state_answers;
+    return {
+      id: question.id,
+      stateId: question.state_id,
+      question: question.question,
+      status: question.status,
+      createdAt: question.created_at,
+      asker: toProfile(profileById.get(question.user_id), question.user_id),
+      answer: answer
+        ? {
+            id: answer.id,
+            answer: answer.answer,
+            createdAt: answer.created_at,
+            updatedAt: answer.updated_at,
+            author: toProfile(profileById.get(answer.author_id), answer.author_id),
+          }
+        : null,
+    };
+  });
+
+  return sortQuestions(mapped);
+}
+
+export async function askStateQuestion(
+  stateId: string,
+  userId: string,
+  question: string,
+) {
+  const client = createClient();
+  const { error } = await client.from("state_questions").insert({
+    state_id: stateId,
+    user_id: userId,
+    question: question.trim(),
+  });
+  if (error) throw error;
+}
+
+export async function submitStateAnswer(
+  questionId: string,
+  authorId: string,
+  answer: string,
+) {
+  const client = createClient();
+  const { error } = await client.from("state_answers").insert({
+    question_id: questionId,
+    author_id: authorId,
+    answer: answer.trim(),
+  });
+  if (error) throw error;
+}
+
+export async function editStateAnswer(answerId: string, answer: string) {
+  const client = createClient();
+  const { error } = await client
+    .from("state_answers")
+    .update({ answer: answer.trim(), updated_at: new Date().toISOString() })
+    .eq("id", answerId);
+  if (error) throw error;
+}
+
+export async function hideStateQuestion(questionId: string) {
+  const client = createClient();
+  const { error } = await client
+    .from("state_questions")
     .update({ status: "oculta" })
     .eq("id", questionId);
   if (error) throw error;

@@ -621,6 +621,66 @@ export interface Database {
           },
         ];
       };
+      state_questions: {
+        Row: {
+          id: string;
+          state_id: string;
+          user_id: string;
+          question: string;
+          status: QuestionStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          state_id: string;
+          user_id: string;
+          question: string;
+          status?: QuestionStatus;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["state_questions"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "state_questions_state_id_fkey";
+            columns: ["state_id"];
+            isOneToOne: false;
+            referencedRelation: "states";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      state_answers: {
+        Row: {
+          id: string;
+          question_id: string;
+          author_id: string;
+          answer: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          question_id: string;
+          author_id: string;
+          answer: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["state_answers"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "state_answers_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: true;
+            referencedRelation: "state_questions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       country_questions: {
         Row: {
           id: string;

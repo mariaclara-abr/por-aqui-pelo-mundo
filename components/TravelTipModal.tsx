@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { linkify } from "@/components/Linkify";
+import ProtectedContent from "@/components/ProtectedContent";
 import { renderBold } from "@/lib/text-formatting";
 
 export default function TravelTipModal({
@@ -64,9 +65,11 @@ export default function TravelTipModal({
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
-          <p className="whitespace-pre-line text-left font-serif text-lg leading-[1.75] text-tinta sm:text-xl">
-            {linkify(content)}
-          </p>
+          <ProtectedContent>
+            <p className="whitespace-pre-line text-left font-serif text-lg leading-[1.75] text-tinta sm:text-xl">
+              {linkify(content)}
+            </p>
+          </ProtectedContent>
           <div className="mt-8 flex items-center gap-3 border-t border-tinta/10 pt-5 text-terracota">
             <span className="font-serif text-lg italic">por aqui</span>
             <span className="h-px flex-1 bg-terracota/25" aria-hidden="true" />
