@@ -82,7 +82,7 @@ export function EasySimBanner() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
               Benefício exclusivo
             </p>
-            <p className="mt-2 font-serif text-2xl leading-snug sm:text-3xl">
+            <p className="mt-2 text-left font-serif text-2xl leading-snug sm:text-3xl">
               {program.benefit}
             </p>
             <a
