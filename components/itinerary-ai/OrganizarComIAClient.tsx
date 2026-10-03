@@ -90,11 +90,18 @@ interface LodgingResult {
 }
 
 interface OrganizeResponse {
+  orderNote?: string | null;
   addedCities?: string[];
   itineraryTitle: string;
   days: OrganizedDayResult[];
   lodging: LodgingResult | null;
 }
+
+interface QuestionsResponse {
+  questions: string[];
+}
+
+const Obrigatorio = () => <span className="ml-1 text-terracota" aria-label="obrigatório">*</span>;
 
 interface GenerateErrorResponse {
   error?: string;
@@ -164,6 +171,11 @@ export default function OrganizarComIAClient({
     attractions.length > 0 ? defaultNumDays(attractions) : 3,
   );
   const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  // Quem viaja (internacional): números e idade exata de cada menor, nunca deduzidos.
+  const [adults, setAdults] = useState("");
+  const [minorAges, setMinorAges] = useState<string[]>([]);
+  const [aiQuestions, setAiQuestions] = useState<string[]>([]);
   const [budget, setBudget] = useState<BudgetRange | null>(preferences.budget);
   const [pace, setPace] = useState<TravelPace | null>(preferences.pace);
   const [travelProfile, setTravelProfile] = useState<TravelProfile | null>(
@@ -311,8 +323,47 @@ export default function OrganizarComIAClient({
     });
   }
 
+  function setDates(start: string, end: string) {
+    setStartDate(start);
+    setEndDate(end);
+    if (start && end && end >= start) {
+      const days = Math.round((Date.parse(end) - Date.parse(start)) / 86_400_000) + 1;
+      setNumDays(Math.min(90, days));
+    }
+  }
+
+  function setMinorCount(count: number) {
+    setMinorAges((prev) => Array.from({ length: count }, (_, i) => prev[i] ?? ""));
+  }
+
+  // Campos obrigatórios do fluxo internacional que ainda faltam.
+  function missingRequired() {
+    const missing: string[] = [];
+    const filled = (key: string) => (extra[key] ?? []).some((v) => v.trim() !== "");
+    if (!/^\d+$/.test(adults) || Number(adults) < 1) missing.push("número de adultos (18+)");
+    if (minorAges.some((age) => !/^\d+$/.test(age) || Number(age) > 17)) {
+      missing.push("idade exata de cada menor (0 a 17)");
+    }
+    if (!filled("saida")) missing.push("cidade de saída");
+    if (!filled("volta")) missing.push("cidade de volta");
+    if (!pace) missing.push("ritmo");
+    if (!budget && !customBudget) missing.push("orçamento");
+    if (!filled("deslocamento")) missing.push("deslocamento");
+    return missing;
+  }
+
   function extraLines() {
     const lines: { label: string; value: string }[] = [];
+    if (tipo === "internacional") {
+      const total = Number(adults || 0) + minorAges.length;
+      lines.push({
+        label: "Viajantes",
+        value: `${total} no total: ${adults || 0} adulto(s) (18+) e ${minorAges.length} menor(es)${
+          minorAges.length ? ` com idades exatas: ${minorAges.join(", ")} anos` : ""
+        }`,
+      });
+      if (endDate) lines.push({ label: "Data final", value: endDate });
+    }
     if (SHOWS.budget(tipo) && numDays > MAX_DAYS_WITH_BUDGET_RANGE && customBudget) {
       lines.push({
         label: "Orçamento médio por pessoa (sem passagens)",
@@ -331,6 +382,9 @@ export default function OrganizarComIAClient({
         })
         .join(", ");
       lines.push({ label: field.label, value });
+    }
+    if (tipo === "internacional" && extra.mirantes?.[0] === "sim") {
+      lines.push({ label: "Interesse extra", value: "Mirantes" });
     }
     if (SHOWS.interests(tipo) && interestCategories.includes("outro") && interestOther.trim()) {
       lines.push({ label: "Outro interesse do viajante", value: interestOther.trim() });
@@ -358,8 +412,22 @@ export default function OrganizarComIAClient({
     const chosen = extra[field.key] ?? [];
     return (
       <div className="rounded-2xl bg-areia/45 p-4">
-        <p className="text-sm font-medium text-tinta">{field.label}</p>
+        <p className="text-sm font-medium text-tinta">
+          {field.label}
+          {field.required && <Obrigatorio />}
+        </p>
         {field.hint && <p className="mt-0.5 text-xs text-oliva">{field.hint}</p>}
+        {field.text && (
+          <input
+            type="text"
+            maxLength={200}
+            aria-label={field.label}
+            placeholder={field.placeholder}
+            value={chosen[0] ?? ""}
+            onChange={(event) => setExtra((prev) => ({ ...prev, [field.key]: [event.target.value] }))}
+            className="mt-2 w-full rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+          />
+        )}
         <div className="mt-2 flex flex-wrap gap-2">
           {field.options.map((option) => (
             <PillButton
@@ -414,8 +482,17 @@ export default function OrganizarComIAClient({
       return;
     }
 
+    if (tipo === "internacional") {
+      const missing = missingRequired();
+      if (missing.length > 0) {
+        setError(`Faltam campos obrigatórios: ${missing.join(", ")}.`);
+        return;
+      }
+    }
+
     setLoading(true);
     setError(null);
+    setAiQuestions([]);
     setResult(null);
     setExcludedSuggestionIds(new Set());
     setSaved(false);
@@ -440,8 +517,8 @@ export default function OrganizarComIAClient({
             budget: SHOWS.budget(tipo) && numDays <= MAX_DAYS_WITH_BUDGET_RANGE ? budget : null,
             travel_pace: SHOWS.pace(tipo) ? pace : null,
             travel_profile: SHOWS.profile(tipo) ? travelProfile : null,
-            traveling_with_kids: travelingWithKids,
-            children_age_ranges: childrenAgeRanges,
+            traveling_with_kids: tipo === "internacional" ? minorAges.length > 0 : travelingWithKids,
+            children_age_ranges: tipo === "internacional" ? [] : childrenAgeRanges,
             interest_categories: SHOWS.interests(tipo) ? interestCategories : [],
             notes: notes.trim() || null,
             extras: extraLines(),
@@ -450,7 +527,15 @@ export default function OrganizarComIAClient({
         }),
       });
 
-      const data = (await response.json()) as OrganizeResponse | GenerateErrorResponse;
+      const data = (await response.json()) as
+        | OrganizeResponse
+        | GenerateErrorResponse
+        | QuestionsResponse;
+
+      if (response.ok && "questions" in data) {
+        setAiQuestions(data.questions);
+        return;
+      }
 
       if (response.status === 403) {
         const errorData = data as GenerateErrorResponse;
@@ -824,10 +909,10 @@ export default function OrganizarComIAClient({
                 <p className="text-sm font-medium text-tinta">Em que ordem visitar os destinos?</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <PillButton active={orderMode === "ai"} onClick={() => setOrderMode("ai")}>
-                    A IA pode sugerir a ordem
+                    A IA sugere a melhor ordem
                   </PillButton>
                   <PillButton active={orderMode === "user"} onClick={() => setOrderMode("user")}>
-                    Já tenho uma ordem em mente
+                    Já sei a ordem
                   </PillButton>
                 </div>
                 {orderMode === "user" && (
@@ -935,10 +1020,25 @@ export default function OrganizarComIAClient({
               id="start-date"
               type="date"
               value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
+              onChange={(event) => setDates(event.target.value, endDate)}
               className="mt-1 w-full rounded-xl border border-oliva/25 bg-areia/25 px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
             />
           </div>
+          {tipo === "internacional" && (
+            <div>
+              <label htmlFor="end-date" className="text-sm font-medium text-tinta">
+                Data final (opcional, ajusta os dias)
+              </label>
+              <input
+                id="end-date"
+                type="date"
+                min={startDate || undefined}
+                value={endDate}
+                onChange={(event) => setDates(startDate, event.target.value)}
+                className="mt-1 w-full rounded-xl border border-oliva/25 bg-areia/25 px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+              />
+            </div>
+          )}
         </div>
 
         <div className="mt-8 border-t border-tinta/10 pt-7">
@@ -965,7 +1065,7 @@ export default function OrganizarComIAClient({
 
           {SHOWS.pace(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
-            <p className="text-sm font-medium text-tinta">Ritmo preferido</p>
+            <p className="text-sm font-medium text-tinta">Ritmo preferido{tipo === "internacional" && <Obrigatorio />}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {TRAVEL_PACES.map((option) => (
                 <PillButton
@@ -985,7 +1085,7 @@ export default function OrganizarComIAClient({
 
           {SHOWS.budget(tipo) && (
           <div className="rounded-2xl bg-areia/45 p-4">
-            <p className="text-sm font-medium text-tinta">Faixa de orçamento</p>
+            <p className="text-sm font-medium text-tinta">Faixa de orçamento{tipo === "internacional" && <Obrigatorio />}</p>
             {numDays > MAX_DAYS_WITH_BUDGET_RANGE ? (
               <>
                 <p className="mt-0.5 text-xs text-oliva">
@@ -1025,7 +1125,9 @@ export default function OrganizarComIAClient({
             <p className="text-sm font-medium text-tinta">Interesses</p>
             <p className="mt-0.5 text-xs text-oliva">O que não pode faltar no seu roteiro?</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {ATTRACTION_CATEGORIES.map((option) => (
+              {ATTRACTION_CATEGORIES.filter(
+                (option) => !(tipo === "internacional" && option.value === "estacionamentos"),
+              ).map((option) => (
                 <PillButton
                   key={option.value}
                   active={interestCategories.includes(option.value)}
@@ -1034,6 +1136,16 @@ export default function OrganizarComIAClient({
                   {option.label}
                 </PillButton>
               ))}
+              {tipo === "internacional" && (
+                <PillButton
+                  active={extra.mirantes?.[0] === "sim"}
+                  onClick={() =>
+                    setExtra((prev) => ({ ...prev, mirantes: prev.mirantes?.[0] === "sim" ? [] : ["sim"] }))
+                  }
+                >
+                  Mirantes
+                </PillButton>
+              )}
             </div>
             {interestCategories.includes("outro") && (
               <input
@@ -1080,6 +1192,62 @@ export default function OrganizarComIAClient({
             </Fragment>
           ))}
 
+          {tipo === "internacional" && (
+            <div className="rounded-2xl bg-areia/45 p-4">
+              <p className="text-sm font-medium text-tinta">
+                Quem viaja
+                <Obrigatorio />
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-3 sm:max-w-sm">
+                <label className="text-xs text-oliva">
+                  Adultos (18+)
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={adults}
+                    onChange={(event) => setAdults(event.target.value)}
+                    className="mt-1 w-full rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+                  />
+                </label>
+                <label className="text-xs text-oliva">
+                  Menores (0 a 17)
+                  <input
+                    type="number"
+                    min={0}
+                    max={10}
+                    value={minorAges.length}
+                    onChange={(event) => setMinorCount(Math.min(10, Math.max(0, Number(event.target.value) || 0)))}
+                    className="mt-1 w-full rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+                  />
+                </label>
+              </div>
+              {minorAges.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {minorAges.map((age, index) => (
+                    <label key={index} className="text-xs text-oliva">
+                      Idade do menor {index + 1}
+                      <input
+                        type="number"
+                        min={0}
+                        max={17}
+                        value={age}
+                        onChange={(event) =>
+                          setMinorAges((prev) => prev.map((v, i) => (i === index ? event.target.value : v)))
+                        }
+                        className="mt-1 block w-24 rounded-xl border border-oliva/25 bg-branco px-3.5 py-2.5 text-sm text-tinta focus:border-terracota focus:outline-none"
+                      />
+                    </label>
+                  ))}
+                </div>
+              )}
+              <p className="mt-2 text-xs text-oliva">
+                Total: {Number(adults || 0) + minorAges.length} viajante(s).
+              </p>
+            </div>
+          )}
+
+          {tipo !== "internacional" && (
           <div className="rounded-2xl bg-areia/45 p-4">
             <p className="text-sm font-medium text-tinta">Viaja com crianças?</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -1101,7 +1269,9 @@ export default function OrganizarComIAClient({
             </div>
           </div>
 
-          {travelingWithKids && (
+          )}
+
+          {tipo !== "internacional" && travelingWithKids && (
             <div className="rounded-2xl border border-oliva/15 bg-oliva/5 p-4">
               <p className="text-sm font-medium text-tinta">Faixas etárias</p>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -1156,6 +1326,19 @@ export default function OrganizarComIAClient({
 
         </div>
         {error && <p className="mt-3 text-sm text-terracota">{error}</p>}
+        {aiQuestions.length > 0 && (
+          <div role="status" className="mt-3 rounded-2xl border border-terracota/30 bg-areia/45 p-4">
+            <p className="text-sm font-medium text-tinta">Antes de gerar, a IA precisa saber:</p>
+            <ul className="mt-2 list-disc pl-5 text-sm text-tinta">
+              {aiQuestions.map((question) => (
+                <li key={question}>{question}</li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-oliva">
+              Responda em &quot;Mais observações&quot; (ou ajuste os campos acima) e gere de novo.
+            </p>
+          </div>
+        )}
         </div>
       </div>
 
@@ -1222,6 +1405,13 @@ export default function OrganizarComIAClient({
               A IA incluiu {result.addedCities.join(", ")} no roteiro por combinar com o que você
               pediu.
             </p>
+          )}
+
+          {result.orderNote && (
+            <div className="rounded-[22px] border border-tinta/10 bg-branco p-5">
+              <h3 className="font-serif text-lg text-tinta">Ordem das cidades</h3>
+              <p className="mt-2 whitespace-pre-line text-sm text-tinta">{result.orderNote}</p>
+            </div>
           )}
 
           {result.lodging && !result.lodging.hasHotel && (
