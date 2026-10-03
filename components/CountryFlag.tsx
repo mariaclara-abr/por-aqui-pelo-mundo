@@ -5,7 +5,7 @@ export default function CountryFlag({ src }: { src: string }) {
     <img
       src={src}
       alt=""
-      className="ml-2 inline-block h-[0.75em] w-auto rounded-[2px] align-baseline"
+      className="mr-2 inline-block h-[0.75em] w-auto rounded-[2px] align-baseline"
     />
   );
 }

@@ -107,8 +107,8 @@ export default function ComingSoonCountryCard({
 
       <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3">
         <h2 className="font-serif text-xl text-white">
-          {country.name}
           {flag && <CountryFlag src={flag} />}
+          {country.name}
         </h2>
 
         <button
