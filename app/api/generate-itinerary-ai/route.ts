@@ -18,6 +18,7 @@ import {
   suggestionsPerDayLimit,
   type OrganizeAttractionInput,
   type LodgingSuggestion,
+  AIQuestionsError,
   type OrganizedDay,
 } from "@/lib/ai";
 import { TIPOS_ROTEIRO, type TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
@@ -216,7 +217,7 @@ export async function POST(request: Request) {
         Math.max(6, Math.ceil((numDays * MIN_ITEMS_PER_DAY) / Math.max(1, cityCount))),
       );
     } catch {
-      // Sugestões são um bônus opcional — se a busca de candidatas falhar, a
+      // Sugestões são um bônus opcional, se a busca de candidatas falhar, a
       // organização das atrações confirmadas segue normalmente sem sugestões.
       candidates = [];
     }
@@ -235,7 +236,7 @@ export async function POST(request: Request) {
         (e): e is { label: string; value: string } =>
           typeof e?.label === "string" && typeof e?.value === "string" && e.value.trim() !== "",
       )
-      .slice(0, 30)
+      .slice(0, 40)
       .map((e) => ({ label: e.label.slice(0, 80), value: e.value.slice(0, 300) })),
   };
 
@@ -249,6 +250,7 @@ export async function POST(request: Request) {
 
   let organizedDays: OrganizedDay[];
   let lodgingSuggestions: LodgingSuggestion[];
+  let orderNote: string | null;
   try {
     const generated = isFromScratch
       ? await buildItineraryFromScratchWithAI({
@@ -276,7 +278,11 @@ export async function POST(request: Request) {
         });
     organizedDays = generated.days;
     lodgingSuggestions = generated.lodging;
+    orderNote = generated.orderNote;
   } catch (error) {
+    if (error instanceof AIQuestionsError) {
+      return NextResponse.json({ questions: error.questions });
+    }
     const message =
       error instanceof Error ? error.message : "Erro ao gerar o roteiro com IA.";
     return NextResponse.json({ error: message }, { status: 502 });
@@ -286,7 +292,7 @@ export async function POST(request: Request) {
   const confirmedIds = new Set(isFromScratch ? [] : itinerary.attractions.map((a) => a.id));
 
   // Garante que nenhuma atração CONFIRMADA fique de fora, mesmo que a IA
-  // tenha esquecido de posicionar alguma — sugestão é opcional, mas o que o
+  // tenha esquecido de posicionar alguma, sugestão é opcional, mas o que o
   // viajante já escolheu tem que aparecer sempre.
   const placedIds = new Set(
     organizedDays.flatMap((day) => day.items.map((item) => item.attractionId)),
@@ -307,7 +313,7 @@ export async function POST(request: Request) {
   // Rede de segurança contra a IA ignorar o limite pedido no prompt: nunca
   // deixa mais que MAX_SUGGESTIONS_PER_DAY sugestões por dia, mas nunca
   // descarta uma atração confirmada. No modo "do zero" não há atração
-  // confirmada nenhuma — todo o roteiro é feito de "sugestões" por
+  // confirmada nenhuma, todo o roteiro é feito de "sugestões" por
   // definição, então esse limite não se aplica.
   if (!isFromScratch) {
     const suggestionLimit = suggestionsPerDayLimit(itinerary.attractions.length, numDays);
@@ -393,6 +399,7 @@ export async function POST(request: Request) {
     itineraryTitle: itinerary.title,
     days,
     addedCities,
+    orderNote,
     lodging:
       lodging.hasHotel === null
         ? null

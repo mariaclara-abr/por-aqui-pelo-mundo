@@ -207,7 +207,7 @@ function rankNearbyCities(
 ): RecommendedCity[] {
   // Sem coordenadas de referência (nem a atração, nem nenhuma atração da
   // cidade atual têm lat/lng cadastrados) não há como saber o que é
-  // realmente próximo — melhor não sugerir nada do que "adivinhar".
+  // realmente próximo, melhor não sugerir nada do que "adivinhar".
   if (reference.latitude === null || reference.longitude === null) return [];
 
   const centroids = new Map<
@@ -252,7 +252,7 @@ function rankNearbyCities(
 
   const cities: RecommendedCity[] = Array.from(centroids.entries())
     // Cidade só entra na comparação se tiver coordenadas próprias ou pelo
-    // menos uma atração com lat/lng — sem isso não há ponto para calcular distância.
+    // menos uma atração com lat/lng, sem isso não há ponto para calcular distância.
     .filter(([, entry]) => (entry.cityLatitude !== null && entry.cityLongitude !== null) || entry.count > 0)
     .map(([slug, entry]) => {
       const point =

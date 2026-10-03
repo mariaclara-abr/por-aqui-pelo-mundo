@@ -5,7 +5,7 @@ import { getPendingQuestionsCount } from "@/lib/questions";
 import AdminNav from "@/components/admin/AdminNav";
 import AdminSearchBox from "@/components/admin/AdminSearchBox";
 
-// Painel interno, protegido por login + role "author" abaixo — nunca deve
+// Painel interno, protegido por login + role "author" abaixo, nunca deve
 // ser indexado. Um título só para todo o painel é suficiente aqui: nenhuma
 // dessas 11 páginas é pública, então não há ganho de SEO em título único
 // por página (diferente das rotas de conteúdo do site).

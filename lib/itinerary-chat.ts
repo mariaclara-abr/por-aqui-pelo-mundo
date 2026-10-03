@@ -3,7 +3,7 @@
 // ferramentas abaixo, cuja implementação real vive em lib/itinerary-ai.ts e
 // roda sob a RLS do usuário autenticado da requisição. Se a IA tentar usar um
 // id de atração que não existe, a ferramenta correspondente falha e o erro
-// volta pra ela — nunca inventamos um lugar para satisfazer o pedido.
+// volta pra ela, nunca inventamos um lugar para satisfazer o pedido.
 
 import type { AIAttraction } from "@/lib/itinerary-ai";
 

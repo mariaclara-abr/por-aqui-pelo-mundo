@@ -201,7 +201,7 @@ export default function AttractionPreview({
           {importantTips && (
             <section className="mt-6 rounded-xl border border-terracota/30 bg-terracota/5 p-5">
               <h2 className="font-serif text-lg text-tinta">
-                Dicas importantes
+                Dicas importantes:
               </h2>
               <p className="mt-2 leading-relaxed text-tinta/90 whitespace-pre-line">
                 {linkify(importantTips)}

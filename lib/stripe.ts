@@ -12,7 +12,7 @@ interface PlanConfig {
   accessMonths?: number;
 }
 
-// Preços definidos aqui e enviados como price_data inline no Checkout —
+// Preços definidos aqui e enviados como price_data inline no Checkout,
 // não há Products/Prices pré-cadastrados no dashboard do Stripe.
 export const PLANS: Record<PlanType, PlanConfig> = {
   roteiro_unico_1pais: {

@@ -12,7 +12,7 @@ import {
   getStateBySlug,
   getTags,
 } from "@/lib/queries";
-import { getCityQuestions } from "@/lib/questions";
+import { getCityQuestions, getStateQuestions } from "@/lib/questions";
 import { checkIsAuthor } from "@/lib/server-auth";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 import { ATTRACTION_CATEGORIES } from "@/types/database";
@@ -25,6 +25,7 @@ import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import RelatedContent from "@/components/RelatedContent";
 import ExpandableText from "@/components/ExpandableText";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
+import StateQuestionsSection from "@/components/state/QuestionsSection";
 import { buildOpenGraph, countLabel, joinNames } from "@/lib/metadata";
 
 function firstValue(value: string | string[] | undefined) {
@@ -257,7 +258,10 @@ export default async function CityOrStatePage(
     notFound();
   }
 
-  const cities = await getCitiesByState(citySlug);
+  const [cities, stateQuestions] = await Promise.all([
+    getCitiesByState(citySlug),
+    getStateQuestions(state.id).catch(() => []),
+  ]);
   const publishedCities = cities.filter((city) => city.status === "published");
   const comingSoonCities = cities.filter((city) => city.status === "draft");
 
@@ -344,8 +348,14 @@ export default async function CityOrStatePage(
             <h2
               className={`font-serif text-xl ${coverImage ? "text-white drop-shadow-sm" : "text-tinta"}`}
             >
-              {state.name}
+              Perguntas sobre {state.name}
             </h2>
+            <div className="mt-4">
+              <StateQuestionsSection
+                stateId={state.id}
+                initialQuestions={stateQuestions}
+              />
+            </div>
           </div>
         </section>
       </div>

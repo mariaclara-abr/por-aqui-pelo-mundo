@@ -36,14 +36,14 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
             esteve lá.
           </p>
           <p className="mt-3 max-w-[620px] text-center text-[13px] leading-relaxed text-areia/85 sm:mt-4 sm:text-base lg:text-left">
-            Atrações diversas, recomendadas e avaliadas pela viajante{" "}
+            Atrações diversas, recomendadas e avaliadas pessoalmente pela viajante{" "}
             <Link
               href="/sobre"
               className="text-white decoration-1 underline-offset-2 hover:underline"
             >
               Rejane Abrantes
             </Link>
-            , que compartilha dicas reais e exclusivas.
+            , que compartilha sua experiência real e dicas exclusivas.
           </p>
           <div className="relative mt-6 w-fit self-center sm:mt-8 lg:self-start">
             <div className="relative inline-flex w-fit">

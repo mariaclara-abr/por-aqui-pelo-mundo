@@ -16,6 +16,7 @@ import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
 import AttractionCard from "@/components/AttractionCard";
 import ComingSoonAttractionCard from "@/components/ComingSoonAttractionCard";
+import ProtectedContent from "@/components/ProtectedContent";
 import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
@@ -289,7 +290,7 @@ export default async function AttractionPage(
               <p className="text-xs font-medium uppercase tracking-wide text-terracota">
                 Exclusivo Por Aqui Pelo Mundo
               </p>
-              <p className="mt-2 leading-relaxed text-tinta">
+              <p className="mt-2 leading-relaxed text-tinta whitespace-pre-line">
                 {linkify(attraction.exclusive_perk_description)}
               </p>
               {attraction.exclusive_perk_url && (
@@ -306,7 +307,8 @@ export default async function AttractionPage(
             </section>
           )}
 
-          {!isContainer && attraction.personal_experience && (
+          <ProtectedContent>
+          {attraction.personal_experience && (
             <section className="mt-6 rounded-xl bg-branco p-5">
               <h2 className="font-serif text-lg text-tinta">
                 Experiência de quem já foi
@@ -320,13 +322,14 @@ export default async function AttractionPage(
           {attraction.important_tips && (
             <section className="mt-6 rounded-xl border border-terracota/30 bg-terracota/5 p-5">
               <h2 className="font-serif text-lg text-tinta">
-                Dicas importantes
+                Dicas importantes:
               </h2>
               <p className="mt-2 leading-relaxed text-tinta/90 whitespace-pre-line">
                 {linkify(attraction.important_tips)}
               </p>
             </section>
           )}
+          </ProtectedContent>
         </div>
 
         {isContainer && (

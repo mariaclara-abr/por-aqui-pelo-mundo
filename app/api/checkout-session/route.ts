@@ -15,7 +15,7 @@ function isPlanType(value: string): value is PlanType {
   return value in PLANS;
 }
 
-// Só aceita caminhos relativos internos como destino pós-checkout — evita
+// Só aceita caminhos relativos internos como destino pós-checkout, evita
 // que o parâmetro vindo do cliente vire um open redirect.
 function sanitizeReturnPath(path: string | undefined): string {
   if (path && path.startsWith("/") && !path.startsWith("//")) return path;
@@ -85,6 +85,12 @@ export async function POST(request: Request) {
 
   const origin = new URL(request.url).origin;
   const returnPath = sanitizeReturnPath(body.return_to);
+  // O Roteiro Único volta para o roteiro comprado, os planos Premium caem na
+  // página de agradecimento.
+  const successPath =
+    body.plan === "roteiro_unico_1pais"
+      ? `${returnPath}?checkout=success`
+      : "/premium/obrigado";
   const metadata: Record<string, string> = {
     supabase_user_id: user.id,
     plan_type: body.plan,
@@ -108,7 +114,7 @@ export async function POST(request: Request) {
         quantity: 1,
       },
     ],
-    success_url: `${origin}${returnPath}?checkout=success`,
+    success_url: `${origin}${successPath}`,
     cancel_url: `${origin}${returnPath}?checkout=cancelled`,
     metadata,
     ...(plan.mode === "subscription"

@@ -4,7 +4,7 @@ import { buildOpenGraph } from "@/lib/metadata";
 
 // app/meu-roteiro/page.tsx é "use client" (metadata só é suportada em
 // Server Components), então a metadata da rota vive aqui, num layout que
-// só repassa os filhos — nenhuma UI nova.
+// só repassa os filhos, nenhuma UI nova.
 
 const TITLE = "Meu roteiro";
 const DESCRIPTION =

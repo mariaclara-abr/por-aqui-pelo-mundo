@@ -17,6 +17,17 @@ const ISO_BY_COUNTRY_SLUG: Record<string, string> = {
   monaco: "MC",
   portugal: "PT",
   suica: "CH",
+  argentina: "AR",
+  guatemala: "GT",
+  "ilhas-cayman": "KY",
+  india: "IN",
+  jamaica: "JM",
+  mexico: "MX",
+  panama: "PA",
+  paraguai: "PY",
+  peru: "PE",
+  "porto-rico": "PR",
+  uruguai: "UY",
 };
 
 export function countryFlag(slug: string): string | null {

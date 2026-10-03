@@ -9,7 +9,7 @@ export default function AuthorBand({
   authorPhotoUrl: string | null;
 }) {
   return (
-    <section className="bg-oliva">
+    <section className="bg-oliva bg-[url('/author-paper.svg')] bg-[length:256px_256px] bg-blend-soft-light">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 py-12 sm:gap-10 sm:px-6 sm:py-16 lg:flex-row lg:items-center lg:gap-14 lg:px-10 lg:py-20">
         <div className="flex flex-col justify-center lg:w-3/5">
           <p className="text-xs uppercase tracking-widest text-areia/70">

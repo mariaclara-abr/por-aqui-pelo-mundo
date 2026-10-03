@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { AFFILIATE_PROGRAMS } from "@/lib/affiliates";
 
 // MVP: agrega em JS a partir das linhas mais recentes, sem view/RPC dedicada
-// no banco — suficiente pro volume esperado nesta fase.
+// no banco, suficiente pro volume esperado nesta fase.
 const MAX_ROWS = 1000;
 
 export default async function AfiliadosPage() {

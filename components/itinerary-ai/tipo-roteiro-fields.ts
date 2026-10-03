@@ -9,6 +9,10 @@ export interface ExtraField {
   // Opções que, quando marcadas, abrem um campo de texto.
   textOn?: string[];
   placeholder?: string;
+  // Marca o campo como obrigatório (selo na tela e checagem antes de gerar).
+  required?: boolean;
+  // Campo de texto livre, sem opções.
+  text?: boolean;
 }
 
 export const TIPO_TABS: { value: TipoRoteiro; label: string; description: string }[] = [
@@ -33,21 +37,51 @@ const SIM_NAO_INDEFINIDO = ["Sim", "Não", "Ainda não decidi"];
 
 export const INTERNACIONAL_FIELDS: ExtraField[] = [
   {
+    key: "saida",
+    label: "Cidade de saída",
+    required: true,
+    text: true,
+    options: [],
+    placeholder: "Ex.: São Paulo (capital)",
+  },
+  {
+    key: "volta",
+    label: "Volta para o mesmo lugar?",
+    required: true,
+    options: ["Volta para o mesmo lugar", "Volta para outro lugar"],
+    textOn: ["Volta para outro lugar"],
+    placeholder: "Cidade de volta",
+  },
+  {
+    key: "flex_datas",
+    label: "Flexibilidade das datas",
+    options: ["Datas fixas", "Flexível"],
+    textOn: ["Flexível"],
+    placeholder: "Qual mês ou intervalo? Ex.: julho de 2027",
+  },
+  {
+    key: "orcamento_inclui",
+    label: "O que o orçamento inclui",
+    multi: true,
+    options: ["Passagens", "Alimentação", "Ingressos", "Transporte", "Hospedagem"],
+  },
+  {
     key: "hospedagem",
     label: "Tipo de hospedagem",
     options: ["Hotel", "Resort", "Apart-hotel", "Airbnb ou casa inteira", "Ainda não decidi"],
   },
   {
     key: "tem_hotel",
-    label: "Você já tem o local?",
-    hint: "Se ainda não tem, o roteiro indica hotéis do site e um bairro bem localizado.",
+    label: "Você já tem hotel?",
+    hint: "Se não tem, a IA indica um bairro-base por cidade e planeja os dias a partir dele. Hotéis do site aparecem só como opção.",
     options: ["Sim, já escolhi", "Ainda não"],
     textOn: ["Sim, já escolhi"],
-    placeholder: "Nome do hotel e, se possível, o bairro/endereço",
+    placeholder: "Nome e endereço do hotel (ponto fixo do roteiro)",
   },
   {
     key: "deslocamento",
     label: "Como pretende se deslocar",
+    required: true,
     multi: true,
     options: [
       "A pé e transporte público",
@@ -58,11 +92,51 @@ export const INTERNACIONAL_FIELDS: ExtraField[] = [
     ],
   },
   {
+    key: "compromissos",
+    label: "Compromissos fixos",
+    hint: "Jantares, ingressos já comprados, eventos. Informe a cidade e a data se puder.",
+    text: true,
+    options: [],
+    placeholder: "Ex.: jantar com vista para a Torre Eiffel, Paris, 12/07",
+  },
+  {
+    key: "imperdivel",
+    label: "Alguma atração é imperdível?",
+    hint: "A IA coloca primeiro no dia, em horário favorável.",
+    text: true,
+    options: [],
+    placeholder: "Nome da atração do site",
+  },
+  {
+    key: "ideias",
+    label: "Só os clássicos ou também ideias menos óbvias?",
+    options: ["Só os clássicos", "Clássicos e algumas ideias diferentes"],
+  },
+  {
     key: "restricao_alimentar",
     label: "Restrição alimentar",
     multi: true,
-    options: ["Nenhuma", "Vegetariano", "Vegano", "Alergia", "Restrição religiosa", "Outra"],
+    options: [
+      "Ninguém tem restrição alimentar",
+      "Vegetariano",
+      "Vegano",
+      "Alergia",
+      "Restrição religiosa",
+      "Outra",
+    ],
     textOn: ["Alergia", "Outra"],
+  },
+  {
+    key: "mobilidade_saude",
+    label: "Restrição de mobilidade ou condição de saúde",
+    multi: true,
+    options: [
+      "Ninguém tem restrições ou condições",
+      "Dificuldade de caminhar longas distâncias",
+      "Cadeira de rodas ou carrinho de bebê",
+      "Condição de saúde",
+    ],
+    textOn: ["Condição de saúde"],
   },
   {
     key: "ocasiao",
@@ -76,6 +150,24 @@ export const INTERNACIONAL_FIELDS: ExtraField[] = [
       "Outra",
     ],
     textOn: ["Outra"],
+  },
+  {
+    key: "passaporte",
+    label: "Passaporte válido?",
+    hint: "Só para orientar as dicas, não bloqueia nada.",
+    options: ["Sim", "Não", "Não sei"],
+  },
+  {
+    key: "primeira_vez",
+    label: "É a primeira vez no destino?",
+    options: ["Sim", "Não"],
+  },
+  {
+    key: "idiomas",
+    label: "Idiomas que o grupo fala",
+    text: true,
+    options: [],
+    placeholder: "Ex.: português, um pouco de inglês",
   },
 ];
 

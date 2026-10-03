@@ -39,7 +39,7 @@ export async function generateMetadata(
     title,
     description,
     // Roteiros compartilhados são conteúdo gerado por usuários (não pela
-    // curadoria da autora), então ficam fora do índice de busca — evita
+    // curadoria da autora), então ficam fora do índice de busca, evita
     // páginas finas/duplicadas competindo com o conteúdo editorial do site.
     robots: { index: false },
     alternates: { canonical: `/roteiros/${share_token}` },

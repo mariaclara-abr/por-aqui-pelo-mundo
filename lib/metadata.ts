@@ -5,7 +5,7 @@ export const SITE_URL = "https://www.poraquipelomundo.com";
 
 // Imagem de marca gerada em app/opengraph-image.tsx (via next/og). Next só
 // aplica esse arquivo automaticamente em rotas que NÃO definem o próprio
-// openGraph — qualquer rota que passa por buildOpenGraph já está definindo
+// openGraph, qualquer rota que passa por buildOpenGraph já está definindo
 // o seu, então precisamos referenciar essa imagem explicitamente aqui para
 // não perder o fallback.
 const DEFAULT_OG_IMAGE = "/opengraph-image";
@@ -37,7 +37,7 @@ export function buildOpenGraph(fields: {
 // --- Gramática de país: contração de preposição (na/no/nas/nos, da/do/das/dos) ---
 //
 // Tabela mantida manualmente. Países novos cadastrados pelo admin que não
-// estiverem aqui caem no fallback neutro "em"/"de" (sem artigo) — não é
+// estiverem aqui caem no fallback neutro "em"/"de" (sem artigo), não é
 // tecnicamente incorreto para nenhum caso comum, só não soa tão natural
 // quanto a forma com artigo. Adicione o país aqui para ficar perfeito.
 type CountryArticle = "a" | "o" | "as" | "os";

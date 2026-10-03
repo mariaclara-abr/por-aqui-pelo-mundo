@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getTravelTips } from "@/lib/queries";
 import TravelTipsGrid from "@/components/TravelTipsGrid";
+import { EasySimBanner } from "@/components/AffiliateCallout";
 import { buildOpenGraph } from "@/lib/metadata";
 
 export const revalidate = 60;
@@ -87,6 +88,8 @@ export default async function DicasDeViagemPage() {
           )}
         </div>
       </section>
+
+      <EasySimBanner />
     </main>
   );
 }

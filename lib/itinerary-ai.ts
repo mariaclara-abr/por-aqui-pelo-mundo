@@ -90,7 +90,7 @@ async function fetchItineraryAttractions(
 }
 
 // Atrações da curadoria nas mesmas cidades do roteiro, ainda não escolhidas
-// pelo viajante — o pool de onde a IA pode tirar sugestões novas. Nunca
+// pelo viajante, o pool de onde a IA pode tirar sugestões novas. Nunca
 // inventa lugares fora do que já está cadastrado no banco.
 export async function getCandidateAttractions(
   itinerary: ItineraryForAI,
@@ -143,7 +143,7 @@ export async function getCandidateAttractions(
 const MAX_CANDIDATES_PER_CITY_FROM_SCRATCH = 15;
 
 // Atrações da curadoria nas cidades escolhidas pelo viajante para montar um
-// roteiro do zero — a IA escolhe livremente dentro desta lista, nunca
+// roteiro do zero, a IA escolhe livremente dentro desta lista, nunca
 // inventa lugares fora do que já está cadastrado no banco.
 export async function getAttractionsForCities(
   citySlugs: string[],
@@ -276,7 +276,7 @@ export async function getHotelsForCities(
   );
 }
 
-// Países distintos das cidades escolhidas — usado para decidir acesso
+// Países distintos das cidades escolhidas, usado para decidir acesso
 // (plano avulso x Premium) antes mesmo de existir qualquer atração
 // confirmada no roteiro do zero.
 export async function getCountrySlugsForCities(
@@ -301,7 +301,7 @@ export async function getCountrySlugsForCities(
 }
 
 // Busca o roteiro que o usuário está editando no momento (o mesmo que
-// /meu-roteiro mostra) — usada pela página de organizar com IA e pelo chat,
+// /meu-roteiro mostra), usada pela página de organizar com IA e pelo chat,
 // que sempre devem operar no roteiro selecionado, não em qualquer um.
 export async function getActiveItineraryForAI(
   userId: string,
@@ -348,7 +348,7 @@ export async function getActiveItineraryForAI(
   return { itineraryId: itinerary.id, title: itinerary.title, attractions };
 }
 
-// Busca um roteiro por id — usada pela API route. A RLS ("Users can view
+// Busca um roteiro por id, usada pela API route. A RLS ("Users can view
 // their own itineraries") garante que só retorna algo se o roteiro pertencer
 // ao usuário autenticado da requisição.
 export async function getItineraryForAIById(
@@ -371,7 +371,7 @@ export async function getItineraryForAIById(
 
 // --- Ferramentas usadas pelo chat de edição do roteiro (lib/itinerary-chat.ts) ---
 // Cada função aqui é a implementação REAL por trás de uma ferramenta que a IA
-// pode chamar. A IA nunca toca o banco diretamente — ela só decide qual
+// pode chamar. A IA nunca toca o banco diretamente, ela só decide qual
 // ferramenta usar; quem executa e valida é este arquivo, sob a RLS do usuário
 // autenticado da requisição.
 
@@ -383,7 +383,7 @@ export interface ChatAttractionMatch {
   curationRating: number | null;
 }
 
-// Busca por nome na curadoria — é assim que a IA descobre o id real de um
+// Busca por nome na curadoria, é assim que a IA descobre o id real de um
 // lugar que o usuário mencionou por nome, sem nunca inventar um id.
 export async function searchAttractionsForChat(
   query: string,

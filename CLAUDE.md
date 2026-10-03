@@ -47,6 +47,8 @@ Princípios visuais:
 - Cards de dicas de países da Europa devem ficar todos agrupados juntos no mesmo capítulo "Europa".
 - O nome do card deve sempre citar o país e/ou a cidade a que se refere.
 - O nome do card deve chamar atenção e despertar vontade de clicar: destaque em negrito uma ou duas palavras, as mais importantes do título.
+- Títulos devem ser sempre bem chamativos, com gancho que dê vontade de clicar (sem prometer o que o conteúdo não entrega).
+- Toda categoria de dicas deve ter pelo menos 1 card travado como premium (`is_premium`), e esse deve ser o de título mais chamativo.
 
 ## Banco de dados (Supabase)
 - Autorização permanente do usuário: rodar SQL/migrations diretamente no banco Supabase de produção (`SUPABASE_DB_URL` em `.env.local`) sem pedir confirmação antes, usando `npm run sql -- <arquivo.sql>` (script em `scripts/run-sql.mjs`, conecta via `pg`). Não é necessário pausar para perguntar antes desse tipo de execução.
