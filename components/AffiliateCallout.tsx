@@ -137,7 +137,7 @@ export function EasySimBanner() {
           <div
             role="img"
             aria-label="40% de desconto com o cupom Poraquipelomundo"
-            className="mt-8 flex h-40 w-40 shrink-0 -rotate-6 items-center justify-center self-start rounded-full bg-terracota p-2 sm:h-48 sm:w-48 lg:mt-auto"
+            className="mt-8 flex h-40 w-40 shrink-0 -rotate-6 items-center justify-center self-center rounded-full bg-terracota p-2 sm:h-48 sm:w-48 lg:mt-auto lg:self-end"
           >
             <div className="flex h-full w-full flex-col items-center justify-center rounded-full border-2 border-dashed border-areia/70 text-center text-white">
               <span className="font-serif text-5xl leading-none sm:text-6xl">40%</span>
