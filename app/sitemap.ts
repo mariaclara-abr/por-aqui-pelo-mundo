@@ -29,6 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: SITE_URL, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/sobre`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/privacidade`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/termos`, changeFrequency: "yearly", priority: 0.3 },
     ...destinations.flatMap(({ country, states, cities }) => [
       {
         url: `${SITE_URL}/${country.slug}`,

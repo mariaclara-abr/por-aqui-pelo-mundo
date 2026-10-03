@@ -6,6 +6,8 @@ const LINKS = [
   { label: "Dicas de viagem", href: "/dicas-de-viagem" },
   { label: "Destinos", href: "/#destinos" },
   { label: "Roteiros completos com IA", href: "/meu-roteiro/organizar-com-ia" },
+  { label: "Privacidade", href: "/privacidade" },
+  { label: "Termos", href: "/termos" },
 ];
 
 function InstagramIcon() {
