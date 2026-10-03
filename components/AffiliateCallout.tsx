@@ -82,7 +82,7 @@ export function EasySimBanner() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
               Benefício exclusivo
             </p>
-            <p className="mt-2 text-left font-serif text-2xl leading-snug sm:text-3xl">
+            <p className="text-left mt-2 text-left font-serif text-2xl leading-snug sm:text-3xl">
               {program.benefit}
             </p>
             <a
@@ -181,7 +181,7 @@ export function EasySimSlimBanner() {
               Internet no <span className="text-terracota">exterior</span>, com
               eSIM ou chip físico
             </h2>
-            <p className="mt-1 text-sm text-areia/80">
+            <p className="text-left mt-1 text-sm text-areia/80">
               {program.benefit}
             </p>
           </div>
@@ -233,7 +233,7 @@ export default function AffiliateCallout({
                 {program.attractionCtaLabel ?? program.label}
               </a>
               {program.benefit && (
-                <p className="mt-3 text-sm font-semibold text-tinta">
+                <p className="text-left mt-3 text-sm font-semibold text-tinta">
                   {program.benefit}
                 </p>
               )}
@@ -300,7 +300,7 @@ export default function AffiliateCallout({
                     </p>
                   )}
                   {href && program.benefit && (
-                    <p className="mt-1 text-sm font-semibold text-branco">
+                    <p className="text-left mt-1 text-sm font-semibold text-branco">
                       {program.benefit}
                     </p>
                   )}
