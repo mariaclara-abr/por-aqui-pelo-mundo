@@ -1,5 +1,6 @@
 "use client";
 
+import CountryFlag from "@/components/CountryFlag";
 import { countryFlag } from "@/lib/country-flag";
 import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
@@ -44,6 +45,7 @@ export default function ComingSoonCountryCard({
   country: Country;
 }) {
   const { isAuthor } = useAuth();
+  const flag = countryFlag(country.slug);
   const [interested, setInterested] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -106,9 +108,7 @@ export default function ComingSoonCountryCard({
       <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3">
         <h2 className="font-serif text-xl text-white">
           {country.name}
-          {countryFlag(country.slug) && (
-            <span aria-hidden="true"> {countryFlag(country.slug)}</span>
-          )}
+          {flag && <CountryFlag src={flag} />}
         </h2>
 
         <button

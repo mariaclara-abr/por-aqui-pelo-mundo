@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import CountryFlag from "@/components/CountryFlag";
 import { imagePositionStyle, type ImagePosition } from "@/lib/image-position";
 
 export default function DestinationCard({
@@ -33,14 +34,14 @@ export default function DestinationCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
           <h2 className="absolute bottom-4 left-4 font-serif text-xl text-white transition-colors group-hover:text-terracota">
             {name}
-            {flag && <span aria-hidden="true"> {flag}</span>}
+            {flag && <CountryFlag src={flag} />}
           </h2>
         </>
       ) : (
         <div className="flex h-full w-full items-center justify-center">
           <span className="font-serif text-lg text-oliva">
             {name}
-            {flag && <span aria-hidden="true"> {flag}</span>}
+            {flag && <CountryFlag src={flag} />}
           </span>
         </div>
       )}
