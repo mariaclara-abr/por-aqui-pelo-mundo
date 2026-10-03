@@ -15,6 +15,7 @@ import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import StateCard from "@/components/StateCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import ExpandableText from "@/components/ExpandableText";
+import JsonLd, { breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
 
 export async function generateMetadata(
@@ -40,8 +41,6 @@ export async function generateMetadata(
       ? `Guias de ${countLabel(cityCount, "cidade", "cidades")} ${withDe(country.name)} com atrações visitadas e avaliadas por quem esteve lá. Escolha um destino e monte seu roteiro.`
       : `Guias de cidades ${withDe(country.name)} com atrações visitadas e avaliadas por quem esteve lá. Escolha um destino e monte seu roteiro.`;
 
-  const image = country.cover_image_url ?? undefined;
-
   return {
     title,
     description,
@@ -52,7 +51,7 @@ export async function generateMetadata(
     openGraph: buildOpenGraph({
       title,
       description,
-      images: image ? [image] : undefined,
+      images: [`/${countrySlug}/opengraph-image`],
     }),
   };
 }
@@ -97,8 +96,19 @@ export default async function CountryPage(
   const questions = await getCountryQuestions(country.id).catch(() => []);
   const coverImage = country.cover_image_url ?? undefined;
 
+  const qa = qaPageLd(questions, `/${countrySlug}`);
+
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <JsonLd
+        data={[
+          breadcrumbLd([
+            { name: "Início", path: "/" },
+            { name: country.name, path: `/${countrySlug}` },
+          ]),
+          ...(qa ? [qa] : []),
+        ]}
+      />
       <div className="mx-auto max-w-[1440px]">
         {country.status === "draft" && (
           <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">

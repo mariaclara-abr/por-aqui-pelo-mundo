@@ -274,6 +274,7 @@ export interface Database {
           exclusive_perk_cta_label: string | null;
           status: CountryStatus;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -304,6 +305,7 @@ export interface Database {
           exclusive_perk_cta_label?: string | null;
           status?: CountryStatus;
           created_at?: string;
+          updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["attractions"]["Insert"]>;
         Relationships: [
@@ -1005,7 +1007,9 @@ export interface Database {
           content: string;
           order: number;
           is_premium: boolean;
+          slug: string;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -1014,7 +1018,9 @@ export interface Database {
           content: string;
           order?: number;
           is_premium?: boolean;
+          slug?: string;
           created_at?: string;
+          updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["travel_tips"]["Insert"]>;
         Relationships: [];

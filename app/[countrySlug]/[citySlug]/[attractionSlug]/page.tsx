@@ -14,6 +14,7 @@ import type { Database } from "@/types/database";
 import PriceRange from "@/components/PriceRange";
 import RoteiroButton from "@/components/RoteiroButton";
 import RelatedContent from "@/components/RelatedContent";
+import { getAttractionRecommendations } from "@/lib/recommendations";
 import AttractionCard from "@/components/AttractionCard";
 import ComingSoonAttractionCard from "@/components/ComingSoonAttractionCard";
 import ProtectedContent from "@/components/ProtectedContent";
@@ -21,8 +22,10 @@ import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import AffiliateCallout from "@/components/AffiliateCallout";
+import UpdatedAt from "@/components/UpdatedAt";
+import JsonLd, { attractionLd, breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import { linkify } from "@/components/Linkify";
-import { buildOpenGraph, truncateToSentence } from "@/lib/metadata";
+import { buildOpenGraph, cutAtSentence, truncateToSentence } from "@/lib/metadata";
 import { parseImagePosition } from "@/lib/image-position";
 
 type AttractionWithRelations = Database["public"]["Tables"]["attractions"]["Row"] & {
@@ -33,7 +36,10 @@ type AttractionWithRelations = Database["public"]["Tables"]["attractions"]["Row"
 
 // Monta a description a partir da descrição curta real da atração (nunca
 // inventada) mais tempo de visita / melhor horário quando existirem,
-// sempre cabendo em 160 caracteres sem cortar frase no meio.
+// sempre cabendo em 155 caracteres. Prefere terminar em frase completa; se a
+// primeira frase não cabe junto do sufixo, descarta o sufixo antes de cortar.
+const MAX_DESCRIPTION = 155;
+
 function buildAttractionDescription(attraction: AttractionWithRelations) {
   const facts: string[] = [];
   if (attraction.average_visit_time) {
@@ -47,13 +53,14 @@ function buildAttractionDescription(attraction: AttractionWithRelations) {
 
   const base = attraction.description?.trim();
   if (base) {
-    const available = 160 - suffix.length;
-    const fittedBase = base.length <= available ? base : truncateToSentence(base, available);
-    return `${fittedBase}${suffix}`.trim();
+    const room = MAX_DESCRIPTION - suffix.length;
+    const withSuffix = room > 40 ? cutAtSentence(base, room) : null;
+    if (withSuffix) return `${withSuffix}${suffix}`.trim();
+    return truncateToSentence(base, MAX_DESCRIPTION);
   }
 
   const fallback = `${attraction.name}, em ${attraction.cities.name} (${attraction.cities.countries.name}): recomendação com curadoria pessoal de quem já esteve lá. Confira dicas reais para a sua visita.`;
-  return truncateToSentence(fallback, 160);
+  return truncateToSentence(fallback, MAX_DESCRIPTION);
 }
 
 export async function generateMetadata(
@@ -180,8 +187,36 @@ export default async function AttractionPage(
       : null,
   ].filter((fact): fact is { label: string; content: React.ReactNode } => fact !== null);
 
+  const path = `/${countrySlug}/${citySlug}/${attractionSlug}`;
+  const qa = qaPageLd(questions, path);
+
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <JsonLd
+        data={[
+          breadcrumbLd([
+            { name: "Início", path: "/" },
+            { name: attraction.cities.countries.name, path: `/${countrySlug}` },
+            { name: attraction.cities.name, path: `/${countrySlug}/${citySlug}` },
+            ...ancestors.map((a) => ({
+              name: a.name,
+              path: `/${countrySlug}/${citySlug}/${a.slug}`,
+            })),
+            { name: attraction.name, path },
+          ]),
+          attractionLd({
+            name: attraction.name,
+            description: buildAttractionDescription(attraction),
+            url: path,
+            image: photos[0]?.url,
+            categories: attraction.categories,
+            latitude: attraction.latitude,
+            longitude: attraction.longitude,
+            updatedAt: attraction.updated_at,
+          }),
+          ...(qa ? [qa] : []),
+        ]}
+      />
       <div className="mx-auto max-w-6xl">
         {attraction.status === "draft" && (
           <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">
@@ -226,6 +261,7 @@ export default async function AttractionPage(
                 {categoryLabel}
               </p>
             )}
+            <UpdatedAt date={attraction.updated_at} className="mt-1" />
           </div>
 
           {!isContainer && (
@@ -415,6 +451,15 @@ export default async function AttractionPage(
                   latitude: attraction.latitude,
                   longitude: attraction.longitude,
                 }}
+                initialRecommendations={await getAttractionRecommendations(
+                  {
+                    id: attraction.id,
+                    citySlug: attraction.cities.slug,
+                    latitude: attraction.latitude,
+                    longitude: attraction.longitude,
+                  },
+                  { limit: 18 },
+                ).catch(() => undefined)}
               />
             </div>
           </section>

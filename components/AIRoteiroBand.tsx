@@ -18,10 +18,7 @@ export default function AIRoteiroBand() {
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <p className="text-xs uppercase tracking-widest text-areia/80">
-            Novidade
-          </p>
-          <h2 className="mt-2 font-serif text-3xl leading-tight text-branco sm:text-4xl lg:text-5xl">
+          <h2 className="font-serif text-3xl leading-tight text-branco sm:text-4xl lg:text-5xl">
             Nossa IA monta o roteiro ideal para você!
           </h2>
           <p className="mt-5 text-areia/90">

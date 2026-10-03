@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTravelTips } from "@/lib/queries";
+import { getTipDestinations } from "@/lib/tip-destinations";
 import TravelTipsGrid from "@/components/TravelTipsGrid";
 import { EasySimBanner } from "@/components/AffiliateCallout";
 import { buildOpenGraph } from "@/lib/metadata";
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
 
 export default async function DicasDeViagemPage() {
   const tips = await getTravelTips();
+  const destinations = await getTipDestinations(tips);
 
   return (
     <main className="flex-1 overflow-hidden">
@@ -84,7 +86,7 @@ export default async function DicasDeViagemPage() {
               </p>
             </div>
           ) : (
-            <TravelTipsGrid tips={tips} />
+            <TravelTipsGrid tips={tips} destinations={destinations} />
           )}
         </div>
       </section>

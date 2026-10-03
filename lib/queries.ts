@@ -401,7 +401,7 @@ export async function getAttractionNamesByCity(citySlug: string) {
 
   const { data, error } = await supabase
     .from("attractions")
-    .select("id, name, slug")
+    .select("id, name, slug, updated_at")
     .eq("city_id", city.id)
     .is("parent_attraction_id", null)
     .order("name");
@@ -624,3 +624,14 @@ export async function getTravelTips() {
   return data;
 }
 
+
+export async function getTravelTipBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from("travel_tips")
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}

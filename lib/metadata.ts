@@ -76,27 +76,41 @@ export function joinNames(names: string[]): string {
 }
 
 /**
- * Corta um texto em até `max` caracteres sem quebrar no meio de uma frase
- * ou palavra: prefere o último "." / "!" / "?" dentro do limite; se não
- * houver nenhum, corta na última palavra completa e fecha com ".".
- * Nunca retorna mais que `max` caracteres.
+ * Corta no fim da última frase completa ("." / "!" / "?") que cabe em `max`.
+ * Retorna null se nenhuma frase termina dentro do limite.
  */
-export function truncateToSentence(text: string, max: number): string {
+export function cutAtSentence(text: string, max: number): string | null {
   const trimmed = text.replace(/\s+/g, " ").trim();
   if (trimmed.length <= max) return trimmed;
 
-  const slice = trimmed.slice(0, max);
-  const sentenceEnd = Math.max(
+  // max + 1 para aceitar a frase que termina exatamente no limite.
+  const slice = trimmed.slice(0, max + 1);
+  const end = Math.max(
     slice.lastIndexOf(". "),
     slice.lastIndexOf("! "),
     slice.lastIndexOf("? "),
   );
-  if (sentenceEnd > 0) {
-    return slice.slice(0, sentenceEnd + 1).trim();
-  }
+  return end > 0 ? slice.slice(0, end + 1) : null;
+}
 
+// Conectivos que não podem ficar pendurados no fim do corte ("..., e, na").
+const DANGLING = /(?:[\s,;:(–-]|\b(?:a|o|as|os|e|ou|de|da|do|das|dos|em|na|no|nas|nos|com|por|para|que|um|uma|ao|à))+$/i;
+
+/**
+ * Prefere cortar no fim de uma frase (ver cutAtSentence). Se a primeira
+ * frase já estoura `max`, corta na última palavra completa, remove conectivos
+ * soltos e fecha com "…" (nunca com ".", para não parecer frase completa).
+ * Nunca retorna mais que `max` caracteres.
+ */
+export function truncateToSentence(text: string, max: number): string {
+  const sentence = cutAtSentence(text, max);
+  if (sentence) return sentence;
+
+  const trimmed = text.replace(/\s+/g, " ").trim();
   const wordSlice = trimmed.slice(0, max - 1);
   const lastSpace = wordSlice.lastIndexOf(" ");
-  const cut = lastSpace > 0 ? wordSlice.slice(0, lastSpace) : wordSlice;
-  return `${cut.trim()}.`;
+  const cut = (lastSpace > 0 ? wordSlice.slice(0, lastSpace) : wordSlice)
+    .replace(DANGLING, "")
+    .trim();
+  return `${cut}…`;
 }

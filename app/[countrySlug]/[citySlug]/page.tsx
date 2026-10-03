@@ -23,7 +23,9 @@ import ComingSoonAttractionCard from "@/components/ComingSoonAttractionCard";
 import CityCard from "@/components/CityCard";
 import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import RelatedContent from "@/components/RelatedContent";
+import { getNearbyCities } from "@/lib/recommendations";
 import ExpandableText from "@/components/ExpandableText";
+import JsonLd, { breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
 import StateQuestionsSection from "@/components/state/QuestionsSection";
 import { buildOpenGraph, countLabel, joinNames } from "@/lib/metadata";
@@ -66,8 +68,6 @@ export async function generateMetadata(
           )
         : `Guia de ${city.name}, ${city.countries.name}: em breve, atrações com curadoria pessoal de quem já esteve lá. Explore outros destinos e monte seu roteiro agora.`;
 
-    const image = city.cover_image_url ?? city.countries.cover_image_url ?? undefined;
-
     return {
       title,
       description,
@@ -78,7 +78,7 @@ export async function generateMetadata(
       openGraph: buildOpenGraph({
         title,
         description,
-        images: image ? [image] : undefined,
+        images: [`/${countrySlug}/${citySlug}/opengraph-image`],
       }),
     };
   }
@@ -95,8 +95,6 @@ export async function generateMetadata(
       ? `Guias de ${countLabel(cityCount, "cidade", "cidades")} em ${state.name}, ${state.countries.name}, com atrações visitadas e avaliadas por quem esteve lá.`
       : `Cidades em ${state.name}, ${state.countries.name}: em breve, guias com curadoria pessoal de quem já esteve lá.`;
 
-  const image = state.cover_image_url ?? state.countries.cover_image_url ?? undefined;
-
   return {
     title,
     description,
@@ -104,7 +102,7 @@ export async function generateMetadata(
     openGraph: buildOpenGraph({
       title,
       description,
-      images: image ? [image] : undefined,
+      images: [`/${countrySlug}/${citySlug}/opengraph-image`],
     }),
   };
 }
@@ -150,8 +148,20 @@ export default async function CityOrStatePage(
         : city.countries.cover_image_position,
     );
 
+    const qa = qaPageLd(questions, `/${countrySlug}/${citySlug}`);
+
     return (
       <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+        <JsonLd
+          data={[
+            breadcrumbLd([
+              { name: "Início", path: "/" },
+              { name: city.countries.name, path: `/${countrySlug}` },
+              { name: city.name, path: `/${countrySlug}/${citySlug}` },
+            ]),
+            ...(qa ? [qa] : []),
+          ]}
+        />
         <div className="mx-auto max-w-[1440px]">
           {city.status === "draft" && (
             <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">
@@ -217,7 +227,11 @@ export default async function CityOrStatePage(
               Cidades próximas
             </h2>
             <div className="mt-4">
-              <RelatedContent mode="city" citySlug={citySlug} />
+              <RelatedContent
+                mode="city"
+                citySlug={citySlug}
+                initialCities={await getNearbyCities(citySlug).catch(() => undefined)}
+              />
             </div>
           </section>
 
@@ -279,8 +293,20 @@ export default async function CityOrStatePage(
       : state.countries.cover_image_position,
   );
 
+  const stateQa = qaPageLd(stateQuestions, `/${countrySlug}/${citySlug}`);
+
   return (
     <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <JsonLd
+        data={[
+          breadcrumbLd([
+            { name: "Início", path: "/" },
+            { name: state.countries.name, path: `/${countrySlug}` },
+            { name: state.name, path: `/${countrySlug}/${citySlug}` },
+          ]),
+          ...(stateQa ? [stateQa] : []),
+        ]}
+      />
       <div className="mx-auto max-w-[1440px]">
         <Link
           href={`/${countrySlug}`}

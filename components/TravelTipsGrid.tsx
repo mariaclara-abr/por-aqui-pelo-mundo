@@ -5,11 +5,18 @@ import TravelTipCard from "@/components/TravelTipCard";
 import TravelTipModal from "@/components/TravelTipModal";
 import PremiumDialog from "@/components/PremiumDialog";
 import { useUserSubscription } from "@/lib/useUserSubscription";
+import type { TipDestination } from "@/lib/tip-destinations";
 import type { Database } from "@/types/database";
 
 type TravelTip = Database["public"]["Tables"]["travel_tips"]["Row"];
 
-export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
+export default function TravelTipsGrid({
+  tips,
+  destinations,
+}: {
+  tips: TravelTip[];
+  destinations: Record<string, TipDestination[]>;
+}) {
   const { hasUnlockedTips } = useUserSubscription();
   const [openTip, setOpenTip] = useState<TravelTip | null>(null);
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
@@ -92,6 +99,7 @@ export default function TravelTipsGrid({ tips }: { tips: TravelTip[] }) {
           title={openTip.title}
           content={openTip.content}
           category={openTip.category}
+          destinations={destinations[openTip.id] ?? []}
           onClose={() => setOpenTip(null)}
         />
       )}

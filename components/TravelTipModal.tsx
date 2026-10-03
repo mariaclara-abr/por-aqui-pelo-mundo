@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
+import type { TipDestination } from "@/lib/tip-destinations";
 import { linkify } from "@/components/Linkify";
 import ProtectedContent from "@/components/ProtectedContent";
 import { renderBold } from "@/lib/text-formatting";
@@ -9,11 +11,13 @@ export default function TravelTipModal({
   title,
   content,
   category,
+  destinations,
   onClose,
 }: {
   title: string;
   content: string;
   category: string;
+  destinations: TipDestination[];
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -70,6 +74,25 @@ export default function TravelTipModal({
               {linkify(content)}
             </p>
           </ProtectedContent>
+          {destinations.length > 0 && (
+            <nav aria-label="Destinos citados" className="mt-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-oliva">
+                Destinos citados
+              </p>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {destinations.map((d) => (
+                  <li key={d.href}>
+                    <Link
+                      href={d.href}
+                      className="inline-block rounded-full border border-terracota/40 px-4 py-1.5 text-sm text-terracota transition-colors hover:bg-terracota hover:text-branco"
+                    >
+                      {d.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
           <div className="mt-8 flex items-center gap-3 border-t border-tinta/10 pt-5 text-terracota">
             <span className="font-serif text-lg italic">por aqui</span>
             <span className="h-px flex-1 bg-terracota/25" aria-hidden="true" />

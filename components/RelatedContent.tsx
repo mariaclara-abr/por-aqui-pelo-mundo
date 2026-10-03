@@ -34,8 +34,9 @@ type RelatedContentProps =
         latitude: number | null;
         longitude: number | null;
       };
+      initialRecommendations?: AttractionRecommendations;
     }
-  | { mode: "city"; citySlug: string }
+  | { mode: "city"; citySlug: string; initialCities?: RecommendedCity[] }
   | { mode: "itinerary" };
 
 // Antes cada categoria (restaurante, hotel, passeio...) tinha seu próprio
@@ -320,9 +321,18 @@ function CityRecommendationCard({ city }: { city: RecommendedCity }) {
 
 export default function RelatedContent(props: RelatedContentProps) {
   const { items } = useRoteiro();
-  const [recommendations, setRecommendations] = useState<AttractionRecommendations | null>(null);
-  const [nearbyCities, setNearbyCities] = useState<RecommendedCity[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Dados iniciais vêm do servidor para que os links já estejam no HTML.
+  const initialRecommendations =
+    props.mode === "attraction" ? props.initialRecommendations : undefined;
+  const initialCities = props.mode === "city" ? props.initialCities : undefined;
+  const [recommendations, setRecommendations] = useState<AttractionRecommendations | null>(
+    initialRecommendations ?? null,
+  );
+  const [nearbyCities, setNearbyCities] = useState<RecommendedCity[] | null>(
+    initialCities ?? null,
+  );
+  const [loading, setLoading] = useState(!initialRecommendations && !initialCities);
+  const skipFirstLoad = useRef(!!initialRecommendations || !!initialCities);
 
   const roteiroKey = useMemo(
     () => items.map((item) => item.attraction.id).join(","),
@@ -337,6 +347,10 @@ export default function RelatedContent(props: RelatedContentProps) {
         : `itinerary:${roteiroKey}`;
 
   useEffect(() => {
+    if (skipFirstLoad.current) {
+      skipFirstLoad.current = false;
+      return;
+    }
     let cancelled = false;
 
     async function load() {

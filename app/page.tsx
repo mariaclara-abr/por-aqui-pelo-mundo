@@ -11,6 +11,7 @@ import DestinationGrid from "@/components/DestinationGrid";
 import WelcomeMarquee from "@/components/WelcomeMarquee";
 import AuthorBand from "@/components/AuthorBand";
 import AIRoteiroBand from "@/components/AIRoteiroBand";
+import { EasySimSlimBanner } from "@/components/AffiliateCallout";
 import TravelTipsBand from "@/components/TravelTipsBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
 import { buildOpenGraph } from "@/lib/metadata";
@@ -56,6 +57,7 @@ export default async function Home() {
         authorPhotoUrl={about.author_photo_url}
       />
       <TravelTipsBand tipCount={tips.length} />
+      <EasySimSlimBanner />
       <AIRoteiroBand />
       <WelcomeMarquee />
       <SiteReviewsSection reviews={siteReviews} />
