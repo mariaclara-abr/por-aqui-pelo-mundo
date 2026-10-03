@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "motion/react";
 import { useRoteiro } from "@/lib/roteiro";
 import { useAuth } from "@/lib/auth";
 import RelatedContent from "@/components/RelatedContent";
@@ -16,6 +15,7 @@ import PremiumDialog from "@/components/PremiumDialog";
 import CopyProtectionGuard from "@/components/CopyProtectionGuard";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
+import ItineraryPremiumBanner from "@/components/itinerary-ai/ItineraryPremiumBanner";
 import { humanizeSlug } from "@/lib/affiliates";
 import { exportToGoogleMaps } from "@/lib/export";
 import { categoryLabels } from "@/types/database";
@@ -149,7 +149,6 @@ export default function MeuRoteiroPage() {
   } = useRoteiro();
   const { user } = useAuth();
   const router = useRouter();
-  const prefersReducedMotion = useReducedMotion();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [confirmingClear, setConfirmingClear] = useState(false);
@@ -301,47 +300,7 @@ export default function MeuRoteiroPage() {
   return (
     <main className="flex-1 bg-[url('/complete-roteiro-background.png')] bg-[length:100%_auto] bg-repeat-y bg-top px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <div className="relative left-1/2 -mt-10 w-screen -translate-x-1/2 overflow-hidden bg-terracota sm:-mt-14">
-          <div
-            aria-hidden="true"
-            className="shine-sweep pointer-events-none absolute inset-0"
-          />
-
-          <motion.img
-            src="/assets/simbolo.svg"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-4 -top-5 h-20 w-20 opacity-10 sm:h-24 sm:w-24"
-            animate={
-              prefersReducedMotion
-                ? undefined
-                : { y: [0, -8, 0], rotate: [-8, -2, -8] }
-            }
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-
-          <button
-            type="button"
-            onClick={handleOrganizarClick}
-            className="relative mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-left sm:px-6 sm:py-5 lg:px-10"
-          >
-            <div className="max-w-md sm:max-w-none">
-              <p className="font-serif text-xl text-branco sm:text-2xl">
-                Organize seu roteiro com IA
-              </p>
-              <p className="mt-1.5 text-sm text-areia/90 sm:whitespace-nowrap">
-                Em poucos minutos você recebe um roteiro detalhado e sob
-                medida para sua viagem.
-              </p>
-            </div>
-
-            <span className="relative rounded-full bg-branco px-6 py-2 text-sm font-medium text-terracota transition-transform hover:scale-105 active:scale-95">
-              Organizar com IA
-            </span>
-          </button>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2">
             <RoteiroTitle />
             {user && itineraryId && (
@@ -647,6 +606,10 @@ export default function MeuRoteiroPage() {
             </svg>
             Buscar mais atrações
           </Link>
+        </div>
+
+        <div className="mt-12">
+          <ItineraryPremiumBanner />
         </div>
 
         <div className="mt-12">
