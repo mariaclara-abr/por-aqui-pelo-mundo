@@ -26,6 +26,17 @@ export default function TravelTipsGrid({
       setShowPremiumDialog(true);
       return;
     }
+    if (tip.is_premium) {
+      // A lista só traz o trecho público; o texto completo vem do servidor.
+      fetch(`/api/travel-tips/${tip.id}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.content) setOpenTip({ ...tip, content: data.content });
+          else setShowPremiumDialog(true);
+        })
+        .catch(() => setShowPremiumDialog(true));
+      return;
+    }
     setOpenTip(tip);
   }
 

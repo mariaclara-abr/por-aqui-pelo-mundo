@@ -64,7 +64,7 @@ export function attractionLd(a: {
   };
 }
 
-export function articleLd(t: { title: string; description: string; path: string; createdAt: string; updatedAt: string }): Json {
+export function articleLd(t: { title: string; description: string; path: string; createdAt: string; updatedAt: string; paywalled?: boolean }): Json {
   return {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -72,6 +72,11 @@ export function articleLd(t: { title: string; description: string; path: string;
     description: t.description,
     datePublished: t.createdAt,
     dateModified: t.updatedAt,
+    // Marcação de conteúdo com paywall (Google): o trecho fica fora do seletor .paywall.
+    ...(t.paywalled && {
+      isAccessibleForFree: false,
+      hasPart: { "@type": "WebPageElement", isAccessibleForFree: false, cssSelector: ".paywall" },
+    }),
     mainEntityOfPage: `${SITE_URL}${t.path}`,
     author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },

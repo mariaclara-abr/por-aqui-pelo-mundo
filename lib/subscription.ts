@@ -107,3 +107,23 @@ export async function canUseAIForItinerary(
 
   return { allowed: false, reason: "needs_premium", countryCount };
 }
+
+// Premium ativo, ou compra avulsa de roteiro ainda dentro da janela de dicas
+// desbloqueadas. Mesma regra de useUserSubscription (client), aqui no servidor
+// para barrar o conteúdo das dicas Premium.
+export async function hasUnlockedTipsAccess(
+  supabase: SupabaseServerClient,
+  userId: string,
+) {
+  if (await getActivePremium(supabase, userId)) return true;
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("plan_type", "roteiro_unico_1pais")
+    .eq("is_active", true)
+    .gt("tips_unlock_expiration", new Date().toISOString())
+    .limit(1);
+  if (error) throw error;
+  return (data?.length ?? 0) > 0;
+}

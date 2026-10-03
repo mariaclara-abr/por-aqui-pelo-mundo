@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getTravelTips } from "@/lib/queries";
 import { getTipDestinations } from "@/lib/tip-destinations";
+import { withTeaser } from "@/lib/tip-teaser";
 import TravelTipsGrid from "@/components/TravelTipsGrid";
 import { EasySimBanner } from "@/components/AffiliateCallout";
 import { buildOpenGraph } from "@/lib/metadata";
@@ -86,7 +87,7 @@ export default async function DicasDeViagemPage() {
               </p>
             </div>
           ) : (
-            <TravelTipsGrid tips={tips} destinations={destinations} />
+            <TravelTipsGrid tips={withTeaser(tips)} destinations={destinations} />
           )}
         </div>
       </section>

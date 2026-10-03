@@ -6,6 +6,8 @@ import { getTipDestinations } from "@/lib/tip-destinations";
 import { linkify } from "@/components/Linkify";
 import { buildOpenGraph, truncateToSentence } from "@/lib/metadata";
 import { renderBold } from "@/lib/text-formatting";
+import PremiumTipBody from "@/components/PremiumTipBody";
+import { tipTeaser } from "@/lib/tip-teaser";
 import UpdatedAt from "@/components/UpdatedAt";
 import JsonLd, { articleLd } from "@/components/JsonLd";
 
@@ -26,10 +28,7 @@ export async function generateMetadata(
   if (!tip) notFound();
 
   const title = plain(tip.title);
-  // Dica Premium: a descrição não pode vazar o conteúdo travado.
-  const description = tip.is_premium
-    ? `Dica Premium de ${tip.category}: ${title}`
-    : truncateToSentence(tip.content, 155);
+  const description = truncateToSentence(tip.content, 155);
 
   return {
     title,
@@ -56,9 +55,8 @@ export default async function DicaPage(
       <JsonLd
         data={articleLd({
           title: plain(tip.title),
-          description: tip.is_premium
-            ? `Dica Premium de ${tip.category}: ${plain(tip.title)}`
-            : truncateToSentence(tip.content, 155),
+          description: truncateToSentence(tip.content, 155),
+          paywalled: tip.is_premium,
           path: `/dicas-de-viagem/${tip.slug}`,
           createdAt: tip.created_at,
           updatedAt: tip.updated_at,
@@ -79,19 +77,7 @@ export default async function DicaPage(
         </h1>
 
         {tip.is_premium ? (
-          // ponytail: o conteúdo Premium nunca vai no HTML; assinante lê pelo
-          // modal em /dicas-de-viagem. Se quiser liberar aqui, checar assinatura no servidor.
-          <div className="mt-10 rounded-card border border-terracota/25 bg-branco p-6 sm:p-8">
-            <p className="font-serif text-xl text-tinta">
-              Esta anotação é exclusiva para assinantes Premium.
-            </p>
-            <Link
-              href="/premium"
-              className="mt-5 inline-block rounded-card bg-terracota px-5 py-3 text-sm font-semibold text-branco"
-            >
-              Conhecer o Premium
-            </Link>
-          </div>
+          <PremiumTipBody tipId={tip.id} teaser={tipTeaser(tip.content)} />
         ) : (
           <p className="mt-10 whitespace-pre-line text-left font-serif text-lg leading-[1.75] text-tinta sm:text-xl">
             {linkify(tip.content)}
