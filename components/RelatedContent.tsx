@@ -395,7 +395,9 @@ export default function RelatedContent(props: RelatedContentProps) {
   }, [reactiveKey]);
 
   if (loading) {
-    return <p className="text-sm text-oliva">Carregando recomendações...</p>;
+    // Só um espaço reservado, sem texto: rastreadores que leem o HTML antes do
+    // fetch terminar não devem indexar "Carregando...".
+    return <div aria-busy="true" className="min-h-24" />;
   }
 
   if (props.mode === "city") {
