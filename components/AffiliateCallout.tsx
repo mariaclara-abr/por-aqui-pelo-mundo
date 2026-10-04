@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
 import {
   ACHADINHOS,
   AFFILIATE_PROGRAMS,
@@ -257,6 +259,77 @@ export function RentcarsBanner() {
   );
 }
 
+// Destaque da Natura na página de dicas de viagem: linha completa de
+// cuidados, não só protetor solar.
+export function NaturaCard() {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "natura");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+  const href = program.buildUrl({ cityName: "" });
+  const categorias = [
+    "Proteção solar",
+    "Cuidados com a pele",
+    "Cabelo",
+    "Perfumaria",
+    "Corpo e banho",
+  ];
+
+  return (
+    <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
+      <div className="mx-auto grid max-w-[1240px] gap-8 rounded-xl bg-areia p-6 text-tinta sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-16 lg:p-16">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
+            Parceiro Por Aqui Pelo Mundo
+          </p>
+          <h2 className="mt-4 text-left font-serif text-3xl leading-tight sm:text-5xl">
+            Cuide de você <span className="text-terracota">em cada destino</span>
+          </h2>
+          <p className="mt-5 max-w-xl text-left text-base leading-relaxed text-oliva sm:text-lg">
+            Clima, sol e dias longos de passeio pedem atenção com a pele, o
+            cabelo e o bem-estar. Na loja da minha consultoria Natura você
+            encontra de proteção solar a perfumaria para montar a nécessaire da
+            viagem.
+          </p>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {categorias.map((c) => (
+              <li
+                key={c}
+                className="rounded-full border border-oliva/30 px-4 py-1.5 text-sm text-oliva"
+              >
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-xl bg-branco p-6 sm:p-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
+            Cupom de desconto
+          </p>
+          <p className="mt-2 text-left font-serif text-5xl leading-none text-terracota sm:text-6xl">
+            10%
+          </p>
+          <p className="mt-2 text-left text-sm text-oliva">de desconto com o cupom</p>
+          <p className="mt-3 rounded-lg border border-dashed border-terracota px-4 py-3 text-center font-serif text-xl tracking-[0.18em] text-tinta">
+            VIAJARDEZ
+          </p>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
+            className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+          >
+            {program.checklistCtaLabel}
+          </a>
+          <div className="mt-3">
+            <AffiliateTag />
+          </div>
+          <PoweredByBadge program={program} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // Versão fina do destaque Rentcars para a página inicial.
 export function RentcarsSlimBanner() {
   const program = AFFILIATE_PROGRAMS.find((p) => p.id === "rentcars");
@@ -338,6 +411,121 @@ export function EasySimSlimBanner() {
   );
 }
 
+// Protetor solar (Natura) na página de atração, só para passeios ao ar livre.
+export function SunscreenCallout({
+  attractionId,
+  context = "attraction_page",
+  className = "mt-8",
+}: {
+  attractionId?: string;
+  context?: string;
+  className?: string;
+}) {
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copying" | "copied" | "error">("idle");
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "natura");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+
+  async function handleCopyCoupon() {
+    setCopyStatus("copying");
+    try {
+      await navigator.clipboard.writeText("VIAJARDEZ");
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("error");
+    }
+  }
+
+  return (
+    <section className={`${className} overflow-hidden rounded-xl border border-oliva/20 bg-branco lg:grid lg:grid-cols-[minmax(0,1fr)_20rem]`}>
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-x-3 gap-y-3 bg-areia/55 p-5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-6 sm:p-6 lg:grid-cols-[10rem_minmax(0,1fr)] lg:gap-y-2 lg:p-8">
+        <Image
+          src="/natura-protecao-solar.webp"
+          alt=""
+          width={640}
+          height={640}
+          sizes="(min-width: 1024px) 160px, (min-width: 640px) 128px, 88px"
+          className="col-start-2 row-start-2 h-auto w-full sm:col-start-1 sm:row-start-1 sm:row-span-2"
+        />
+        <div className="col-span-2 col-start-1 row-start-1 min-w-0 sm:col-span-1 sm:col-start-2 sm:self-end">
+          <p className="text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-oliva sm:text-[11px]">
+            Natura · cuidado para a viagem
+          </p>
+          <h2 className="mt-2 whitespace-nowrap text-left font-serif text-base leading-tight tracking-tight text-tinta sm:text-2xl">
+            Não esqueça o protetor solar
+          </h2>
+        </div>
+        <p className="col-start-1 row-start-2 max-w-sm text-pretty text-left text-sm leading-relaxed text-oliva sm:col-start-2 sm:self-start">
+          Praia, trilha ou passeio ao ar livre: leve seu protetor solar e
+          aproveite cada destino com mais cuidado.
+        </p>
+      </div>
+      <div className="min-w-0 border-t border-dashed border-oliva/25 p-5 sm:p-6 lg:border-t-0 lg:border-l">
+        <p className="mb-3 text-left text-xs font-semibold text-oliva">
+          Exclusivo Por Aqui Pelo Mundo
+        </p>
+        <div className="flex items-center gap-3">
+          <p className="sr-only">{program.benefit}</p>
+          <p aria-hidden="true" className="text-left font-serif text-5xl leading-none tracking-tight text-terracota">
+            10<span className="text-3xl">%</span>
+          </p>
+          <p aria-hidden="true" className="text-left text-sm leading-snug text-oliva">
+            de desconto
+          </p>
+        </div>
+        <div className="mt-4 rounded-lg border border-dashed border-oliva/30 bg-areia/35 px-3 py-2.5">
+          <p className="text-left text-xs text-oliva">Use o cupom</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="select-all text-sm font-semibold tracking-[0.14em] text-tinta">
+              VIAJARDEZ
+            </span>
+            <button
+              type="button"
+              onClick={handleCopyCoupon}
+              disabled={copyStatus === "copying"}
+              aria-label="Copiar cupom VIAJARDEZ"
+              className="flex min-h-11 min-w-20 items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-semibold text-oliva transition-colors hover:bg-oliva/10 active:bg-oliva/15 disabled:opacity-60 motion-reduce:transition-none"
+            >
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0">
+                {copyStatus === "copied" ? (
+                  <path d="m4 10 4 4 8-8" strokeLinecap="round" strokeLinejoin="round" />
+                ) : (
+                  <>
+                    <rect x="7" y="7" width="10" height="10" rx="2" />
+                    <path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" strokeLinecap="round" />
+                  </>
+                )}
+              </svg>
+              {copyStatus === "copied" ? "Copiado" : copyStatus === "copying" ? "Copiando" : "Copiar"}
+            </button>
+          </div>
+          <p role="status" className={copyStatus === "error" ? "mt-1 text-left text-xs leading-relaxed text-tinta" : "sr-only"}>
+            {copyStatus === "copied"
+              ? "Cupom VIAJARDEZ copiado."
+              : copyStatus === "error"
+                ? "Não foi possível copiar. Selecione o código para copiá-lo manualmente."
+                : ""}
+          </p>
+        </div>
+        <a
+          href={program.buildUrl({ cityName: "" })}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={() => trackClick(program, attractionId, context)}
+          className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-oliva px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
+        >
+          {program.checklistCtaLabel}
+          <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0">
+            <path d="M4 10h12m-5-5 5 5-5 5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </a>
+        <p className="mt-3 text-left text-[11px] leading-relaxed text-oliva">
+          Link de afiliada, sem custo extra para você.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function AffiliateCallout({
   variant,
   location,
@@ -394,7 +582,9 @@ export default function AffiliateCallout({
         Um checklist rápido pra fechar os últimos detalhes da viagem.
       </p>
       <div className="mt-4 flex flex-col gap-2">
-        {AFFILIATE_PROGRAMS.map((program) => {
+        {[...AFFILIATE_PROGRAMS]
+          .sort((a, b) => Number(!!(b.isConfigured && b.buildUrl)) - Number(!!(a.isConfigured && a.buildUrl)))
+          .map((program) => {
           const href = program.isConfigured && program.buildUrl
             ? program.buildUrl(location)
             : null;
@@ -453,7 +643,7 @@ export default function AffiliateCallout({
                   onClick={() =>
                     trackClick(program, attractionId, "meu_roteiro_checklist")
                   }
-                  className="shrink-0 rounded-full bg-terracota px-4 py-1.5 text-xs font-medium text-white transition-colors after:absolute after:inset-0 after:content-[''] hover:bg-terracota/90"
+                  className="w-44 shrink-0 whitespace-nowrap rounded-full bg-terracota px-4 py-1.5 text-center text-xs font-medium text-white transition-colors after:absolute after:inset-0 after:content-[''] hover:bg-terracota/90"
                 >
                   {program.checklistCtaLabel ?? "Ver opções"}
                 </a>

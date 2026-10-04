@@ -4,7 +4,8 @@ export type AffiliateProgramId =
   | "safetywing"
   | "easysim"
   | "rentcars"
-  | "mercadolivre";
+  | "mercadolivre"
+  | "natura";
 
 export interface AffiliateLocation {
   cityName: string;
@@ -93,6 +94,16 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     isConfigured: true,
     // Link fixo de afiliada (Rejane). Novos achadinhos entram em ACHADINHOS.
     buildUrl: () => ACHADINHOS[0].href,
+  },
+  {
+    id: "natura",
+    label: "Natura",
+    checklistLabel: "Produtos Natura",
+    checklistCtaLabel: "Comprar com desconto",
+    benefit: "10% de desconto com o cupom VIAJARDEZ",
+    isConfigured: true,
+    // Link fixo da loja da consultora (Rejane), não depende do destino.
+    buildUrl: () => "https://www.minhaloja.natura.com/consultoria/rejaneabrantes",
   },
   {
     id: "rentcars",

@@ -74,6 +74,12 @@ export default function TravelTipsGrid({
         aria-label="Filtrar por categoria"
         className="mb-10 flex flex-wrap gap-2 sm:mb-12"
       >
+        <a
+          href="#afiliados"
+          className="rounded-full border border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota hover:text-white"
+        >
+          Afiliados
+        </a>
         {categories.map((category) => {
           const active = selected.includes(category);
           return (

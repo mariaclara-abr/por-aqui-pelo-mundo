@@ -21,6 +21,7 @@ import ProtectedContent from "@/components/ProtectedContent";
 import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
+import { SunscreenCallout } from "@/components/AffiliateCallout";
 import UpdatedAt from "@/components/UpdatedAt";
 import JsonLd, { attractionLd, breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import { linkify } from "@/components/Linkify";
@@ -141,6 +142,10 @@ export default async function AttractionPage(
   // Kingdom, que por sua vez tem seus restaurantes); senão, funciona como
   // uma cidade (lista atrações, ex: Magic Kingdom > Satu'li Canteen).
   const isContainer = childAttractions.length > 0;
+  const isOutdoor =
+    !attraction.categories.some((c) => ["restaurante", "cafe", "hotel"].includes(c)) &&
+    (attraction.categories.includes("natureza") ||
+      tags.some((tag) => tag.name === "Melhor em dias de sol"));
   const childrenWithChildren = isContainer
     ? await getAttractionIdsWithChildren(
         childAttractions.map((child) => child.id),
@@ -300,6 +305,10 @@ export default async function AttractionPage(
                 {linkify(attraction.description)}
               </p>
             </section>
+          )}
+
+          {!isContainer && isOutdoor && (
+            <SunscreenCallout attractionId={attraction.id} />
           )}
 
           {quickFacts.length > 0 && (
