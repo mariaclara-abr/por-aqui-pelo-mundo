@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { SiteReviewWithProfile } from "@/lib/queries";
 import SiteReviewSubmitForm from "@/components/SiteReviewSubmitForm";
-import { linkify } from "@/components/Linkify";
+import ReviewComment from "@/components/ReviewComment";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -103,9 +103,7 @@ export default function SiteReviewsSection({
                 </div>
                 <span className="sr-only">{`Avaliação: ${review.rating} de 5 estrelas`}</span>
 
-                <blockquote className="flex-1 whitespace-pre-line text-sm leading-relaxed text-tinta">
-                  &ldquo;{linkify(review.comment)}&rdquo;
-                </blockquote>
+                <ReviewComment text={review.comment} />
 
                 <figcaption className="flex items-center gap-3">
                   <ReviewerLink review={review}>
