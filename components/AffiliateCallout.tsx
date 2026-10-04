@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ACHADINHOS,
   AFFILIATE_PROGRAMS,
   type AffiliateLocation,
   type AffiliateProgram,
@@ -94,21 +95,21 @@ export function EasySimBanner() {
             >
               {program.checklistCtaLabel ?? "Ver opções"}
             </a>
-            <p className="mt-3">
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               <AffiliateTag />
-            </p>
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-oliva">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 20 20"
-                className="h-3.5 w-3.5 fill-none stroke-current"
-                strokeWidth={2}
-              >
-                <rect x="4" y="9" width="12" height="8" rx="2" />
-                <path d="M7 9V6a3 3 0 016 0v3" strokeLinecap="round" />
-              </svg>
-              Compra segura
-            </p>
+              <p className="flex items-center gap-1.5 text-xs text-oliva">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  className="h-3.5 w-3.5 fill-none stroke-current"
+                  strokeWidth={2}
+                >
+                  <rect x="4" y="9" width="12" height="8" rx="2" />
+                  <path d="M7 9V6a3 3 0 016 0v3" strokeLinecap="round" />
+                </svg>
+                Compra segura
+              </p>
+            </div>
             <PoweredByBadge program={program} />
           </div>
         </div>
@@ -147,6 +148,143 @@ export function EasySimBanner() {
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// Itens para sua viagem (Mercado Livre) na página de dicas de viagem.
+export function AchadinhosCard() {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "mercadolivre");
+  if (!program?.isConfigured) return null;
+
+  return (
+    <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
+      <div className="mx-auto max-w-[1240px] rounded-xl bg-areia p-6 text-tinta sm:p-10">
+        <p className="text-left text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
+          Parceiro Por Aqui Pelo Mundo
+        </p>
+        <h2 className="mt-3 text-left font-serif text-2xl leading-tight sm:text-4xl">
+          Itens para sua <span className="text-terracota">viagem</span>
+        </h2>
+        <p className="mt-4 max-w-2xl text-left text-sm leading-relaxed text-oliva sm:text-base">
+          Ao longo das minhas viagens, alguns itens acabam fazendo bastante
+          diferença no dia a dia. São produtos que ajudam a deixar a viagem
+          mais prática, organizada e confortável, seja na hora de montar a
+          mala, durante os passeios ou no próprio deslocamento.
+        </p>
+        <ul className="mt-6 flex flex-col gap-4">
+          {ACHADINHOS.map((item) => (
+            <li
+              key={item.href}
+              className="flex flex-col gap-4 rounded-lg bg-branco p-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <h3 className="text-left font-serif text-lg text-tinta">
+                  <span aria-hidden="true">🧳 </span>
+                  {item.name}
+                </h3>
+                <p className="mt-1 text-left text-sm leading-relaxed text-oliva">
+                  {item.description}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-start gap-2">
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
+                  className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+                >
+                  {program.checklistCtaLabel}
+                </a>
+                <AffiliateTag />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+// Destaque do parceiro Rentcars na página de dicas de viagem.
+export function RentcarsBanner() {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "rentcars");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+  const href = program.buildUrl({ cityName: "" });
+
+  return (
+    <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
+      <div className="mx-auto grid max-w-[1240px] gap-8 rounded-xl bg-oliva p-6 text-areia sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:p-16">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-areia/70">
+            Parceiro Por Aqui Pelo Mundo
+          </p>
+          <h2 className="mt-4 font-serif text-3xl leading-tight text-branco sm:text-5xl">
+            <span className="text-terracota">Alugue um carro</span> e viaje mais
+            tranquilo
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-areia/90 sm:text-lg">
+            Ter um carro à disposição dá liberdade para montar o roteiro no seu
+            ritmo, chegar a lugares de difícil acesso e se programar melhor
+            para estradas, estacionamentos e deslocamentos.
+          </p>
+        </div>
+        <div className="rounded-xl bg-areia p-5 text-tinta sm:p-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
+            Aluguel de carro
+          </p>
+          <p className="mt-2 text-left font-serif text-2xl leading-snug sm:text-3xl">
+            Reserve pela Rentcars
+          </p>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
+            className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+          >
+            {program.checklistCtaLabel ?? "Ver opções"}
+          </a>
+          <div className="mt-3">
+            <AffiliateTag />
+          </div>
+          <PoweredByBadge program={program} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Versão fina do destaque Rentcars para a página inicial.
+export function RentcarsSlimBanner() {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "rentcars");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+  const href = program.buildUrl({ cityName: "" });
+
+  return (
+    <section className="px-4 pb-10 pt-14 sm:px-6 sm:pb-12 sm:pt-20 lg:px-10">
+      <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-4 rounded-xl border border-oliva/25 bg-branco p-5 text-tinta sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-8">
+        <div>
+          <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-oliva">
+            Parceiro Por Aqui Pelo Mundo
+            <AffiliateTag />
+          </p>
+          <h2 className="mt-1 font-serif text-xl leading-tight text-tinta sm:text-2xl">
+            <span className="text-terracota">Alugue um carro</span> e viaje mais
+            tranquilo
+          </h2>
+        </div>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={() => trackClick(program, undefined, "home")}
+          className="shrink-0 self-center rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+        >
+          {program.checklistCtaLabel ?? "Ver opções"}
+        </a>
       </div>
     </section>
   );
@@ -264,9 +402,9 @@ export default function AffiliateCallout({
           return (
             <div
               key={program.id}
-              className={`flex items-center justify-between gap-3 rounded-lg border p-3 ${
+              className={`relative flex items-center justify-between gap-3 rounded-lg border p-3 ${
                 href
-                  ? "border-branco/20 bg-branco/10"
+                  ? "border-branco/20 bg-branco/10 transition-colors hover:bg-branco/15"
                   : "border-dashed border-branco/20 bg-branco/5"
               }`}
             >
@@ -315,7 +453,7 @@ export default function AffiliateCallout({
                   onClick={() =>
                     trackClick(program, attractionId, "meu_roteiro_checklist")
                   }
-                  className="shrink-0 rounded-full bg-terracota px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-terracota/90"
+                  className="shrink-0 rounded-full bg-terracota px-4 py-1.5 text-xs font-medium text-white transition-colors after:absolute after:inset-0 after:content-[''] hover:bg-terracota/90"
                 >
                   {program.checklistCtaLabel ?? "Ver opções"}
                 </a>

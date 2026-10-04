@@ -3,7 +3,8 @@ export type AffiliateProgramId =
   | "getyourguide"
   | "safetywing"
   | "easysim"
-  | "rentcars";
+  | "rentcars"
+  | "mercadolivre";
 
 export interface AffiliateLocation {
   cityName: string;
@@ -28,7 +29,18 @@ export interface AffiliateProgram {
 const bookingAffiliateId = process.env.NEXT_PUBLIC_BOOKING_AFFILIATE_ID;
 const getYourGuidePartnerId = process.env.NEXT_PUBLIC_GETYOURGUIDE_PARTNER_ID;
 
-// Booking.com, GetYourGuide e EasySim têm link real por enquanto. Os outros
+// Achadinhos recomendados pela curadoria, todos via link de afiliada do
+// Mercado Livre. Para adicionar um novo, basta incluir mais um item aqui.
+export const ACHADINHOS = [
+  {
+    name: "Sapatilha aquática",
+    description:
+      "Prática para praia, piscina, cachoeiras e passeios em que seja importante proteger os pés com mais conforto.",
+    href: "https://meli.la/2DuK8Kn",
+  },
+];
+
+// Booking.com, GetYourGuide, EasySim, Mercado Livre e Rentcars têm link real por enquanto. Os outros
 // ficam no checklist como "em breve": quando a conta de afiliado existir,
 // basta setar a env var e trocar isConfigured/buildUrl aqui, nenhuma outra
 // mudança de UI é necessária.
@@ -74,10 +86,23 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
       "https://www.easysim4u.com/?ref=HODESLJQ&utm_source=affiliate&utm_medium=referral&utm_campaign=poraquipelomundo&link_id=54",
   },
   {
+    id: "mercadolivre",
+    label: "Mercado Livre",
+    checklistLabel: "Sapatilha aquática",
+    checklistCtaLabel: "Ver no Mercado Livre",
+    isConfigured: true,
+    // Link fixo de afiliada (Rejane). Novos achadinhos entram em ACHADINHOS.
+    buildUrl: () => ACHADINHOS[0].href,
+  },
+  {
     id: "rentcars",
     label: "Rentcars",
     checklistLabel: "Aluguel de carro",
-    isConfigured: false,
+    checklistCtaLabel: "Alugar carro",
+    isConfigured: true,
+    // Link fixo e público da parceria, não depende do destino.
+    buildUrl: () =>
+      "https://www.rentcars.com?requestorid=11226&utm_source=www.poraquipelomundo.com&utm_medium=afiliado-banner",
   },
 ];
 

@@ -4,7 +4,7 @@ import { getTravelTips } from "@/lib/queries";
 import { getTipDestinations } from "@/lib/tip-destinations";
 import { withTeaser } from "@/lib/tip-teaser";
 import TravelTipsGrid from "@/components/TravelTipsGrid";
-import { EasySimBanner } from "@/components/AffiliateCallout";
+import { AchadinhosCard, EasySimBanner, RentcarsBanner } from "@/components/AffiliateCallout";
 import { buildOpenGraph } from "@/lib/metadata";
 
 export const revalidate = 60;
@@ -93,6 +93,8 @@ export default async function DicasDeViagemPage() {
       </section>
 
       <EasySimBanner />
+      <RentcarsBanner />
+      <AchadinhosCard />
     </main>
   );
 }

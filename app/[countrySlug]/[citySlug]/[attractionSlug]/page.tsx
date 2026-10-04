@@ -21,7 +21,6 @@ import ProtectedContent from "@/components/ProtectedContent";
 import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
-import AffiliateCallout from "@/components/AffiliateCallout";
 import UpdatedAt from "@/components/UpdatedAt";
 import JsonLd, { attractionLd, breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import { linkify } from "@/components/Linkify";
@@ -410,17 +409,6 @@ export default async function AttractionPage(
                   ]}
             </div>
           </section>
-        )}
-
-        {!isContainer && (
-          <AffiliateCallout
-            variant="attraction"
-            location={{
-              cityName: attraction.cities.name,
-              countryName: attraction.cities.countries.name,
-            }}
-            attractionId={attraction.id}
-          />
         )}
 
         <section className="relative left-1/2 mt-12 w-screen -translate-x-1/2 bg-oliva">
