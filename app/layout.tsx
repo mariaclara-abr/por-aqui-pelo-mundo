@@ -22,9 +22,9 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
-const HOME_TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
+const HOME_TITLE = "Roteiros de viagem em família feitos por quem esteve lá";
 const HOME_DESCRIPTION =
-  "Monte seu roteiro de viagem com atrações visitadas e avaliadas pessoalmente por Rejane Abrantes. Recomendações reais para famílias, sem lista genérica.";
+  "Roteiros e dicas de Disney, Europa, Dubai e Brasil, visitados e avaliados pessoalmente por Rejane Abrantes. Viagem com crianças e casal, sem lista genérica.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

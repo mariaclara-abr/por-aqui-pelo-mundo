@@ -20,6 +20,7 @@ export default function TravelTipsGrid({
   const { hasUnlockedTips } = useUserSubscription();
   const [openTip, setOpenTip] = useState<TravelTip | null>(null);
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
 
   function handleCardClick(tip: TravelTip) {
     if (tip.is_premium && !hasUnlockedTips) {
@@ -58,10 +59,44 @@ export default function TravelTipsGrid({
     return a.localeCompare(b, "pt-BR");
   });
 
+  function toggleCategory(category: string) {
+    setSelected((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category],
+    );
+  }
+
   return (
     <>
+      <div
+        role="group"
+        aria-label="Filtrar por categoria"
+        className="mb-10 flex flex-wrap gap-2 sm:mb-12"
+      >
+        {categories.map((category) => {
+          const active = selected.includes(category);
+          return (
+            <button
+              key={category}
+              type="button"
+              aria-pressed={active}
+              onClick={() => toggleCategory(category)}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                active
+                  ? "border-terracota bg-terracota text-white"
+                  : "border-oliva/40 text-oliva hover:border-oliva"
+              }`}
+            >
+              {category}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="flex flex-col">
         {categories.map((category, categoryIndex) => {
+          if (selected.length > 0 && !selected.includes(category)) return null;
           const categoryTips = tipsByCategory.get(category)!;
 
           return (

@@ -33,13 +33,13 @@ export async function generateMetadata(
   // "O que fazer na {País}: cidades e atrações" estoura 60 caracteres com o
   // sufixo do template para países de nome longo (ex: Estados Unidos), então
   // usamos uma forma mais compacta que cabe em qualquer nome de país.
-  const title = `${country.name}: o que fazer e onde ir`;
+  const title = `${country.name}: roteiro, o que fazer e dicas`;
 
   const cityCount = await getCityCountByCountry(countrySlug).catch(() => null);
   const description =
     cityCount !== null
-      ? `Guias de ${countLabel(cityCount, "cidade", "cidades")} ${withDe(country.name)} com atrações visitadas e avaliadas por quem esteve lá. Escolha um destino e monte seu roteiro.`
-      : `Guias de cidades ${withDe(country.name)} com atrações visitadas e avaliadas por quem esteve lá. Escolha um destino e monte seu roteiro.`;
+      ? `Guias de ${countLabel(cityCount, "cidade", "cidades")} ${withDe(country.name)} com roteiro, onde ir e o que fazer, visitadas e avaliadas por quem esteve lá. Ideal para viajar em família.`
+      : `Guias de cidades ${withDe(country.name)} com roteiro, onde ir e o que fazer, visitadas e avaliadas por quem esteve lá. Ideal para viajar em família.`;
 
   return {
     title,

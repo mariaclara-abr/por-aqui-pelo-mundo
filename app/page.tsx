@@ -15,12 +15,13 @@ import { EasySimSlimBanner, RentcarsSlimBanner } from "@/components/AffiliateCal
 import TravelTipsBand from "@/components/TravelTipsBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
 import { buildOpenGraph } from "@/lib/metadata";
+import JsonLd, { websiteLd } from "@/components/JsonLd";
 
 export const revalidate = 60;
 
-const TITLE = "Roteiros de viagem com curadoria de quem esteve lá";
+const TITLE = "Roteiros de viagem em família feitos por quem esteve lá";
 const DESCRIPTION =
-  "Monte seu roteiro de viagem com atrações visitadas e avaliadas pessoalmente por Rejane Abrantes. Recomendações reais para famílias, sem lista genérica.";
+  "Roteiros e dicas de Disney, Europa, Dubai e Brasil, visitados e avaliados pessoalmente por Rejane Abrantes. Viagem com crianças e casal, sem lista genérica.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -47,6 +48,7 @@ export default async function Home() {
 
   return (
     <main className="flex-1">
+      <JsonLd data={websiteLd(DESCRIPTION)} />
       <HeroSection counts={counts} />
       <DestinationGrid
         countries={publishedCountries}

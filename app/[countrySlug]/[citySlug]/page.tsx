@@ -23,9 +23,10 @@ import ComingSoonAttractionCard from "@/components/ComingSoonAttractionCard";
 import CityCard from "@/components/CityCard";
 import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import RelatedContent from "@/components/RelatedContent";
+import { buildCityFaq } from "@/lib/city-faq";
 import { getNearbyCities } from "@/lib/recommendations";
 import ExpandableText from "@/components/ExpandableText";
-import JsonLd, { breadcrumbLd, qaPageLd } from "@/components/JsonLd";
+import JsonLd, { breadcrumbLd, faqPageLd, qaPageLd } from "@/components/JsonLd";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
 import StateQuestionsSection from "@/components/state/QuestionsSection";
 import { buildOpenGraph, countLabel, joinNames } from "@/lib/metadata";
@@ -38,10 +39,10 @@ function firstValue(value: string | string[] | undefined) {
 // (cidades com nomes de atração longos), reduz até caber.
 function buildCityDescription(cityName: string, attractionNames: string[]) {
   for (let n = Math.min(3, attractionNames.length); n >= 1; n--) {
-    const candidate = `Atrações de ${cityName} com curadoria pessoal: ${joinNames(attractionNames.slice(0, n))}. Dicas reais de tempo de visita e melhor horário para cada uma.`;
+    const candidate = `O que fazer em ${cityName}: ${joinNames(attractionNames.slice(0, n))}. Roteiro com dicas de quem foi, para família e casal.`;
     if (candidate.length <= 160) return candidate;
   }
-  return `Atrações de ${cityName}, com curadoria pessoal de quem esteve lá. Dicas reais de tempo de visita e melhor horário para cada uma.`;
+  return `O que fazer em ${cityName}: roteiro com dicas de quem foi, para família e casal.`;
 }
 
 // Este segundo segmento da rota (ex: /brasil/santa-catarina ou
@@ -57,7 +58,7 @@ export async function generateMetadata(
   const city = await getCityBySlug(citySlug).catch(() => null);
 
   if (city && city.countries.slug === countrySlug) {
-    const title = `O que fazer em ${city.name}, ${city.countries.name}`;
+    const title = `O que fazer em ${city.name}, ${city.countries.name}: roteiro e dicas`;
 
     const attractions = await getAttractionNamesByCity(citySlug).catch(() => []);
     const description =
@@ -149,6 +150,9 @@ export default async function CityOrStatePage(
     );
 
     const qa = qaPageLd(questions, `/${countrySlug}/${citySlug}`);
+    // Só na listagem completa: com filtro ativo a lista não representa a cidade.
+    const faq = categories || tags ? [] : buildCityFaq(city.name, attractions);
+    const faqLd = faqPageLd(faq);
 
     return (
       <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
@@ -160,6 +164,7 @@ export default async function CityOrStatePage(
               { name: city.name, path: `/${countrySlug}/${citySlug}` },
             ]),
             ...(qa ? [qa] : []),
+            ...(faqLd ? [faqLd] : []),
           ]}
         />
         <div className="mx-auto max-w-[1440px]">
@@ -220,6 +225,22 @@ export default async function CityOrStatePage(
                   />
                 ))}
             </div>
+          )}
+
+          {faq.length > 0 && (
+            <section className="mt-12 border-t border-tinta/10 pt-8">
+              <h2 className="font-serif text-xl text-tinta">
+                Resumo rápido: {city.name}
+              </h2>
+              <dl className="mt-4 space-y-4">
+                {faq.map((item) => (
+                  <div key={item.question}>
+                    <dt className="font-medium text-tinta">{item.question}</dt>
+                    <dd className="mt-1 text-oliva">{item.answer}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
           )}
 
           <section className="mt-12 border-t border-tinta/10 pt-8">

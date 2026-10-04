@@ -117,3 +117,25 @@ export function qaPageLd(
     },
   };
 }
+
+/** FAQPage a partir de perguntas e respostas que também aparecem visíveis na página. */
+export function faqPageLd(items: { question: string; answer: string }[]): Json | null {
+  if (items.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((i) => ({
+      "@type": "Question",
+      name: i.question,
+      acceptedAnswer: { "@type": "Answer", text: i.answer },
+    })),
+  };
+}
+
+/** Home: identifica o site e a organização para buscadores e IAs. */
+export function websiteLd(description: string): Json[] {
+  return [
+    { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: SITE_URL, inLanguage: "pt-BR", description },
+    { "@context": "https://schema.org", "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+  ];
+}
