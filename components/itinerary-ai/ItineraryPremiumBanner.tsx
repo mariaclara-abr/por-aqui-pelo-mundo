@@ -1,9 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
+import AIRoteiroFlourishes from "@/components/AIRoteiroFlourishes";
 
 export default function ItineraryPremiumBanner() {
   return (
-    <section aria-labelledby="roteiro-ia-convite">
+    <section
+      id="experiencia-premium"
+      aria-labelledby="roteiro-ia-convite"
+      className="relative pt-24"
+    >
+      <AIRoteiroFlourishes variant="premium" />
       <Link
         href="/meu-roteiro/organizar-com-ia"
         aria-label="Organizar com IA"

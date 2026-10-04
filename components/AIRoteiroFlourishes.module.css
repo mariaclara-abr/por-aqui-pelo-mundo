@@ -1,0 +1,322 @@
+.flourishes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.flourishes[data-variant="premium"] {
+  z-index: 1;
+}
+
+.flight {
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  width: 13rem;
+  height: 4.5rem;
+}
+
+.trail {
+  width: 100%;
+  height: 100%;
+  opacity: 0.75;
+}
+
+.plane {
+  position: absolute;
+  top: -0.375rem;
+  right: 0.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  background: currentColor;
+  mask: url("/assets/simbolo.svg") center / contain no-repeat;
+  transform: rotate(45deg);
+}
+
+.sparkle {
+  position: absolute;
+  display: block;
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.topSparkle {
+  top: 0.25rem;
+  left: 6.5rem;
+  font-size: 1.5rem;
+}
+
+.smallSparkle {
+  top: 2.75rem;
+  right: 0;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.bottomStars {
+  display: none;
+  position: absolute;
+  right: 1rem;
+  bottom: 0.25rem;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.bottomSparkle {
+  top: 0;
+  right: 0;
+  font-size: 1.75rem;
+  opacity: 0.85;
+}
+
+.tinySparkle {
+  bottom: 0.25rem;
+  left: 0.25rem;
+  font-size: 1rem;
+  opacity: 0.65;
+}
+
+.flourishes[data-variant="premium"] .flight {
+  top: 1.5rem;
+  right: 1rem;
+}
+
+.flourishes[data-variant="premium"] .flight .plane {
+  top: 0.25rem;
+}
+
+.premiumOrbit {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: calc(100% - 2.5rem);
+  height: 8.5rem;
+  container-type: size;
+}
+
+.orbitPlane {
+  top: 0;
+  left: 0;
+  right: auto;
+  width: 2rem;
+  height: 2rem;
+  transform: translate(0.25rem, 0.25rem) rotate(70deg);
+}
+
+.orbitStarOne {
+  top: 0.5rem;
+  left: 0;
+  font-size: 1.75rem;
+}
+
+.orbitStarTwo {
+  top: 0;
+  right: 0;
+  font-size: 1.25rem;
+}
+
+.orbitStarThree {
+  top: 45%;
+  right: -0.25rem;
+  font-size: 1.75rem;
+}
+
+.orbitStarFour {
+  bottom: 0;
+  right: 20%;
+  font-size: 1.25rem;
+}
+
+.orbitStarFive {
+  bottom: 0;
+  left: 5%;
+  font-size: 1.5rem;
+}
+
+.orbitStarSix {
+  top: 45%;
+  left: 0;
+  font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+  .bottomStars {
+    display: block;
+  }
+}
+
+@media (min-width: 768px) {
+  .flourishes[data-variant="premium"] .flight {
+    right: 50%;
+  }
+
+  .premiumOrbit {
+    width: calc(100% / 2.2 - 2.5rem);
+    height: calc(100% - 8.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .flight {
+    top: -2rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .plane {
+    animation: plane-float 5s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+
+  .sparkle {
+    animation: sparkle-float 4s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+
+  .flourishes[data-visible="true"] .plane,
+  .flourishes[data-visible="true"] .sparkle {
+    animation-play-state: running;
+  }
+
+  .flourishes[data-variant="premium"] .flight .plane {
+    animation-name: premium-cruise;
+    animation-duration: 7s;
+  }
+
+  .topSparkle {
+    --float-y: -0.5rem;
+    --tilt: 12deg;
+  }
+
+  .smallSparkle,
+  .bottomSparkle {
+    --float-y: 0.5rem;
+    --tilt: -12deg;
+    animation-duration: 5.5s;
+  }
+
+  .tinySparkle {
+    --float-y: -0.375rem;
+    --tilt: 16deg;
+    animation-duration: 3.5s;
+  }
+
+  .premiumOrbit .sparkle {
+    --float-y: -0.375rem;
+    --tilt: 12deg;
+    animation-name: premium-shimmer;
+  }
+
+  .orbitStarTwo,
+  .orbitStarFive {
+    animation-duration: 5.5s;
+    animation-delay: -1.5s;
+  }
+
+  .orbitStarThree,
+  .orbitStarSix {
+    animation-duration: 6.5s;
+    animation-delay: -3s;
+  }
+
+  @supports (width: 1cqw) {
+    .orbitPlane {
+      animation-name: orbit-flight;
+      animation-duration: 16s;
+      animation-timing-function: linear;
+      animation-delay: -4s;
+    }
+  }
+}
+
+@keyframes plane-float {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(45deg);
+  }
+  35% {
+    transform: translate(-1.75rem, 0.5rem) rotate(30deg);
+  }
+  70% {
+    transform: translate(0.25rem, -0.75rem) rotate(55deg);
+  }
+}
+
+@keyframes sparkle-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0) scale(1);
+  }
+  25%,
+  75% {
+    transform: translateY(var(--float-y)) rotate(var(--tilt)) scale(1.15);
+  }
+  50% {
+    transform: translateY(0) rotate(0) scale(0.85);
+  }
+}
+
+@keyframes premium-cruise {
+  0% {
+    transform: translate(-8.5rem, 1.5rem) rotate(70deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-7.75rem, 0.25rem) rotate(20deg);
+  }
+  45% {
+    transform: translate(-6.5rem, 1.25rem) rotate(95deg);
+  }
+  70% {
+    transform: translate(-3.5rem, 0.75rem) rotate(45deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -0.75rem) rotate(70deg);
+    opacity: 0;
+  }
+}
+
+@keyframes premium-shimmer {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0) scale(0.85);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(var(--float-y)) rotate(var(--tilt)) scale(1.25);
+    opacity: 1;
+  }
+}
+
+@keyframes orbit-flight {
+  0% {
+    transform: translate(0.25rem, 0.25rem) rotate(70deg);
+  }
+  20% {
+    transform: translate(calc(100cqw - 2.25rem), 0.25rem) rotate(70deg);
+  }
+  30% {
+    transform: translate(calc(100cqw - 2.25rem), 0.75rem) rotate(160deg);
+  }
+  45% {
+    transform: translate(calc(100cqw - 2.25rem), calc(100cqh - 2.25rem)) rotate(160deg);
+  }
+  55% {
+    transform: translate(calc(100cqw - 2.75rem), calc(100cqh - 2.25rem)) rotate(250deg);
+  }
+  75% {
+    transform: translate(0.25rem, calc(100cqh - 2.25rem)) rotate(250deg);
+  }
+  85% {
+    transform: translate(0.25rem, calc(100cqh - 2.75rem)) rotate(340deg);
+  }
+  100% {
+    transform: translate(0.25rem, 0.25rem) rotate(430deg);
+  }
+}

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
+import AIRoteiroFlourishes from "./AIRoteiroFlourishes";
 
 const differentials = [
   {
@@ -47,11 +48,13 @@ export default function AIRoteiroBand() {
       <div className="relative mx-auto max-w-[1440px]">
         <div className="grid items-center gap-9 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12 xl:gap-16">
           <motion.div
+            className="relative pt-16 lg:pt-10"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: "easeOut" }}
           >
+            <AIRoteiroFlourishes />
             <p className="text-left text-xs font-medium tracking-wide text-areia sm:text-sm">
               Seu planejador de viagens com IA
             </p>
