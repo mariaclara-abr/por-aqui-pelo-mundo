@@ -330,34 +330,73 @@ export function NaturaCard() {
   );
 }
 
-// Versão fina do destaque Rentcars para a página inicial.
+// Destaque editorial da Rentcars na página inicial.
 export function RentcarsSlimBanner() {
   const program = AFFILIATE_PROGRAMS.find((p) => p.id === "rentcars");
   if (!program?.isConfigured || !program.buildUrl) return null;
   const href = program.buildUrl({ cityName: "" });
 
   return (
-    <section className="px-4 pb-10 pt-14 sm:px-6 sm:pb-12 sm:pt-20 lg:px-10">
-      <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-4 rounded-xl border border-oliva/25 bg-branco p-5 text-tinta sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-8">
-        <div>
-          <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-oliva">
-            Parceiro Por Aqui Pelo Mundo
-            <AffiliateTag />
-          </p>
-          <h2 className="mt-1 font-serif text-xl leading-tight text-tinta sm:text-2xl">
-            <span className="text-terracota">Alugue um carro</span> e viaje mais
-            tranquilo
+    <section aria-labelledby="rentcars-home-title" className="overflow-hidden bg-branco px-4 py-14 text-tinta sm:px-6 sm:py-20 lg:px-10">
+      <div className="mx-auto grid max-w-[1440px] items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="min-w-0 max-w-xl lg:order-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="text-2xl font-semibold tracking-tight text-oliva">
+              {program.label}
+            </span>
+            <span aria-hidden="true" className="hidden h-5 w-px bg-oliva/25 sm:block" />
+            <p className="text-left text-xs font-medium text-oliva">
+              Parceira Por Aqui Pelo Mundo
+            </p>
+          </div>
+          <h2 id="rentcars-home-title" className="mt-5 text-balance font-serif text-3xl leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+            Aluguel de carro para a <span className="text-terracota">sua viagem</span>
           </h2>
+          <p className="mt-5 max-w-lg text-left text-base leading-7 text-oliva">
+            Pesquise as opções de aluguel para o seu destino e faça a reserva
+            diretamente na Rentcars, nossa parceira para viajar de carro.
+          </p>
+          <p className="mt-6 text-sm font-semibold text-terracota">
+            A maior plataforma de aluguel de carros online da América Latina
+          </p>
+          <dl className="mt-4 grid max-w-lg grid-cols-3 gap-4 border-y border-oliva/20 py-4">
+            {[
+              ["160+", "países"],
+              ["300+", "locadoras comparadas"],
+              ["Desde 2009", "no mercado"],
+            ].map(([valor, rotulo]) => (
+              <div key={rotulo}>
+                <dt className="font-serif text-xl leading-none text-tinta sm:text-2xl">{valor}</dt>
+                <dd className="mt-1.5 text-xs leading-snug text-oliva">{rotulo}</dd>
+              </div>
+            ))}
+          </dl>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => trackClick(program, undefined, "home")}
+            className="group mt-7 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-oliva px-6 py-3.5 text-center text-sm font-semibold text-branco transition-colors duration-200 hover:bg-tinta active:bg-tinta motion-reduce:transition-none sm:w-auto"
+          >
+            Ver carros na {program.label}
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:translate-x-1">
+              <path d="M5 15 15 5M5 5h10v10" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+          <p className="mt-4 max-w-lg text-left text-xs leading-relaxed text-oliva">
+            Link de afiliada. Sem custo extra para você.
+          </p>
         </div>
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          onClick={() => trackClick(program, undefined, "home")}
-          className="shrink-0 self-center rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
-        >
-          {program.checklistCtaLabel ?? "Ver opções"}
-        </a>
+        <div className="mx-auto w-full max-w-xl lg:order-1 lg:max-w-none">
+          <Image
+            src="/rentcars-viagem.webp"
+            alt=""
+            width={960}
+            height={640}
+            sizes="(min-width: 1520px) 688px, (min-width: 1024px) 46vw, (min-width: 640px) 576px, calc(100vw - 32px)"
+            className="h-auto w-full object-contain"
+          />
+        </div>
       </div>
     </section>
   );
