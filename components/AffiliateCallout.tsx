@@ -359,10 +359,9 @@ export function RentcarsSlimBanner() {
           <p className="mt-6 text-sm font-semibold text-terracota">
             A maior plataforma de aluguel de carros online da América Latina
           </p>
-          <dl className="mt-4 grid max-w-lg grid-cols-3 gap-4 border-y border-oliva/20 py-4">
+          <dl className="mt-4 grid max-w-lg grid-cols-2 gap-4 border-y border-oliva/20 py-4">
             {[
               ["160+", "países"],
-              ["300+", "locadoras comparadas"],
               ["Desde 2009", "no mercado"],
             ].map(([valor, rotulo]) => (
               <div key={rotulo}>
@@ -415,8 +414,12 @@ export function EasySimSlimBanner() {
           <div
             role="img"
             aria-label="40% de desconto com o cupom Poraquipelomundo"
-            className="flex h-16 w-16 shrink-0 -rotate-6 flex-col items-center justify-center rounded-full bg-terracota text-white"
+            className="relative flex h-16 w-16 shrink-0 -rotate-6 flex-col items-center justify-center rounded-full bg-terracota text-white"
           >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-1.5 animate-spin rounded-full border-2 border-dashed border-areia/70 [animation-duration:14s] motion-reduce:animate-none"
+            />
             <span className="font-serif text-2xl leading-none">40%</span>
             <span className="text-[9px] font-semibold uppercase tracking-wider">
               off
