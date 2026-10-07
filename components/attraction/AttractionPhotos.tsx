@@ -211,7 +211,30 @@ export default function AttractionPhotos({
 
   return (
     <>
-      <div className="flex flex-col gap-2">
+      {/* Mobile: fotos vistas uma a uma, arrastando com o dedo (scroll-snap nativo) */}
+      <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 sm:hidden">
+        {photos.map((photo, index) => (
+          <button
+            key={photo.id}
+            type="button"
+            onClick={() => setGalleryOpen(true)}
+            aria-label={photo.caption ?? `Foto ${index + 1}`}
+            className="relative aspect-[4/3] w-full shrink-0 snap-center overflow-hidden rounded-xl bg-branco"
+          >
+            <Image
+              src={photo.url}
+              alt={index === 0 ? attractionName : ""}
+              fill
+              sizes="100vw"
+              preload={index === 0}
+              className="object-cover"
+              style={imagePositionStyle(parseImagePosition(photo.position))}
+            />
+          </button>
+        ))}
+      </div>
+
+      <div className="hidden flex-col gap-2 sm:flex">
         <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-branco">
           <Image
             src={photos[0].url}
