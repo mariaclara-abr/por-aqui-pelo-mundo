@@ -12,6 +12,108 @@ type Photo = Database["public"]["Tables"]["attraction_photos"]["Row"];
 // página antes de precisar abrir a galeria completa.
 const PREVIEW_COUNT = 3;
 
+function FocusedPhotoTrack({
+  photos,
+  index,
+  attractionName,
+  onIndexChange,
+  onTap,
+}: {
+  photos: Photo[];
+  index: number;
+  attractionName: string;
+  onIndexChange: (index: number) => void;
+  onTap: () => void;
+}) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+  const [animate, setAnimate] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const dragged = useRef(false);
+  const pendingDirection = useRef<0 | 1 | -1>(0);
+
+  const prevIndex = (index - 1 + photos.length) % photos.length;
+  const nextIndex = (index + 1) % photos.length;
+
+  function handleTouchStart(event: TouchEvent) {
+    touchStartX.current = event.touches[0].clientX;
+    dragged.current = false;
+    setAnimate(false);
+  }
+
+  function handleTouchMove(event: TouchEvent) {
+    if (touchStartX.current === null || photos.length < 2) return;
+    const delta = event.touches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > 5) dragged.current = true;
+    setOffset(delta);
+  }
+
+  function handleTouchEnd(event: TouchEvent) {
+    if (touchStartX.current === null) return;
+    const delta = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    const viewportWidth = viewportRef.current?.offsetWidth ?? 0;
+    const SWIPE_THRESHOLD = 50;
+
+    setAnimate(true);
+    if (Math.abs(delta) > SWIPE_THRESHOLD && viewportWidth > 0 && photos.length > 1) {
+      pendingDirection.current = delta < 0 ? 1 : -1;
+      setOffset(delta < 0 ? -viewportWidth : viewportWidth);
+    } else {
+      pendingDirection.current = 0;
+      setOffset(0);
+      if (!dragged.current) onTap();
+    }
+  }
+
+  function handleTransitionEnd() {
+    if (pendingDirection.current !== 0) {
+      onIndexChange(pendingDirection.current === 1 ? nextIndex : prevIndex);
+    }
+    pendingDirection.current = 0;
+    setAnimate(false);
+    setOffset(0);
+  }
+
+  return (
+    <div
+      ref={viewportRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onClick={() => {
+        if (!dragged.current) onTap();
+      }}
+      className="relative h-full w-full overflow-hidden"
+    >
+      <div
+        onTransitionEnd={handleTransitionEnd}
+        className="flex h-full"
+        style={{
+          width: "300%",
+          transform: `translate3d(calc(-100%/3 + ${offset}px), 0, 0)`,
+          transition: animate ? "transform 280ms ease-out" : "none",
+        }}
+      >
+        {[prevIndex, index, nextIndex].map((photoIndex, slot) => {
+          const photo = photos[photoIndex];
+          return (
+            <div key={`${photo.id}-${slot}`} className="relative h-full w-1/3 shrink-0">
+              <Image
+                src={photo.url}
+                alt={photo.caption ?? attractionName}
+                fill
+                sizes="100vw"
+                className="rounded-lg object-contain"
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function PhotoGalleryOverlay({
   photos,
   attractionName,
@@ -73,27 +175,6 @@ function PhotoGalleryOverlay({
     setFocusedIndex((current) =>
       current === null ? current : (current + 1) % photos.length,
     );
-  }
-
-  const touchStartX = useRef<number | null>(null);
-
-  function handleTouchStart(event: TouchEvent) {
-    touchStartX.current = event.touches[0].clientX;
-  }
-
-  function handleTouchEnd(event: TouchEvent) {
-    if (touchStartX.current === null) return;
-    const deltaX = event.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-
-    const SWIPE_THRESHOLD = 40;
-    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
-    setFocusedIndex((current) => {
-      if (current === null) return current;
-      return deltaX < 0
-        ? (current + 1) % photos.length
-        : (current - 1 + photos.length) % photos.length;
-    });
   }
 
   return (
@@ -163,19 +244,14 @@ function PhotoGalleryOverlay({
               ✕
             </button>
           </div>
-          <div
-            onClick={() => setFocusedIndex(null)}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            className="relative flex flex-1 items-center justify-center overflow-hidden px-4 pb-2"
-          >
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 pb-2">
             {photos.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={goToPrev}
                   aria-label="Foto anterior"
-                  className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-xl text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:left-4"
+                  className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-xl text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:left-4"
                 >
                   ‹
                 </button>
@@ -183,19 +259,18 @@ function PhotoGalleryOverlay({
                   type="button"
                   onClick={goToNext}
                   aria-label="Próxima foto"
-                  className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-xl text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:right-4"
+                  className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-xl text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:right-4"
                 >
                   ›
                 </button>
               </>
             )}
-            <Image
-              src={focusedPhoto.url}
-              alt={focusedPhoto.caption ?? attractionName}
-              onClick={(event) => event.stopPropagation()}
-              fill
-              sizes="100vw"
-              className="rounded-lg object-contain"
+            <FocusedPhotoTrack
+              photos={photos}
+              index={focusedIndex!}
+              attractionName={attractionName}
+              onIndexChange={setFocusedIndex}
+              onTap={() => setFocusedIndex(null)}
             />
           </div>
           {focusedPhoto.caption && (
