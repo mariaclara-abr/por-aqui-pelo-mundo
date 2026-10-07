@@ -730,7 +730,7 @@ export default function OrganizarComIAClient({
                 {
                   value: "current" as const,
                   label: "Partir do meu roteiro",
-                  description: `${attractions.length} ${attractions.length === 1 ? "lugar" : "lugares"} em ${cityCount} ${cityCount === 1 ? "cidade" : "cidades"}, organizados pela IA.`,
+                  description: `${attractions.length} ${attractions.length === 1 ? "lugar" : "lugares"} em ${cityCount} ${cityCount === 1 ? "cidade" : "cidades"} organizados, + sugestões da IA.`,
                 },
                 {
                   value: "scratch" as const,
