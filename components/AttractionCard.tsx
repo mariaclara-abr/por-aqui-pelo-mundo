@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Database } from "@/types/database";
 import { categoryLabels } from "@/types/database";
 import RoteiroButton from "@/components/RoteiroButton";
+import PriceRange from "@/components/PriceRange";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
 type Attraction = Database["public"]["Tables"]["attractions"]["Row"] & {
@@ -26,6 +27,7 @@ export default function AttractionCard({
   )[0];
   const tags = attraction.attraction_tags.map((entry) => entry.tags);
   const categoryLabel = categoryLabels(attraction.categories);
+  const hasPrice = attraction.price_range != null;
 
   return (
     <div className="group relative">
@@ -59,9 +61,14 @@ export default function AttractionCard({
           <h2 className="truncate font-serif text-lg text-tinta transition-colors group-hover:text-terracota">
             {attraction.name}
           </h2>
-          {tags.length > 0 && (
+          {(hasPrice || tags.length > 0) && (
             <div className="mt-2 flex flex-wrap gap-1">
-              {tags.slice(0, 3).map((tag) => (
+              {hasPrice && (
+                <span className="rounded-full border border-oliva/25 bg-branco px-2 py-0.5 text-xs text-oliva">
+                  <PriceRange value={attraction.price_range} showLabel={false} />
+                </span>
+              )}
+              {tags.slice(hasPrice ? 1 : 0, 3).map((tag) => (
                 <span
                   key={tag.id}
                   className="rounded-full border border-oliva/25 bg-branco px-2 py-0.5 text-xs text-oliva"
