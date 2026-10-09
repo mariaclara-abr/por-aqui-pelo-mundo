@@ -1,7 +1,7 @@
 export type AffiliateProgramId =
   | "booking"
   | "getyourguide"
-  | "safetywing"
+  | "realseguroviagem"
   | "easysim"
   | "rentcars"
   | "mercadolivre"
@@ -41,7 +41,8 @@ export const ACHADINHOS = [
   },
 ];
 
-// Booking.com, GetYourGuide, EasySim, Mercado Livre e Rentcars têm link real por enquanto. Os outros
+// Booking.com, GetYourGuide, EasySim, Mercado Livre, Rentcars e Real Seguro
+// Viagem têm link real por enquanto. Os outros
 // ficam no checklist como "em breve": quando a conta de afiliado existir,
 // basta setar a env var e trocar isConfigured/buildUrl aqui, nenhuma outra
 // mudança de UI é necessária.
@@ -69,10 +70,16 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
       )}&partner_id=${getYourGuidePartnerId}`,
   },
   {
-    id: "safetywing",
-    label: "SafetyWing",
+    id: "realseguroviagem",
+    label: "Real Seguro Viagem",
     checklistLabel: "Seguro viagem",
-    isConfigured: false,
+    attractionCtaLabel: "Seguro viagem para o destino",
+    checklistCtaLabel: "Compare seu seguro viagem",
+    benefit: "10% de desconto com o cupom poraquipelomundo",
+    isConfigured: true,
+    // Link fixo e público da parceria, não depende do destino.
+    buildUrl: () =>
+      "https://www.seguroviagem.srv.br/?ag=TDLIA8aIRR&lead_tag=poraquipelomundosite",
   },
   {
     id: "easysim",

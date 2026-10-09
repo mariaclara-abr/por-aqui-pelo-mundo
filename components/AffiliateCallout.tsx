@@ -259,6 +259,58 @@ export function RentcarsBanner() {
   );
 }
 
+// Destaque do parceiro Real Seguro Viagem na página de dicas de viagem.
+export function SeguroViagemBanner() {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "realseguroviagem");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+  const href = program.buildUrl({ cityName: "" });
+
+  return (
+    <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
+      <div className="mx-auto grid max-w-[1240px] gap-8 rounded-xl bg-areia p-6 text-tinta sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-16 lg:p-16">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
+            Parceiro Por Aqui Pelo Mundo
+          </p>
+          <h2 className="mt-4 text-left font-serif text-3xl leading-tight sm:text-5xl">
+            Viaje tranquilo com <span className="text-terracota">seguro viagem</span>
+          </h2>
+          <p className="mt-5 max-w-xl text-left text-base leading-relaxed text-oliva sm:text-lg">
+            Compare opções de seguro viagem de diferentes seguradoras e escolha
+            a cobertura que melhor atende à sua viagem. O pagamento pode ser
+            feito por cartão, Pix ou boleto.
+          </p>
+        </div>
+        <div className="rounded-xl bg-branco p-6 sm:p-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
+            Cupom de desconto
+          </p>
+          <p className="mt-2 text-left font-serif text-5xl leading-none text-terracota sm:text-6xl">
+            10%
+          </p>
+          <p className="mt-2 text-left text-sm text-oliva">de desconto com o cupom</p>
+          <p className="mt-3 rounded-lg border border-dashed border-terracota px-4 py-3 text-center font-serif text-xl tracking-[0.18em] text-tinta">
+            poraquipelomundo
+          </p>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
+            className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+          >
+            {program.checklistCtaLabel}
+          </a>
+          <div className="mt-3">
+            <AffiliateTag />
+          </div>
+          <PoweredByBadge program={program} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // Destaque da Natura na página de dicas de viagem: linha completa de
 // cuidados, não só protetor solar.
 export function NaturaCard() {
@@ -435,6 +487,54 @@ export function EasySimSlimBanner() {
               eSIM ou chip físico
             </h2>
             <p className="text-left mt-1 text-sm text-areia/80">
+              {program.benefit}
+            </p>
+          </div>
+        </div>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={() => trackClick(program, undefined, "home")}
+          className="shrink-0 self-center rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+        >
+          {program.checklistCtaLabel ?? "Ver opções"}
+        </a>
+      </div>
+    </section>
+  );
+}
+
+// Versão fina do destaque Real Seguro Viagem para a página inicial.
+export function SeguroViagemSlimBanner() {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "realseguroviagem");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+  const href = program.buildUrl({ cityName: "" });
+
+  return (
+    <section className="px-4 py-8 sm:px-6 lg:px-10">
+      <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-4 rounded-xl bg-areia p-5 text-tinta sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-8">
+        <div className="flex items-center gap-4">
+          <div
+            role="img"
+            aria-label="10% de desconto com o cupom poraquipelomundo"
+            className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-full bg-terracota text-white"
+          >
+            <span className="font-serif text-2xl leading-none">10%</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider">
+              off
+            </span>
+          </div>
+          <div>
+            <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-oliva">
+              Real Seguro Viagem: parceiro Por Aqui Pelo Mundo
+              <AffiliateTag />
+            </p>
+            <h2 className="mt-1 font-serif text-xl leading-tight text-tinta sm:text-2xl">
+              Compare o <span className="text-terracota">seguro viagem</span>{" "}
+              ideal para a sua viagem
+            </h2>
+            <p className="mt-1 text-left text-sm text-oliva">
               {program.benefit}
             </p>
           </div>
