@@ -9,7 +9,7 @@ function toHref(match: string) {
 // Interpreta um texto vindo da curadoria (nunca HTML): reconhece apenas
 // **negrito**, *itálico*, __sublinhado__ e URLs, mantendo o resto como
 // texto puro.
-export function linkify(text: string, linkClassName = "text-terracota underline-offset-2 hover:underline"): ReactNode[] {
+export function linkify(text: string, linkClassName = "break-all text-terracota underline-offset-2 hover:underline"): ReactNode[] {
   const parts = text.split(TOKEN_PATTERN);
 
   return parts.map((part, index) => {
