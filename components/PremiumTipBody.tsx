@@ -20,7 +20,21 @@ export default function PremiumTipBody({ tipId, teaser }: { tipId: string; tease
       .catch(() => {});
   }, [hasUnlockedTips, tipId]);
 
-  if (full) return <p className={`mt-10 ${BODY}`}>{linkify(full)}</p>;
+  if (full)
+    return (
+      <div className="mt-10 rounded-card border border-terracota/50 p-1.5">
+        <div className="rounded-[8px] border border-terracota/25 bg-branco/60 px-5 pb-8 pt-6 sm:px-9">
+          <div className="flex items-center gap-3 text-terracota">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-terracota px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-branco">
+              <span aria-hidden="true">★</span> Dica Premium
+            </span>
+            <span className="h-px flex-1 bg-terracota/30" aria-hidden="true" />
+          </div>
+          <p className="mt-2 text-xs text-oliva">Conteúdo completo, liberado para você.</p>
+          <p className={`mt-6 ${BODY}`}>{linkify(full)}</p>
+        </div>
+      </div>
+    );
 
   return (
     <>

@@ -151,6 +151,7 @@ export default function TravelTipsGrid({
           title={openTip.title}
           content={openTip.content}
           category={openTip.category}
+          isPremium={openTip.is_premium}
           destinations={destinations[openTip.id] ?? []}
           onClose={() => setOpenTip(null)}
         />

@@ -12,12 +12,14 @@ export default function TravelTipModal({
   content,
   category,
   destinations,
+  isPremium = false,
   onClose,
 }: {
   title: string;
   content: string;
   category: string;
   destinations: TipDestination[];
+  isPremium?: boolean;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -44,10 +46,17 @@ export default function TravelTipModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="travel-tip-modal-title"
-        className="relative flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-t-2xl border border-tinta/10 bg-areia shadow-[0_24px_70px_rgba(43,38,32,0.28)] sm:rounded-2xl"
+        className={`relative flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-t-2xl bg-areia shadow-[0_24px_70px_rgba(43,38,32,0.28)] sm:rounded-2xl ${
+          isPremium ? "border-2 border-terracota ring-4 ring-inset ring-areia outline outline-1 -outline-offset-8 outline-terracota/40" : "border border-tinta/10"
+        }`}
       >
-        <div className="flex shrink-0 items-start justify-between gap-6 border-b border-tinta/10 bg-oliva px-5 py-5 text-areia sm:px-7 sm:py-6">
+        <div className={`flex shrink-0 items-start justify-between gap-6 border-b border-tinta/10 px-5 py-5 text-areia sm:px-7 sm:py-6 ${isPremium ? "bg-terracota" : "bg-oliva"}`}>
           <div>
+            {isPremium && (
+              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-areia px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-terracota">
+                <span aria-hidden="true">★</span> Dica Premium
+              </span>
+            )}
             <p className="text-left text-[10px] font-semibold uppercase tracking-[0.2em] text-areia/65">
               {category}
             </p>
@@ -69,6 +78,12 @@ export default function TravelTipModal({
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-7 sm:px-8 sm:py-9">
+          {isPremium && (
+            <p className="mb-5 flex items-center gap-3 text-xs text-oliva">
+              <span>Conteúdo completo, liberado para você</span>
+              <span className="h-px flex-1 bg-terracota/30" aria-hidden="true" />
+            </p>
+          )}
           <ProtectedContent>
             <p className="whitespace-pre-line text-left font-serif text-lg leading-[1.75] text-tinta sm:text-xl">
               {linkify(content)}
