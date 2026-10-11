@@ -74,7 +74,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     label: "Real Seguro Viagem",
     checklistLabel: "Seguro viagem",
     attractionCtaLabel: "Seguro viagem para o destino",
-    checklistCtaLabel: "Compare seu seguro viagem",
+    checklistCtaLabel: "Contratar com desconto",
     benefit: "10% de desconto com o cupom poraquipelomundo",
     isConfigured: true,
     // Link fixo e público da parceria, não depende do destino.

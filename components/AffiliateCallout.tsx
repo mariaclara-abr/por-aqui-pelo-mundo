@@ -27,8 +27,8 @@ function trackClick(program: AffiliateProgram, attractionId?: string, context?: 
 
 function PoweredByBadge({ program }: { program: AffiliateProgram }) {
   return (
-    <p className="mt-2 text-[11px] leading-snug text-oliva/80">
-      🔗 Powered by {program.label}, sem custo extra pra você.
+    <p className="mt-2 text-left text-xs leading-relaxed text-oliva">
+      Parceria com {program.label}. Sem custo extra para você.
     </p>
   );
 }
@@ -42,6 +42,75 @@ function AffiliateTag({ light = false }: { light?: boolean }) {
     >
       link de afiliada
     </span>
+  );
+}
+
+// Assinatura do parceiro: o nome da empresa vem sempre antes, para ficar claro
+// de quem é a oferta em qualquer card de afiliada.
+function AffiliateEyebrow({
+  program,
+  light = false,
+}: {
+  program: AffiliateProgram;
+  light?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+      <p className={`text-left text-xl font-semibold tracking-tight sm:text-2xl ${light ? "text-branco" : "text-oliva"}`}>
+        {program.label}
+      </p>
+      <span aria-hidden="true" className={`hidden h-5 w-px sm:block ${light ? "bg-areia/30" : "bg-oliva/25"}`} />
+      <span className={`text-[10px] font-medium uppercase leading-relaxed tracking-[0.14em] ${light ? "text-areia" : "text-oliva"}`}>
+        Parceiro Por Aqui Pelo Mundo
+      </span>
+    </div>
+  );
+}
+
+// Cupom com botão de copiar, usado nos cards de parceiros que têm desconto.
+function CouponCode({ code, light = false }: { code: string; light?: boolean }) {
+  const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setStatus("copied");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className={`mt-4 min-w-0 rounded-lg border px-3 py-2 ${light ? "border-areia/40 text-branco" : "border-oliva/30 bg-branco/60 text-tinta"}`}>
+      <p className={`text-left text-[11px] ${light ? "text-areia" : "text-oliva"}`}>Use o cupom</p>
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+        <span className="min-w-0 select-all break-all font-mono text-sm font-medium tracking-tight">
+          {code}
+        </span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          aria-label={`Copiar cupom ${code}`}
+          className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-md px-2 text-xs font-semibold transition-colors motion-reduce:transition-none ${light ? "text-branco hover:bg-branco/10 active:bg-branco/15 focus-visible:outline-areia" : "text-oliva hover:bg-oliva/10 active:bg-oliva/15"}`}
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="h-4 w-4 shrink-0"
+          >
+            <rect x="7" y="7" width="9" height="9" rx="2" />
+            <path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+          </svg>
+          {status === "copied" ? "Copiado" : "Copiar"}
+        </button>
+      </div>
+      <p role="status" className={status === "error" ? "mt-1 text-left text-xs leading-relaxed" : "sr-only"}>
+        {status === "copied" ? `Cupom ${code} copiado.` : status === "error" ? "Selecione o código para copiá-lo manualmente." : ""}
+      </p>
+    </div>
   );
 }
 
@@ -63,92 +132,55 @@ export function EasySimBanner() {
     <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
       <div className="mx-auto grid max-w-[1240px] gap-10 rounded-xl bg-oliva p-6 text-areia sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:p-16">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-areia/70">
-            Parceiro Por Aqui Pelo Mundo
-          </p>
-          <h2 className="mt-4 font-serif text-3xl leading-tight text-branco sm:text-5xl">
-            Internet no <span className="text-terracota">exterior</span>,
-            sem complicação
+          <AffiliateEyebrow program={program} light />
+          <h2 className="mt-6 text-balance font-serif text-3xl leading-tight tracking-tight text-branco sm:text-5xl">
+            Sua viagem conectada com a EasySim
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-areia/90 sm:text-lg">
-            Ter internet durante uma viagem facilita muito a rotina: ajuda com
-            mapas, reservas, transporte, mensagens, traduções e pesquisas
-            durante os passeios.
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-areia/80 sm:text-base">
-            A EasySim oferece internet para viagens internacionais de forma
-            prática, segura e sem complicação, com opções que podem atender
-            diferentes perfis de viajantes.
+          <p className="mt-5 max-w-lg text-left text-base leading-7 text-areia">
+            Mapas, reservas e mensagens sempre à mão. Escolha um eSIM ou chip
+            físico da EasySim para usar internet no exterior.
           </p>
 
-          <div className="mt-8 rounded-xl bg-areia p-5 text-tinta sm:p-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
-              Benefício exclusivo
+          <div className="mt-7 max-w-lg border-t border-areia/30 pt-6">
+            <p className="flex items-baseline gap-3 text-left text-areia">
+              <span className="font-serif text-5xl leading-none text-branco">40%</span>
+              <span className="text-sm">de desconto com o cupom</span>
             </p>
-            <p className="text-left mt-2 text-left font-serif text-2xl leading-snug sm:text-3xl">
-              {program.benefit}
-            </p>
+            <CouponCode code="Poraquipelomundo" light />
             <a
               href={href}
               target="_blank"
               rel="noopener noreferrer sponsored"
               onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-              className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+              className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-areia px-6 py-3 text-sm font-semibold text-tinta transition-colors hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none sm:w-auto"
             >
-              {program.checklistCtaLabel ?? "Ver opções"}
+              Escolher meu plano na EasySim
             </a>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <AffiliateTag />
-              <p className="flex items-center gap-1.5 text-xs text-oliva">
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 20 20"
-                  className="h-3.5 w-3.5 fill-none stroke-current"
-                  strokeWidth={2}
-                >
-                  <rect x="4" y="9" width="12" height="8" rx="2" />
-                  <path d="M7 9V6a3 3 0 016 0v3" strokeLinecap="round" />
-                </svg>
-                Compra segura
-              </p>
-            </div>
-            <PoweredByBadge program={program} />
+            <p className="mt-4 text-left text-xs leading-relaxed text-areia">Link de afiliada. Sem custo extra para você.</p>
           </div>
         </div>
 
-        <div className="flex flex-col">
-          <h3 className="font-serif text-2xl text-branco">Como funciona</h3>
-          <ol className="mt-5 flex flex-col gap-4">
+        <div className="flex flex-col justify-center lg:border-l lg:border-areia/25 lg:pl-12">
+          <h3 className="font-serif text-2xl text-branco">Conecte-se em quatro passos</h3>
+          <ol className="mt-6 divide-y divide-areia/25">
             {EASYSIM_STEPS.map((step, i) => (
               <li
                 key={step}
-                className="flex items-start gap-4 rounded-xl bg-branco/10 p-4"
+                className="flex items-start gap-5 py-5"
               >
                 <span
                   aria-hidden="true"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-terracota font-serif text-lg text-white"
+                  className="shrink-0 font-serif text-3xl leading-none text-areia"
                 >
-                  {i + 1}
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="pt-1 text-sm leading-relaxed text-areia sm:text-base">
+                <span className="text-sm leading-relaxed text-areia sm:text-base">
                   {step}
                 </span>
               </li>
             ))}
           </ol>
 
-          <div
-            role="img"
-            aria-label="40% de desconto com o cupom Poraquipelomundo"
-            className="mt-8 flex h-40 w-40 shrink-0 -rotate-6 items-center justify-center self-center rounded-full bg-terracota p-2 sm:h-48 sm:w-48 lg:mt-auto lg:self-end"
-          >
-            <div className="flex h-full w-full flex-col items-center justify-center rounded-full border-2 border-dashed border-areia/70 text-center text-white">
-              <span className="font-serif text-5xl leading-none sm:text-6xl">40%</span>
-              <span className="mt-1 text-xs font-semibold uppercase tracking-[0.2em]">
-                de desconto
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -162,28 +194,23 @@ export function AchadinhosCard() {
 
   return (
     <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
-      <div className="mx-auto max-w-[1240px] rounded-xl bg-areia p-6 text-tinta sm:p-10">
-        <p className="text-left text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
-          Parceiro Por Aqui Pelo Mundo
-        </p>
+      <div className="mx-auto max-w-[1240px] rounded-xl border border-oliva/20 bg-branco p-6 text-tinta sm:p-10">
+        <AffiliateEyebrow program={program} />
         <h2 className="mt-3 text-left font-serif text-2xl leading-tight sm:text-4xl">
           Itens para sua <span className="text-terracota">viagem</span>
         </h2>
         <p className="mt-4 max-w-2xl text-left text-sm leading-relaxed text-oliva sm:text-base">
-          Ao longo das minhas viagens, alguns itens acabam fazendo bastante
-          diferença no dia a dia. São produtos que ajudam a deixar a viagem
-          mais prática, organizada e confortável, seja na hora de montar a
-          mala, durante os passeios ou no próprio deslocamento.
+          Achados no Mercado Livre para levar na mala e aproveitar melhor os
+          passeios, selecionados a partir das minhas viagens.
         </p>
         <ul className="mt-6 flex flex-col gap-4">
           {ACHADINHOS.map((item) => (
             <li
               key={item.href}
-              className="flex flex-col gap-4 rounded-lg bg-branco p-5 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-5 border-t border-oliva/20 pt-6 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <h3 className="text-left font-serif text-lg text-tinta">
-                  <span aria-hidden="true">🧳 </span>
                   {item.name}
                 </h3>
                 <p className="mt-1 text-left text-sm leading-relaxed text-oliva">
@@ -196,7 +223,7 @@ export function AchadinhosCard() {
                   target="_blank"
                   rel="noopener noreferrer sponsored"
                   onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-                  className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+                  className="inline-flex min-h-12 items-center justify-center rounded-lg bg-oliva px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
                 >
                   {program.checklistCtaLabel}
                 </a>
@@ -214,101 +241,135 @@ export function AchadinhosCard() {
 export function RentcarsBanner() {
   const program = AFFILIATE_PROGRAMS.find((p) => p.id === "rentcars");
   if (!program?.isConfigured || !program.buildUrl) return null;
-  const href = program.buildUrl({ cityName: "" });
 
   return (
     <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
-      <div className="mx-auto grid max-w-[1240px] gap-8 rounded-xl bg-oliva p-6 text-areia sm:p-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:p-16">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-areia/70">
-            Parceiro Por Aqui Pelo Mundo
-          </p>
-          <h2 className="mt-4 font-serif text-3xl leading-tight text-branco sm:text-5xl">
-            <span className="text-terracota">Alugue um carro</span> e viaje mais
-            tranquilo
+      <div className="mx-auto grid max-w-[1240px] items-center gap-6 overflow-hidden rounded-xl border border-oliva/20 bg-branco p-6 text-tinta sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
+        <div className="min-w-0">
+          <AffiliateEyebrow program={program} />
+          <h2 className="mt-6 text-balance font-serif text-3xl leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+            A liberdade de viajar <span className="text-terracota">no seu ritmo.</span>
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-areia/90 sm:text-lg">
-            Ter um carro à disposição dá liberdade para montar o roteiro no seu
-            ritmo, chegar a lugares de difícil acesso e se programar melhor
-            para estradas, estacionamentos e deslocamentos.
-          </p>
-        </div>
-        <div className="rounded-xl bg-areia p-5 text-tinta sm:p-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
-            Aluguel de carro
-          </p>
-          <p className="mt-2 text-left font-serif text-2xl leading-snug sm:text-3xl">
-            Reserve pela Rentcars
+          <p className="mt-5 max-w-lg text-left text-base leading-7 text-oliva">
+            Das pequenas paradas aos caminhos fora do roteiro: pesquise as
+            opções de aluguel para o seu destino e reserve pela Rentcars.
           </p>
           <a
-            href={href}
+            href={program.buildUrl({ cityName: "" })}
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+            className="group mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-oliva px-6 py-3 text-center text-sm font-semibold text-branco transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none sm:w-auto"
           >
-            {program.checklistCtaLabel ?? "Ver opções"}
+            Ver carros na Rentcars
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5">
+              <path d="M5 15 15 5M5 5h10v10" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </a>
-          <div className="mt-3">
-            <AffiliateTag />
+          <p className="mt-4 text-left text-xs leading-relaxed text-oliva">Link de afiliada. Sem custo extra para você.</p>
+        </div>
+        <Image
+          src="/rentcars-viagem.webp"
+          alt=""
+          width={960}
+          height={640}
+          sizes="(min-width: 1024px) 480px, (min-width: 640px) 420px, 80vw"
+          className="mx-auto h-auto w-full max-w-[420px] lg:max-w-none"
+        />
+      </div>
+    </section>
+  );
+}
+
+// A mesma identidade visual acompanha o parceiro na home e nas dicas.
+function SeguroViagemCard({ compact = false }: { compact?: boolean }) {
+  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "realseguroviagem");
+  if (!program?.isConfigured || !program.buildUrl) return null;
+  const context = compact ? "home" : "dicas_de_viagem";
+  const titleId = compact ? "seguro-viagem-home-title" : "seguro-viagem-dicas-title";
+
+  return (
+    <section
+      aria-labelledby={titleId}
+      className={compact ? "border-b border-oliva/15 bg-branco px-4 py-10 sm:px-6 sm:py-14 lg:px-10" : "px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24"}
+    >
+      <div className="mx-auto grid max-w-[1240px] overflow-hidden rounded-xl border border-oliva/20 bg-branco text-tinta lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 p-6 sm:p-8 xl:p-10">
+          <AffiliateEyebrow program={program} />
+          <div className="mt-7 grid items-center gap-4 sm:grid-cols-[minmax(0,1fr)_0.65fr] sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-oliva">
+                Seguro viagem · antes de embarcar
+              </p>
+              <h2
+                id={titleId}
+                className={`mt-3 text-balance font-serif leading-[1.12] tracking-tight ${compact ? "text-3xl sm:text-4xl" : "text-3xl sm:text-4xl xl:text-[2.75rem]"}`}
+              >
+                {compact ? <>Viaje com planos.<br /><span className="text-terracota">E com seguro.</span></> : <>Seu próximo destino,<br /><span className="text-terracota">com mais tranquilidade.</span></>}
+              </h2>
+              <p className="mt-4 max-w-md text-pretty text-left text-sm leading-7 text-oliva sm:text-base">
+                Compare seguros de diferentes seguradoras na {program.label} e
+                escolha as coberturas para a sua viagem.
+              </p>
+            </div>
+            <Image
+              src="/seguro-viagem.webp"
+              alt=""
+              width={960}
+              height={640}
+              sizes="(min-width: 1024px) 280px, (min-width: 640px) 34vw, 208px"
+              className="mx-auto h-auto w-52 sm:w-full"
+            />
           </div>
-          <PoweredByBadge program={program} />
+          {!compact && (
+            <div className="mt-7 border-t border-oliva/20 pt-5">
+              <p className="text-left text-xs font-medium text-oliva">Na hora de comparar, confira:</p>
+              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-tinta sm:text-sm">
+                {["Despesas médicas", "Bagagem", "Coberturas para o destino"].map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 text-oliva">
+                      <path d="m4 10 4 4 8-8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <div className="flex min-w-0 flex-col justify-center bg-oliva p-6 text-branco sm:p-8">
+          <p className="text-left text-[10px] font-medium uppercase tracking-[0.17em] text-areia">
+            Benefício para nossos leitores
+          </p>
+          <p className="mt-4 flex items-baseline gap-3 text-left">
+            <span className="font-serif text-7xl leading-none tracking-tight">10<span className="text-4xl">%</span></span>
+            <span className="text-sm text-areia">de desconto</span>
+          </p>
+          <CouponCode code="poraquipelomundo" light />
+          <a
+            href={program.buildUrl({ cityName: "" })}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() => trackClick(program, undefined, context)}
+            className="group mt-5 flex min-h-12 items-center justify-center gap-3 rounded-lg bg-areia px-4 py-3.5 text-center text-sm font-semibold text-tinta transition-colors duration-200 hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none"
+          >
+            Comparar na Real
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5">
+              <path d="M5 15 15 5M5 5h10v10" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+          <p className="mt-4 text-left text-[11px] leading-relaxed text-areia">
+            Link de afiliada. Sem custo extra para você.
+          </p>
         </div>
       </div>
     </section>
   );
 }
 
-// Destaque do parceiro Real Seguro Viagem na página de dicas de viagem.
 export function SeguroViagemBanner() {
-  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "realseguroviagem");
-  if (!program?.isConfigured || !program.buildUrl) return null;
-  const href = program.buildUrl({ cityName: "" });
-
-  return (
-    <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
-      <div className="mx-auto grid max-w-[1240px] gap-8 rounded-xl bg-areia p-6 text-tinta sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-16 lg:p-16">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
-            Parceiro Por Aqui Pelo Mundo
-          </p>
-          <h2 className="mt-4 text-left font-serif text-3xl leading-tight sm:text-5xl">
-            Viaje tranquilo com <span className="text-terracota">seguro viagem</span>
-          </h2>
-          <p className="mt-5 max-w-xl text-left text-base leading-relaxed text-oliva sm:text-lg">
-            Compare opções de seguro viagem de diferentes seguradoras e escolha
-            a cobertura que melhor atende à sua viagem. O pagamento pode ser
-            feito por cartão, Pix ou boleto.
-          </p>
-        </div>
-        <div className="rounded-xl bg-branco p-6 sm:p-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
-            Cupom de desconto
-          </p>
-          <p className="mt-2 text-left font-serif text-5xl leading-none text-terracota sm:text-6xl">
-            10%
-          </p>
-          <p className="mt-2 text-left text-sm text-oliva">de desconto com o cupom</p>
-          <p className="mt-3 rounded-lg border border-dashed border-terracota px-4 py-3 text-center font-serif text-xl tracking-[0.18em] text-tinta">
-            poraquipelomundo
-          </p>
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
-          >
-            {program.checklistCtaLabel}
-          </a>
-          <div className="mt-3">
-            <AffiliateTag />
-          </div>
-          <PoweredByBadge program={program} />
-        </div>
-      </div>
-    </section>
-  );
+  return <SeguroViagemCard />;
 }
 
 // Destaque da Natura na página de dicas de viagem: linha completa de
@@ -327,32 +388,40 @@ export function NaturaCard() {
 
   return (
     <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
-      <div className="mx-auto grid max-w-[1240px] gap-8 rounded-xl bg-areia p-6 text-tinta sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-16 lg:p-16">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-terracota">
-            Parceiro Por Aqui Pelo Mundo
-          </p>
-          <h2 className="mt-4 text-left font-serif text-3xl leading-tight sm:text-5xl">
-            Cuide de você <span className="text-terracota">em cada destino</span>
-          </h2>
-          <p className="mt-5 max-w-xl text-left text-base leading-relaxed text-oliva sm:text-lg">
-            Clima, sol e dias longos de passeio pedem atenção com a pele, o
-            cabelo e o bem-estar. Na loja da minha consultoria Natura você
-            encontra de proteção solar a perfumaria para montar a nécessaire da
-            viagem.
-          </p>
+      <div className="mx-auto grid max-w-[1240px] overflow-hidden rounded-xl border border-oliva/20 bg-branco text-tinta lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 p-6 sm:p-8 xl:p-10">
+          <AffiliateEyebrow program={program} />
+          <div className="mt-6 grid items-center gap-5 sm:grid-cols-[minmax(0,1fr)_0.5fr]">
+            <div>
+              <h2 className="text-balance text-left font-serif text-3xl leading-tight tracking-tight sm:text-4xl">
+                Cuide de você <span className="text-terracota">em cada destino</span>
+              </h2>
+              <p className="mt-5 max-w-xl text-left text-base leading-7 text-oliva">
+                De proteção solar a perfumaria: monte sua nécessaire na loja da
+                minha consultoria Natura e leve seus cuidados favoritos na viagem.
+              </p>
+            </div>
+            <Image
+              src="/natura-protecao-solar.webp"
+              alt=""
+              width={640}
+              height={640}
+              sizes="(min-width: 640px) 200px, 160px"
+              className="mx-auto h-auto w-40 sm:w-full"
+            />
+          </div>
           <ul className="mt-6 flex flex-wrap gap-2">
             {categorias.map((c) => (
               <li
                 key={c}
-                className="rounded-full border border-oliva/30 px-4 py-1.5 text-sm text-oliva"
+                className="border-b border-oliva/25 pb-1 text-xs text-oliva [&:not(:last-child)]:mr-3"
               >
                 {c}
               </li>
             ))}
           </ul>
         </div>
-        <div className="rounded-xl bg-branco p-6 sm:p-8">
+        <div className="flex min-w-0 flex-col justify-center border-t border-oliva/20 bg-areia/60 p-6 sm:p-8 lg:border-t-0 lg:border-l">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
             Cupom de desconto
           </p>
@@ -360,22 +429,17 @@ export function NaturaCard() {
             10%
           </p>
           <p className="mt-2 text-left text-sm text-oliva">de desconto com o cupom</p>
-          <p className="mt-3 rounded-lg border border-dashed border-terracota px-4 py-3 text-center font-serif text-xl tracking-[0.18em] text-tinta">
-            VIAJARDEZ
-          </p>
+          <CouponCode code="VIAJARDEZ" />
           <a
             href={href}
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="mt-5 inline-block rounded-full bg-terracota px-8 py-3 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+            className="mt-5 inline-flex min-h-12 items-center justify-center rounded-lg bg-oliva px-6 py-3 text-center text-sm font-semibold text-branco transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
           >
-            {program.checklistCtaLabel}
+            Comprar na Natura
           </a>
-          <div className="mt-3">
-            <AffiliateTag />
-          </div>
-          <PoweredByBadge program={program} />
+          <p className="mt-4 text-left text-xs leading-relaxed text-oliva">Link de afiliada. Sem custo extra para você.</p>
         </div>
       </div>
     </section>
@@ -461,34 +525,32 @@ export function EasySimSlimBanner() {
 
   return (
     <section className="px-4 py-8 sm:px-6 lg:px-10">
-      <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-4 rounded-xl bg-oliva p-5 text-areia sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-8">
-        <div className="flex items-center gap-4">
+      <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-6 rounded-xl bg-oliva p-6 text-areia lg:flex-row lg:items-center lg:justify-between lg:gap-8 sm:p-8">
+        <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
           <div
             role="img"
             aria-label="40% de desconto com o cupom Poraquipelomundo"
-            className="relative flex h-16 w-16 shrink-0 -rotate-6 flex-col items-center justify-center rounded-full bg-terracota text-white"
+            className="relative m-2 flex h-24 w-24 shrink-0 -rotate-6 flex-col items-center justify-center gap-1 rounded-full bg-terracota text-branco sm:h-28 sm:w-28"
           >
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute -inset-1.5 animate-spin rounded-full border-2 border-dashed border-areia/70 [animation-duration:14s] motion-reduce:animate-none"
+              className="pointer-events-none absolute -inset-2 animate-spin rounded-full border-2 border-dashed border-areia [animation-duration:14s] motion-reduce:animate-none"
             />
-            <span className="font-serif text-2xl leading-none">40%</span>
-            <span className="text-[9px] font-semibold uppercase tracking-wider">
+            <span className="font-serif text-4xl leading-none sm:text-5xl">40%</span>
+            <span className="text-xl font-bold uppercase leading-none tracking-wider">
               off
             </span>
           </div>
           <div>
-            <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-areia/70">
-              EasySim: parceiro Por Aqui Pelo Mundo
-              <AffiliateTag light />
-            </p>
-            <h2 className="mt-1 font-serif text-xl leading-tight text-branco sm:text-2xl">
-              Internet no <span className="text-terracota">exterior</span>, com
+            <AffiliateEyebrow program={program} light />
+            <h2 className="mt-3 text-balance font-serif text-2xl leading-tight text-branco sm:text-3xl">
+              Internet no exterior, com
               eSIM ou chip físico
             </h2>
-            <p className="text-left mt-1 text-sm text-areia/80">
+            <p className="mt-3 text-left text-sm text-areia">
               {program.benefit}
             </p>
+            <p className="mt-2 text-left text-[11px] text-areia">Link de afiliada. Sem custo extra para você.</p>
           </div>
         </div>
         <a
@@ -496,61 +558,18 @@ export function EasySimSlimBanner() {
           target="_blank"
           rel="noopener noreferrer sponsored"
           onClick={() => trackClick(program, undefined, "home")}
-          className="shrink-0 self-center rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+          className="inline-flex min-h-12 w-full shrink-0 items-center justify-center self-start rounded-lg bg-areia px-6 py-3 text-center text-sm font-semibold text-tinta transition-colors hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none lg:w-auto lg:self-center"
         >
-          {program.checklistCtaLabel ?? "Ver opções"}
+          Comprar com desconto
         </a>
       </div>
     </section>
   );
 }
 
-// Versão fina do destaque Real Seguro Viagem para a página inicial.
+// Versão compacta da mesma composição para a página inicial.
 export function SeguroViagemSlimBanner() {
-  const program = AFFILIATE_PROGRAMS.find((p) => p.id === "realseguroviagem");
-  if (!program?.isConfigured || !program.buildUrl) return null;
-  const href = program.buildUrl({ cityName: "" });
-
-  return (
-    <section className="px-4 py-8 sm:px-6 lg:px-10">
-      <div className="mx-auto flex max-w-[1240px] flex-col items-start gap-4 rounded-xl bg-areia p-5 text-tinta sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-8">
-        <div className="flex items-center gap-4">
-          <div
-            role="img"
-            aria-label="10% de desconto com o cupom poraquipelomundo"
-            className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-full bg-terracota text-white"
-          >
-            <span className="font-serif text-2xl leading-none">10%</span>
-            <span className="text-[9px] font-semibold uppercase tracking-wider">
-              off
-            </span>
-          </div>
-          <div>
-            <p className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-oliva">
-              Real Seguro Viagem: parceiro Por Aqui Pelo Mundo
-              <AffiliateTag />
-            </p>
-            <h2 className="mt-1 font-serif text-xl leading-tight text-tinta sm:text-2xl">
-              Compare o <span className="text-terracota">seguro viagem</span>{" "}
-              ideal para a sua viagem
-            </h2>
-            <p className="mt-1 text-left text-sm text-oliva">
-              {program.benefit}
-            </p>
-          </div>
-        </div>
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          onClick={() => trackClick(program, undefined, "home")}
-          className="shrink-0 self-center rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
-        >
-          {program.checklistCtaLabel ?? "Ver opções"}
-        </a>
-      </div>
-    </section>
-  );
+  return <SeguroViagemCard compact />;
 }
 
 // Protetor solar (Natura) na página de atração, só para passeios ao ar livre.
@@ -689,6 +708,7 @@ export default function AffiliateCallout({
         <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {programs.map((program) => (
             <div key={program.id} className="rounded-lg bg-areia p-4">
+              <p className="mb-3 text-left text-base font-semibold text-oliva">{program.label}</p>
               <a
                 href={program.buildUrl!(location)}
                 target="_blank"
@@ -696,7 +716,7 @@ export default function AffiliateCallout({
                 onClick={() =>
                   trackClick(program, attractionId, "attraction_page")
                 }
-                className="inline-block rounded-full bg-terracota px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+                className="inline-flex min-h-11 items-center rounded-lg bg-oliva px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
               >
                 {program.attractionCtaLabel ?? program.label}
               </a>
@@ -734,7 +754,7 @@ export default function AffiliateCallout({
           return (
             <div
               key={program.id}
-              className={`relative flex items-center justify-between gap-3 rounded-lg border p-3 ${
+              className={`relative flex flex-col items-stretch justify-between gap-3 rounded-lg border p-3 sm:flex-row sm:items-center ${
                 href
                   ? "border-branco/20 bg-branco/10 transition-colors hover:bg-branco/15"
                   : "border-dashed border-branco/20 bg-branco/5"
@@ -764,7 +784,7 @@ export default function AffiliateCallout({
                 <div>
                   <p className="text-sm text-branco">{program.checklistLabel}</p>
                   {href && (
-                    <p className="mt-0.5 flex items-center gap-2 text-[11px] text-areia/80">
+                    <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-areia">
                       via {program.label}
                       <AffiliateTag light />
                     </p>

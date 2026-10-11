@@ -92,7 +92,7 @@ export default async function DicasDeViagemPage() {
         </div>
       </section>
 
-      <div id="afiliados" className="scroll-mt-4">
+      <div id="afiliados" className="scroll-mt-24">
         <EasySimBanner />
         <RentcarsBanner />
         <SeguroViagemBanner />

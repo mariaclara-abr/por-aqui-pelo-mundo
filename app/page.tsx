@@ -14,6 +14,7 @@ import AIRoteiroBand from "@/components/AIRoteiroBand";
 import { EasySimSlimBanner, RentcarsSlimBanner, SeguroViagemSlimBanner } from "@/components/AffiliateCallout";
 import TravelTipsBand from "@/components/TravelTipsBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
+import FaqSection from "@/components/home/FaqSection";
 import { buildOpenGraph } from "@/lib/metadata";
 import JsonLd, { websiteLd } from "@/components/JsonLd";
 
@@ -65,6 +66,7 @@ export default async function Home() {
       <RentcarsSlimBanner />
       <SeguroViagemSlimBanner />
       <SiteReviewsSection reviews={siteReviews} />
+      <FaqSection />
     </main>
   );
 }
