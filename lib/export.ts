@@ -11,6 +11,8 @@ export interface ExportAttractionItem {
   suggestedStartTime: string | null;
   suggestedDurationMinutes: number | null;
   isSuggestion: boolean;
+  tips?: string | null;
+  number?: number;
 }
 
 export interface ExportDay {
@@ -22,6 +24,142 @@ export interface ExportDay {
 export interface ExportItinerary {
   title: string;
   days: ExportDay[];
+  // Pontos na ordem do roteiro; vira uma página com o mapa numerado.
+  // Um mapa por cidade, com a numeração global do roteiro.
+  mapPoints?: (GoogleMapsPoint & { name: string; number: number; cityName: string })[];
+}
+
+// Resumo de texto de curadoria: tira marcações (**, ✓), junta linhas e corta
+// no fim de uma frase perto do limite.
+export function summarizeText(text: string | null | undefined, max: number) {
+  const clean = (text ?? "")
+    .replace(/\*\*/g, "")
+    .replace(/[✓•]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("! "), cut.lastIndexOf("? "));
+  return end > max * 0.5 ? cut.slice(0, end + 1) : `${cut.replace(/\s+\S*$/, "")}...`;
+}
+
+// Monta o mapa como imagem juntando os tiles do OpenStreetMap num canvas e
+// desenhando o caminho tracejado e os marcadores numerados na ordem do roteiro.
+async function renderMapImage(points: { lat: number; lng: number; number: number }[]): Promise<string> {
+  const W = 1400;
+  const H = 900;
+  const PAD = 110;
+  const TILE = 256;
+  const toPx = (lat: number, lng: number, z: number) => {
+    const n = 2 ** z * TILE;
+    const rad = (lat * Math.PI) / 180;
+    return {
+      x: ((lng + 180) / 360) * n,
+      y: ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n,
+    };
+  };
+
+  let z = 17;
+  for (; z > 1; z--) {
+    const px = points.map((pt) => toPx(pt.lat, pt.lng, z));
+    const xs = px.map((q) => q.x);
+    const ys = px.map((q) => q.y);
+    if (
+      Math.max(...xs) - Math.min(...xs) <= W - PAD * 2 &&
+      Math.max(...ys) - Math.min(...ys) <= H - PAD * 2
+    )
+      break;
+  }
+  const px = points.map((pt) => toPx(pt.lat, pt.lng, z));
+  const cx = (Math.min(...px.map((q) => q.x)) + Math.max(...px.map((q) => q.x))) / 2;
+  const cy = (Math.min(...px.map((q) => q.y)) + Math.max(...px.map((q) => q.y))) / 2;
+  const left = cx - W / 2;
+  const top = cy - H / 2;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#F0E6D2";
+  ctx.fillRect(0, 0, W, H);
+
+  const maxTile = 2 ** z;
+  const tiles: Promise<void>[] = [];
+  for (let tx = Math.floor(left / TILE); tx <= Math.floor((left + W) / TILE); tx++) {
+    for (let ty = Math.floor(top / TILE); ty <= Math.floor((top + H) / TILE); ty++) {
+      if (ty < 0 || ty >= maxTile) continue;
+      tiles.push(
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            ctx.drawImage(img, tx * TILE - left, ty * TILE - top, TILE, TILE);
+            resolve();
+          };
+          // Tile que falha fica na cor de fundo, não derruba o PDF.
+          img.onerror = () => resolve();
+          setTimeout(resolve, 8000);
+          img.src = `https://tile.openstreetmap.org/${z}/${((tx % maxTile) + maxTile) % maxTile}/${ty}.png`;
+        }),
+      );
+    }
+  }
+  await Promise.all(tiles);
+
+  const pos = px.map((q) => ({ x: q.x - left, y: q.y - top }));
+  if (pos.length > 1) {
+    ctx.strokeStyle = "#C1653A";
+    ctx.lineWidth = 5;
+    ctx.setLineDash([16, 12]);
+    ctx.beginPath();
+    pos.forEach((q, i) => (i === 0 ? ctx.moveTo(q.x, q.y) : ctx.lineTo(q.x, q.y)));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "bold 24px sans-serif";
+  pos.forEach((q, i) => {
+    ctx.fillStyle = "#C1653A";
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(q.x, q.y, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(String(points[i].number), q.x, q.y + 1);
+  });
+  ctx.font = "16px sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillStyle = "rgba(255,255,255,0.8)";
+  ctx.fillRect(W - 230, H - 28, 230, 28);
+  ctx.fillStyle = "#2B2620";
+  ctx.fillText("© OpenStreetMap", W - 8, H - 13);
+
+  return canvas.toDataURL("image/png");
+}
+
+function buildMapPage(
+  dataUrl: string,
+  title: string,
+  entries: { number: number; name: string }[],
+) {
+  const page = el("div", "bg-branco p-16 font-sans");
+  page.style.width = `${PAGE_WIDTH_PX}px`;
+  page.appendChild(el("h2", "border-b-2 border-terracota pb-4 font-serif text-3xl text-tinta", title));
+  page.appendChild(
+    el("p", "mt-4 text-sm text-oliva", "Os números mostram a ordem das atrações no roteiro."),
+  );
+  const img = document.createElement("img");
+  img.src = dataUrl;
+  img.className = "mt-6 w-full rounded-xl";
+  page.appendChild(img);
+  const list = el("ol", "mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-tinta");
+  entries.forEach((e) => list.appendChild(el("li", undefined, `${e.number}. ${e.name}`)));
+  page.appendChild(list);
+  page.appendChild(buildFooter());
+  return page;
 }
 
 // Dimensões de uma página A4 a 96dpi, usar essa largura fixa no container
@@ -105,7 +243,9 @@ function buildItemCard(item: ExportAttractionItem) {
   const info = el("div", "min-w-0 flex-1");
 
   const nameRow = el("div", "flex flex-wrap items-baseline justify-between gap-2");
-  nameRow.appendChild(el("h3", "font-serif text-xl text-tinta", item.name));
+  nameRow.appendChild(
+    el("h3", "font-serif text-xl text-tinta", item.number ? `${item.number}. ${item.name}` : item.name),
+  );
   const timeParts = [
     item.suggestedStartTime,
     item.suggestedDurationMinutes ? `≈ ${item.suggestedDurationMinutes} min` : null,
@@ -140,6 +280,13 @@ function buildItemCard(item: ExportAttractionItem) {
     info.appendChild(
       el("p", "mt-2 text-sm leading-relaxed text-tinta/90", item.description),
     );
+  }
+
+  if (item.tips) {
+    const tip = el("p", "mt-2 text-sm leading-relaxed text-oliva");
+    tip.appendChild(el("strong", "font-medium", "Dica: "));
+    tip.appendChild(document.createTextNode(item.tips));
+    info.appendChild(tip);
   }
 
   card.appendChild(info);
@@ -207,7 +354,7 @@ export function exportToGoogleMaps(points: GoogleMapsPoint[]): string {
 export async function exportItineraryToPDF(itinerary: ExportItinerary): Promise<void> {
   const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
     import("jspdf"),
-    import("html2canvas"),
+    import("html2canvas-pro"),
   ]);
 
   const pdf = new jsPDF({ unit: "mm", format: "a4" });
@@ -222,8 +369,30 @@ export async function exportItineraryToPDF(itinerary: ExportItinerary): Promise<
   document.body.appendChild(stage);
 
   try {
+    const mapPoints = itinerary.mapPoints ?? [];
+    // O mapa é um extra: se os tiles não carregarem, o PDF sai sem ele.
+    const mapSections: HTMLElement[] = [];
+    const byCity = new Map<string, typeof mapPoints>();
+    for (const pt of mapPoints) {
+      byCity.set(pt.cityName, [...(byCity.get(pt.cityName) ?? []), pt]);
+    }
+    for (const [cityName, pts] of byCity) {
+      try {
+        mapSections.push(
+          buildMapPage(
+            await renderMapImage(pts),
+            byCity.size > 1 ? `Mapa: ${cityName}` : "Mapa do roteiro",
+            pts,
+          ),
+        );
+      } catch (error) {
+        console.error("Não foi possível montar o mapa do PDF:", error);
+      }
+    }
+
     const sections = [
       buildCoverPage(itinerary),
+      ...mapSections,
       ...itinerary.days.map((day) => buildDayPage(day)),
     ];
 

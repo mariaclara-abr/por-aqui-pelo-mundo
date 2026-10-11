@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRoteiro } from "@/lib/roteiro";
 import { useAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase-browser";
 import RelatedContent from "@/components/RelatedContent";
 import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
@@ -17,7 +18,8 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
 import ItineraryPremiumBanner from "@/components/itinerary-ai/ItineraryPremiumBanner";
 import { humanizeSlug } from "@/lib/affiliates";
-import { exportToGoogleMaps } from "@/lib/export";
+import { exportItineraryToPDF, exportToGoogleMaps, summarizeText } from "@/lib/export";
+import { useUserSubscription } from "@/lib/useUserSubscription";
 import { categoryLabels } from "@/types/database";
 
 const RoteiroMap = dynamic(() => import("@/components/RoteiroMap"), {
@@ -148,9 +150,11 @@ export default function MeuRoteiroPage() {
     title,
   } = useRoteiro();
   const { user } = useAuth();
+  const { isPremium } = useUserSubscription();
   const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [pdfStatus, setPdfStatus] = useState<"idle" | "busy" | "error">("idle");
   const [confirmingClear, setConfirmingClear] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [confirmingRemoveId, setConfirmingRemoveId] = useState<string | null>(
@@ -174,6 +178,72 @@ export default function MeuRoteiroPage() {
     reorder(orderedIds).catch((error) => {
       console.error("Não foi possível reordenar o roteiro:", error);
     });
+  }
+
+  async function handleSalvarPDF() {
+    setShareOpen(false);
+    if (!isPremium) {
+      setPremiumOpen(true);
+      return;
+    }
+    setPdfStatus("busy");
+    try {
+      // O resumo e as dicas não vêm na lista do roteiro, então busca aqui.
+      const { data, error } = await createClient()
+        .from("attractions")
+        .select("id, description, personal_experience, important_tips")
+        .in("id", items.map(({ attraction }) => attraction.id));
+      if (error) throw error;
+      let mapNumber = 0;
+      const details = new Map((data ?? []).map((row) => [row.id, row]));
+
+      await exportItineraryToPDF({
+        title,
+        mapPoints: items
+          .filter(({ attraction: a }) => a.latitude != null && a.longitude != null)
+          .map(({ attraction: a }, i) => ({
+            name: a.name,
+            lat: a.latitude!,
+            lng: a.longitude!,
+            number: i + 1,
+            cityName: humanizeSlug(a.citySlug),
+          })),
+        days: [
+          {
+            dayNumber: 1,
+            date: null,
+            items: items.map(({ attraction }) => {
+              const info = details.get(attraction.id);
+              const experience = summarizeText(info?.personal_experience, 320);
+              const description = experience
+                ? `\u201C${experience}\u201D`
+                : summarizeText(info?.description, 320);
+              return {
+                name: attraction.name,
+                // Mesma numeração das bolinhas do mapa (só quem tem coordenadas).
+                number:
+                  attraction.latitude != null && attraction.longitude != null
+                    ? ++mapNumber
+                    : undefined,
+                categories: attraction.categories,
+                cityName: humanizeSlug(attraction.citySlug),
+                curationRating: attraction.curationRating,
+                description: description || null,
+                tips: summarizeText(info?.important_tips, 240) || null,
+                coverPhotoUrl: attraction.coverPhotoUrl,
+                suggestedStartTime: null,
+                suggestedDurationMinutes: null,
+                isSuggestion: false,
+              };
+            }),
+          },
+        ],
+      });
+      setPdfStatus("idle");
+    } catch (error) {
+      console.error("Não foi possível gerar o PDF:", error);
+      setPdfStatus("error");
+    }
   }
 
   function handleOrganizarClick() {
@@ -357,10 +427,7 @@ export default function MeuRoteiroPage() {
             itineraryTitle={title}
             userId={user.id}
             onClose={() => setShareOpen(false)}
-            onSalvarPDF={() => {
-              setShareOpen(false);
-              setPremiumOpen(true);
-            }}
+            onSalvarPDF={handleSalvarPDF}
           />
         )}
 
@@ -635,7 +702,26 @@ export default function MeuRoteiroPage() {
         </section>
       </div>
 
-      <ItineraryChat />
+      {pdfStatus !== "idle" && (
+          <div
+            role={pdfStatus === "error" ? "alert" : "status"}
+            className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-xl bg-tinta px-4 py-3 text-sm text-white"
+          >
+            {pdfStatus === "busy"
+              ? "Gerando seu PDF, pode levar alguns segundos..."
+              : "Houve um erro inesperado ao gerar o PDF. Vamos trabalhar para corrigi-lo o mais rápido possível. Tente novamente mais tarde."}
+            {pdfStatus === "error" && (
+              <button
+                type="button"
+                onClick={() => setPdfStatus("idle")}
+                className="ml-3 underline"
+              >
+                Fechar
+              </button>
+            )}
+          </div>
+        )}
+        <ItineraryChat />
     </main>
   );
 }

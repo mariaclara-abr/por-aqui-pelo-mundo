@@ -35,6 +35,29 @@ function FitBounds({ points }: { points: [number, number][] }) {
   return null;
 }
 
+// Pinça no trackpad do laptop chega como "wheel" com ctrlKey; scroll normal
+// (sem ctrlKey) segue rolando a página em vez de dar zoom sem querer.
+function TrackpadPinchZoom() {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+    function onWheel(e: WheelEvent) {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      map.setZoomAround(
+        map.mouseEventToContainerPoint(e),
+        map.getZoom() - e.deltaY * 0.02,
+        { animate: false },
+      );
+    }
+    container.addEventListener("wheel", onWheel, { passive: false });
+    return () => container.removeEventListener("wheel", onWheel);
+  }, [map]);
+
+  return null;
+}
+
 function EyeIcon() {
   return (
     <svg
@@ -86,6 +109,8 @@ export default function RoteiroMap({
         center={coords[0]}
         zoom={13}
         scrollWheelZoom={false}
+        touchZoom
+        zoomSnap={0}
         className="h-80 w-full rounded-xl border-2 border-oliva"
       >
         <TileLayer
@@ -103,13 +128,14 @@ export default function RoteiroMap({
             }}
           />
         )}
-        {orderedPoints.map((point) => (
+        {orderedPoints.map((point, index) => (
           <Marker key={point.id} position={[point.lat, point.lng]} icon={markerIcon}>
             <Popup>
-              {point.order + 1}. {point.name}
+              {index + 1}. {point.name}
             </Popup>
           </Marker>
         ))}
+        <TrackpadPinchZoom />
         <FitBounds points={coords} />
       </MapContainer>
 
