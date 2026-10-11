@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import { useAuth } from "@/lib/auth";
 
 // Bloqueia cópia de texto e tentativas comuns de captura (clique direito,
 // atalho de impressão/print screen) dentro da área envolvida, chamando
@@ -14,7 +15,10 @@ export default function CopyProtectionGuard({
   children: ReactNode;
   onBlocked: () => void;
 }) {
+  const { isAuthor } = useAuth();
+
   useEffect(() => {
+    if (isAuthor) return;
     function handleCopy(event: ClipboardEvent) {
       event.preventDefault();
       onBlocked();
@@ -40,7 +44,9 @@ export default function CopyProtectionGuard({
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onBlocked]);
+  }, [onBlocked, isAuthor]);
+
+  if (isAuthor) return <>{children}</>;
 
   return (
     <div className="select-none [-webkit-user-select:none]">{children}</div>
