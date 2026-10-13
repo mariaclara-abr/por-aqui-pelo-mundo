@@ -4,6 +4,12 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import PasswordInput from "@/components/PasswordInput";
+import { safePath } from "@/lib/safe-path";
+
+// Para onde ir depois do login (ex.: continuar uma compra), vem em ?next=.
+function nextPath() {
+  return safePath(new URLSearchParams(window.location.search).get("next"), "/");
+}
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -34,14 +40,14 @@ export default function LoginForm() {
     // Recarrega a página inteira: a sessão foi criada pelo servidor via
     // cookies, e um reload garante que o AuthProvider a releia do zero.
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    window.location.assign("/");
+    window.location.assign(nextPath());
   }
 
   async function handleGoogleLogin() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath())}` },
     });
   }
 
