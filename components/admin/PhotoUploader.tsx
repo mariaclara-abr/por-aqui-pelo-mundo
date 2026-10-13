@@ -30,6 +30,19 @@ function sanitizeFileName(name: string) {
   return cleanExt ? `${cleanBase || "foto"}.${cleanExt}` : cleanBase || "foto";
 }
 
+// Só o Safari exibe HEIC (foto de iPhone): converte pra JPEG antes de enviar.
+async function toWebFile(file: File) {
+  if (!/\.(heic|heif)$/i.test(file.name) && !/hei[cf]/i.test(file.type)) {
+    return file;
+  }
+  const { default: heic2any } = await import("heic2any");
+  const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.9 });
+  const blob = Array.isArray(converted) ? converted[0] : converted;
+  return new File([blob], file.name.replace(/\.hei[cf]$/i, ".jpg"), {
+    type: "image/jpeg",
+  });
+}
+
 export default function PhotoUploader({
   photos,
   onChange,
@@ -52,7 +65,15 @@ export default function PhotoUploader({
     const uploaded: AdminPhoto[] = [];
     let hadError = false;
 
-    for (const file of files) {
+    for (const original of files) {
+      let file: File;
+      try {
+        file = await toWebFile(original);
+      } catch (conversionError) {
+        console.error("Falha ao converter foto:", original.name, conversionError);
+        hadError = true;
+        continue;
+      }
       const path = `attractions/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
       const { error: uploadError } = await supabase.storage
         .from("media")
