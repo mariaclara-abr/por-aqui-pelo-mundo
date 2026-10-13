@@ -117,15 +117,15 @@ function CouponCode({ code, light = false }: { code: string; light?: boolean }) 
 const EASYSIM_STEPS = [
   "Escolha o destino e o plano ideal para a sua viagem.",
   "Faça a compra pelo link do Por Aqui Pelo Mundo e aplique o cupom Poraquipelomundo.",
-  "Siga as orientações enviadas pela EasySim.",
+  "Siga as orientações enviadas pela Easysim4U.",
   "Use a internet durante a viagem e fique conectado no seu destino.",
 ];
 
-// Destaque do parceiro EasySim na página de dicas de viagem.
+// Destaque do parceiro Easysim4U na página de dicas de viagem.
 export function EasySimBanner() {
   const program = AFFILIATE_PROGRAMS.find((p) => p.id === "easysim");
   if (!program?.isConfigured || !program.buildUrl) return null;
-  // O link do EasySim é fixo, a cidade não é usada.
+  // O link do Easysim4U é fixo, a cidade não é usada.
   const href = program.buildUrl({ cityName: "" });
 
   return (
@@ -134,11 +134,11 @@ export function EasySimBanner() {
         <div>
           <AffiliateEyebrow program={program} light />
           <h2 className="mt-6 text-balance font-serif text-3xl leading-tight tracking-tight text-branco sm:text-5xl">
-            Sua viagem conectada com a EasySim
+            Sua viagem conectada com a Easysim4U
           </h2>
           <p className="mt-5 max-w-lg text-left text-base leading-7 text-areia">
             Mapas, reservas e mensagens sempre à mão. Escolha um eSIM ou chip
-            físico da EasySim para usar internet no exterior.
+            físico da Easysim4U para usar internet no exterior.
           </p>
 
           <div className="mt-7 max-w-lg border-t border-areia/30 pt-6">
@@ -154,7 +154,7 @@ export function EasySimBanner() {
               onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
               className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-areia px-6 py-3 text-sm font-semibold text-tinta transition-colors hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none sm:w-auto"
             >
-              Escolher meu plano na EasySim
+              Escolher meu plano na Easysim4U
             </a>
             <p className="mt-4 text-left text-xs leading-relaxed text-areia">Link de afiliada. Sem custo extra para você.</p>
           </div>
@@ -517,7 +517,7 @@ export function RentcarsSlimBanner() {
   );
 }
 
-// Versão fina do destaque EasySim para a página inicial.
+// Versão fina do destaque Easysim4U para a página inicial.
 export function EasySimSlimBanner() {
   const program = AFFILIATE_PROGRAMS.find((p) => p.id === "easysim");
   if (!program?.isConfigured || !program.buildUrl) return null;

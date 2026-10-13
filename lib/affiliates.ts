@@ -41,7 +41,7 @@ export const ACHADINHOS = [
   },
 ];
 
-// Booking.com, GetYourGuide, EasySim, Mercado Livre, Rentcars e Real Seguro
+// Booking.com, GetYourGuide, Easysim4U, Mercado Livre, Rentcars e Real Seguro
 // Viagem têm link real por enquanto. Os outros
 // ficam no checklist como "em breve": quando a conta de afiliado existir,
 // basta setar a env var e trocar isConfigured/buildUrl aqui, nenhuma outra
@@ -83,7 +83,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
   },
   {
     id: "easysim",
-    label: "EasySim",
+    label: "Easysim4U",
     checklistLabel: "eSIM ou chip físico",
     attractionCtaLabel: "Internet no destino (eSIM ou chip físico)",
     checklistCtaLabel: "Comprar com desconto",

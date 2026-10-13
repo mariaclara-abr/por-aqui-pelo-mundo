@@ -5,7 +5,7 @@
 A empresa parceira aparece como identificação principal, com tipografia maior que a assinatura do Por Aqui Pelo Mundo. A composição usa a paleta existente (oliva, areia, terracota e branco), Fraunces nos títulos e Inter nos textos. Foram preservados URLs, descontos, códigos de cupom e contextos de rastreamento existentes.
 
 - Real Seguro Viagem: composição compartilhada entre home e dicas, ilustração editorial, texto conciso e área oliva para desconto, cupom e ação. Os itens de comparação não prometem coberturas de uma apólice específica.
-- EasySim: desconto tipográfico, passos com divisórias e cupom copiável em dicas. Na home, selo terracota de 40% OFF ampliado com contorno tracejado giratório (estático com movimento reduzido) e botão “Comprar com desconto”.
+- Easysim4U: desconto tipográfico, passos com divisórias e cupom copiável em dicas. Na home, selo terracota de 40% OFF ampliado com contorno tracejado giratório (estático com movimento reduzido) e botão “Comprar com desconto”.
 - Rentcars: a ilustração já usada na home acompanha o destaque de dicas.
 - Natura: ilustração existente e desconto em coluna própria.
 - Mercado Livre: identificação explícita e linha de produto com menos elementos decorativos.
@@ -24,7 +24,7 @@ Use case: illustration-story. Asset type: decorative editorial illustration for 
 ## Verificação
 
 - Home e dicas verificadas em 320, 390, 768, 1024 e 1440 px, sem transbordamento nos cards.
-- Cópia dos três cupons conferida, incluindo a diferença de maiúsculas entre EasySim e Real Seguro Viagem.
+- Cópia dos três cupons conferida, incluindo a diferença de maiúsculas entre Easysim4U e Real Seguro Viagem.
 - Estado de erro de clipboard e mensagem acessível conferidos.
 - Foco de teclado e navegação entre copiar e acessar o parceiro conferidos.
 - Nomes das cinco empresas visíveis nos respectivos cards de dicas.
