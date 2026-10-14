@@ -7,6 +7,9 @@ export type AttractionCategory =
   | "compras"
   | "passeio"
   | "cafe"
+  | "beach_club"
+  | "night_club"
+  | "rooftop"
   | "estacionamentos"
   | "parque_tematico"
   | "outro";
@@ -19,6 +22,9 @@ export const ATTRACTION_CATEGORIES: {
   { value: "ponto_turistico", label: "Ponto turístico" },
   { value: "restaurante", label: "Restaurante" },
   { value: "cafe", label: "Café" },
+  { value: "beach_club", label: "Beach club" },
+  { value: "night_club", label: "Night club" },
+  { value: "rooftop", label: "Rooftop" },
   { value: "hotel", label: "Hotel" },
   { value: "museu", label: "Museu" },
   { value: "natureza", label: "Natureza" },
