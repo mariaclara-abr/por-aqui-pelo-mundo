@@ -333,7 +333,7 @@ export default function PremiumDialog({
             Por Aqui Pelo Mundo Premium
           </p>
           <h2 className="mt-3 font-serif text-3xl leading-tight text-tinta">
-            Seu roteiro ideal pronto em minutos.
+            Roteiro sob medida pronto em minutos
           </h2>
           <p className="mt-1.5 text-base font-medium text-terracota">
             Desbloqueie ainda mais benefícios
