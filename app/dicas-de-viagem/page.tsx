@@ -27,7 +27,15 @@ export default async function DicasDeViagemPage() {
   return (
     <main className="flex-1 overflow-hidden">
       <section className="relative overflow-hidden border-b border-tinta/10 bg-oliva text-areia">
-        <div className="mx-auto grid min-h-[580px] max-w-[1440px] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[220px] bg-[url('/dicas-capa-copa.avif')] bg-cover bg-[position:35%_100%] sm:h-[260px] lg:h-[300px]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[240px] bg-[url('/dicas-capa-campo.avif')] bg-cover bg-[position:75%_100%] [mask-image:linear-gradient(to_bottom,transparent,#000_30%)] sm:h-[280px] lg:h-[260px] lg:bg-right-bottom"
+        />
+        <div className="relative mx-auto grid min-h-[580px] max-w-[1440px] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="relative z-10 px-4 pb-4 pt-14 sm:px-6 sm:pb-0 sm:pt-20 lg:px-10 lg:py-24">
             <p className="flex items-center gap-3 text-left text-[11px] font-semibold uppercase tracking-[0.24em] text-areia/70">
               <span className="h-px w-8 bg-terracota" aria-hidden="true" />
@@ -44,10 +52,6 @@ export default async function DicasDeViagemPage() {
           </div>
 
           <div className="relative flex min-h-[290px] items-end justify-center sm:min-h-[390px] lg:h-full lg:min-h-[580px]">
-            <span
-              aria-hidden="true"
-              className="absolute bottom-6 left-6 top-6 hidden w-px bg-areia/15 lg:block"
-            />
             <Image
               src="/dicas-viagem-caderno.png"
               alt=""

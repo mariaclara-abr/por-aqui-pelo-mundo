@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { stripe, PLANS } from "@/lib/stripe";
+import { stripe, PACKS, PACK_VALIDITY_MONTHS, type PackId } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { computeTipsUnlockExpiration } from "@/lib/subscription";
-import type { PlanType } from "@/types/database";
 
 function toIso(unixSeconds: number | null | undefined) {
   return unixSeconds ? new Date(unixSeconds * 1000).toISOString() : null;
@@ -19,48 +17,36 @@ function subscriptionPeriodEnd(subscription: Stripe.Subscription) {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const supabase = createAdminClient();
   const userId = session.metadata?.supabase_user_id;
-  const planType = session.metadata?.plan_type as PlanType | undefined;
-  const itineraryId = session.metadata?.itinerary_id || null;
+  const pack = PACKS[session.metadata?.plan_type as PackId];
 
-  if (!userId || !planType) return;
+  if (!userId || !pack) return;
 
-  let expirationDate: string | null = null;
-  let stripeSubscriptionId: string | null = null;
+  // Stripe reenvia eventos: não credita duas vezes a mesma sessão.
+  const { count } = await supabase
+    .from("subscriptions")
+    .select("id", { count: "exact", head: true })
+    .eq("stripe_checkout_session_id", session.id);
+  if (count) return;
 
-  if (session.mode === "subscription" && session.subscription) {
-    const subscriptionId =
-      typeof session.subscription === "string"
-        ? session.subscription
-        : session.subscription.id;
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    expirationDate = toIso(subscriptionPeriodEnd(subscription));
-    stripeSubscriptionId = subscription.id;
-  } else {
-    const months = PLANS[planType]?.accessMonths;
-    if (months) {
-      const end = new Date();
-      end.setMonth(end.getMonth() + months);
-      expirationDate = end.toISOString();
-    }
-  }
+  const end = new Date();
+  end.setMonth(end.getMonth() + PACK_VALIDITY_MONTHS);
+  const expiration = end.toISOString();
 
-  const tipsUnlockExpiration =
-    planType === "roteiro_unico_1pais" ? computeTipsUnlockExpiration() : null;
-
-  const { error } = await supabase.from("subscriptions").insert({
-    user_id: userId,
-    plan_type: planType,
-    itinerary_id: itineraryId,
-    expiration_date: expirationDate,
-    tips_unlock_expiration: tipsUnlockExpiration,
-    is_active: true,
-    stripe_customer_id:
-      typeof session.customer === "string"
-        ? session.customer
-        : (session.customer?.id ?? null),
-    stripe_subscription_id: stripeSubscriptionId,
-    stripe_checkout_session_id: session.id,
-  });
+  // Um crédito por roteiro, sem itinerary_id até o usuário usá-lo.
+  const { error } = await supabase.from("subscriptions").insert(
+    Array.from({ length: pack.quantity }, () => ({
+      user_id: userId,
+      plan_type: "roteiro_unico_1pais" as const,
+      expiration_date: expiration,
+      tips_unlock_expiration: expiration,
+      is_active: true,
+      stripe_customer_id:
+        typeof session.customer === "string"
+          ? session.customer
+          : (session.customer?.id ?? null),
+      stripe_checkout_session_id: session.id,
+    })),
+  );
 
   if (error) throw error;
 }

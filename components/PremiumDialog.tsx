@@ -1,11 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactElement } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useUserSubscription } from "@/lib/useUserSubscription";
-import type { PlanType } from "@/types/database";
+import type { PackId } from "@/lib/stripe";
 
 function SparkleIcon({ className }: { className?: string }) {
   return (
@@ -101,46 +99,42 @@ export const COMPACT_BENEFITS = [
 ];
 
 const PLAN_INFO: Record<
-  PlanType,
+  PackId,
   {
+    // Quantos roteiros o pacote libera: vira um aviãozinho no cartão de embarque.
+    count: number;
     title: string;
     price: string;
     originalPrice?: string;
-    priceSuffix: string;
     belowPriceNote?: string;
     detail: string;
   }
 > = {
-  roteiro_unico_1pais: {
-    title: "Roteiro Único",
-    price: "R$ 49,90",
-    priceSuffix: "",
-    detail:
-      "Um roteiro premium (até 1 país com cidades e\natrações ilimitadas) + todas as dicas desbloqueadas por 7 dias",
+  roteiro_1: {
+    count: 1,
+    title: "1 roteiro premium",
+    price: "R$ 89,90",
+    detail: "Um roteiro organizado pela nossa IA especializada (cidades e atrações ilimitadas, 1 país)",
   },
-  premium_mensal: {
-    title: "1 mês Ilimitado",
-    price: "R$ 69,90",
-    originalPrice: "R$ 79,90",
-    priceSuffix: "",
-    detail: "Acesso a roteiros premium e a todas as dicas por um mês",
+  pacote_4: {
+    count: 4,
+    title: "4 roteiros premium",
+    price: "R$ 299,90",
+    originalPrice: "R$ 359,60",
+    belowPriceNote: "R$ 74,98 por roteiro",
+    detail: "Quatro roteiros organizados pela nossa IA especializada, cada um com até 1 país",
   },
-  premium_anual: {
-    title: "Premium Anual",
-    price: "R$ 24,90",
-    priceSuffix: "/mês",
-    belowPriceNote: "R$ 298,80 ao ano",
-    detail: "Acesso a roteiros premium e a todas as dicas por um ano",
+  pacote_8: {
+    count: 8,
+    title: "8 roteiros premium",
+    price: "R$ 499,90",
+    originalPrice: "R$ 719,20",
+    belowPriceNote: "R$ 62,49 por roteiro",
+    detail: "Oito roteiros organizados pela nossa IA especializada, cada um com até 1 país",
   },
 };
 
-const LOCKED_ROTEIRO_UNICO_DETAIL =
-  "Válido apenas para roteiros de até 1 país";
-
-// (39,90 − 14,90) / 39,90 ≈ 63% de economia no plano anual em relação ao mensal.
-const ANNUAL_SAVINGS_LABEL = "Economize 63% em relação ao mensal";
-
-const PLAN_ORDER: PlanType[] = ["premium_anual", "premium_mensal", "roteiro_unico_1pais"];
+const PLAN_ORDER: PackId[] = ["roteiro_1", "pacote_4", "pacote_8"];
 
 const MAX_POLL_ATTEMPTS = 5;
 const POLL_INTERVAL_MS = 1500;
@@ -183,9 +177,8 @@ export default function PremiumDialog({
   onAccessGranted?: () => void;
   highlight?: PremiumHighlight;
 }) {
-  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { isPremium, hasRoteiroUnicoFor, refresh } = useUserSubscription();
+  const { isPremium, hasRoteiroUnicoFor, credits, refresh } = useUserSubscription();
 
   useEffect(() => {
     if (isPremium || (itineraryId && hasRoteiroUnicoFor(itineraryId))) {
@@ -193,8 +186,12 @@ export default function PremiumDialog({
     }
   }, [isPremium, itineraryId, hasRoteiroUnicoFor, onAccessGranted]);
   const [checkoutStatus] = useState(readCheckoutStatus);
+  // Acabou de comprar: o crédito ainda não está atrelado a nenhum roteiro.
+  useEffect(() => {
+    if (checkoutStatus === "success" && credits > 0) onAccessGranted?.();
+  }, [checkoutStatus, credits, onAccessGranted]);
   const [confirming, setConfirming] = useState(checkoutStatus === "success");
-  const [loadingPlan, setLoadingPlan] = useState<PlanType | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<PackId | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState<"enter" | "entered" | "exit">("enter");
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -236,22 +233,6 @@ export default function PremiumDialog({
     };
   }, [requestClose]);
 
-  // Fecha o modal na hora (sem animação) e rola até a seção de destinos.
-  // Um Link comum não funciona aqui porque, quando o pop-up já está aberto
-  // na própria home, o Next não dispara o scroll até a hash numa navegação
-  // para a mesma página: rolamos manualmente quando a seção já existe no
-  // DOM, e navegamos normalmente quando ela está em outra página.
-  const goToDestinos = useCallback(() => {
-    document.body.style.overflow = "";
-    onClose();
-    const target = document.getElementById("destinos");
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      router.push("/#destinos");
-    }
-  }, [onClose, router]);
-
   useEffect(() => {
     if (checkoutStatus !== "success") return;
     let attempts = 0;
@@ -275,7 +256,13 @@ export default function PremiumDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkoutStatus]);
 
-  async function handleCheckout(plan: PlanType) {
+  async function handleCheckout(plan: PackId) {
+    if (!user) {
+      // Rota de servidor (GET): precisa de navegação completa, não do router.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign(`/comprar?plano=${plan}`);
+      return;
+    }
     setLoadingPlan(plan);
     setError(null);
 
@@ -285,7 +272,6 @@ export default function PremiumDialog({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           plan,
-          itinerary_id: plan === "roteiro_unico_1pais" ? itineraryId : undefined,
           return_to: "/meu-roteiro",
         }),
       });
@@ -347,7 +333,7 @@ export default function PremiumDialog({
             Por Aqui Pelo Mundo Premium
           </p>
           <h2 className="mt-3 font-serif text-3xl leading-tight text-tinta">
-            Seu roteiro ideal pronto em minutos.
+            Roteiro sob medida pronto em minutos
           </h2>
           <p className="mt-1.5 text-base font-medium text-terracota">
             Desbloqueie ainda mais benefícios
@@ -409,18 +395,6 @@ export default function PremiumDialog({
               </div>
             ) : isPremium ? (
               <p className="text-sm text-tinta">Você já é Premium. Aproveite!</p>
-            ) : !user ? (
-              <div>
-                <p className="text-sm text-oliva">
-                  Entre na sua conta para desbloquear o Premium.
-                </p>
-                <Link
-                  href="/entrar"
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-terracota px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
-                >
-                  Entrar
-                </Link>
-              </div>
             ) : (
               <div className="flex flex-col gap-5 pt-2">
                 {checkoutStatus === "cancelled" && (
@@ -428,111 +402,87 @@ export default function PremiumDialog({
                     Pagamento cancelado. Tente novamente quando quiser.
                   </p>
                 )}
+                {countryCount >= 2 && (
+                  <p className="text-sm text-oliva">
+                    Seu roteiro atual tem atrações em {countryCount} países. Cada roteiro
+                    comprado vale para até 1 país.
+                  </p>
+                )}
                 {PLAN_ORDER.map((plan) => {
                   const info = PLAN_INFO[plan];
-                  const isAnnual = plan === "premium_anual";
-                  const isFeatured = plan === "premium_mensal";
-                  const noItinerary =
-                    plan === "roteiro_unico_1pais" && !itineraryId;
-                  const isLocked =
-                    plan === "roteiro_unico_1pais" && countryCount >= 2;
+                  const isFeatured = plan === "pacote_4";
                   const isLoading = loadingPlan === plan;
 
+                  // Cartão de embarque: corpo + canhoto separados por picote (horizontal
+                  // no celular, vertical no desktop). Os recortes são círculos da cor do
+                  // modal sobre a borda; um aviãozinho por roteiro do pacote.
                   return (
                     <div
                       key={plan}
-                      onClick={
-                        isLocked || loadingPlan !== null
-                          ? undefined
-                          : noItinerary
-                            ? goToDestinos
-                            : () => handleCheckout(plan)
-                      }
-                      className={`transition-transform duration-200 ${isLocked ? "" : "cursor-pointer hover:scale-[1.02]"} ${
-                        isLocked
-                          ? "relative rounded-xl border border-oliva/15 bg-areia/40 p-4"
-                          : isFeatured
-                            ? "relative rounded-xl border-2 border-terracota bg-terracota/5 p-4"
-                            : "relative rounded-xl border border-oliva/20 p-4"
+                      onClick={loadingPlan !== null ? undefined : () => handleCheckout(plan)}
+                      className={`relative flex cursor-pointer flex-col rounded-xl bg-areia transition-transform duration-200 hover:scale-[1.02] sm:flex-row ${
+                        isFeatured ? "border-2 border-terracota" : "border border-oliva/20"
                       }`}
                     >
-                      {isFeatured && (
-                        <span className="absolute -top-3 left-4 rounded-full border border-terracota bg-branco px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-terracota">
-                          Favorito
-                        </span>
-                      )}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0 pr-3">
-                          <p
-                            className={`font-serif text-base ${isLocked ? "text-oliva" : "text-tinta"}`}
-                          >
-                            {info.title}
-                          </p>
-                          <p className="mt-1 whitespace-pre-line text-xs text-oliva">
-                            {noItinerary
-                              ? "Faça um roteiro premium limitado a um país. Tenha acesso a todas as dicas por 7 dias."
-                              : isLocked
-                                ? `${LOCKED_ROTEIRO_UNICO_DETAIL}: seu roteiro atual tem atrações em ${countryCount} países.`
-                                : info.detail}
-                          </p>
+                      <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
+                        {isFeatured && (
+                          // Etiqueta de bilhete: mesmos recortes laterais do cartão, levemente torta.
+                          <span className="relative mb-2 -rotate-2 self-start rounded-sm bg-terracota px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white">
+                            Favorito
+                            <span className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-areia" />
+                            <span className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 translate-x-1/2 rounded-full bg-areia" />
+                          </span>
+                        )}
+                        <p className="font-serif text-base text-tinta">{info.title}</p>
+                        <p className="mt-1 text-left text-xs text-oliva">{info.detail}</p>
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {Array.from({ length: info.count }, (_, i) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img key={i} src="/assets/simbolo.svg" alt="" width={16} height={16} />
+                          ))}
                         </div>
+                      </div>
+                      <div className="relative border-t-2 border-dashed border-oliva/30 sm:border-l-2 sm:border-t-0">
+                        <span className="pointer-events-none absolute left-0 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-branco" />
+                        <span className="pointer-events-none absolute right-0 top-0 h-4 w-4 -translate-y-1/2 translate-x-1/2 rounded-full bg-branco sm:bottom-0 sm:left-0 sm:right-auto sm:top-auto sm:-translate-x-1/2 sm:translate-y-1/2" />
+                      </div>
+                      <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:w-44 sm:flex-col sm:flex-nowrap sm:justify-center">
                         <div className="shrink-0 text-center">
-                          {info.originalPrice && !isLocked && (
-                            <p className="text-center text-xs text-oliva/50 line-through">
+                          {info.originalPrice && (
+                            <p className="text-left text-xs text-oliva/50 line-through sm:text-center">
                               {info.originalPrice}
                             </p>
                           )}
-                          {info.belowPriceNote && !isLocked && (
-                            <p className="text-center text-xs font-medium text-oliva">
+                          <p
+                            className={`text-left text-base font-semibold sm:text-center ${isFeatured || plan === "pacote_8" ? "text-terracota" : "text-tinta"}`}
+                          >
+                            {info.price}
+                          </p>
+                          {info.belowPriceNote && (
+                            <p className="text-left text-xs font-medium text-oliva sm:text-center">
                               {info.belowPriceNote}
                             </p>
                           )}
-                          <p
-                            className={`text-center text-base font-semibold ${isLocked ? "text-oliva" : isFeatured ? "text-terracota" : "text-tinta"}`}
-                          >
-                            {info.price}
-                            {info.priceSuffix && (
-                              <span className="ml-1 text-xs font-normal text-oliva">
-                                {info.priceSuffix}
-                              </span>
-                            )}
-                          </p>
                         </div>
-                      </div>
-                      {isAnnual && (
-                        <p className="mt-1 text-xs font-semibold text-oliva">
-                          {ANNUAL_SAVINGS_LABEL}
-                        </p>
-                      )}
-                      {noItinerary ? (
                         <button
                           type="button"
-                          className="mt-3 flex w-full items-center justify-center rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
-                        >
-                          Montar meu roteiro
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled={isLocked || loadingPlan !== null}
+                          disabled={loadingPlan !== null}
                           className={
-                            isLocked
-                              ? "mt-3 w-full cursor-not-allowed rounded-full border border-oliva/25 py-2.5 text-sm font-medium text-oliva/60"
-                              : isFeatured
-                                ? "mt-3 w-full rounded-full bg-terracota py-2.5 text-sm font-semibold text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
-                                : "mt-3 w-full rounded-full border-2 border-terracota py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 disabled:opacity-60"
+                            isFeatured
+                              ? "grow rounded-full bg-terracota px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-terracota/90 disabled:opacity-60 sm:w-full sm:grow-0"
+                              : "grow rounded-full border-2 border-terracota px-5 py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 disabled:opacity-60 sm:w-full sm:grow-0"
                           }
                         >
-                          {isLocked
-                            ? "Indisponível para múltiplos países"
-                            : isLoading
-                              ? "Aguarde..."
-                              : "Desbloquear meu roteiro"}
+                          {isLoading ? "Aguarde..." : "Comprar"}
                         </button>
-                      )}
+                      </div>
                     </div>
                   );
                 })}
+                <p className="text-xs text-oliva">
+                  Use seus roteiros em até 6 meses após a compra. Nesse período, todas as dicas Premium do
+                  site ficam liberadas.
+                </p>
                 {error && <p className="text-sm text-terracota">{error}</p>}
               </div>
             )}

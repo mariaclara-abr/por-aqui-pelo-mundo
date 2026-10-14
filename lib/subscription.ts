@@ -1,19 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-admin";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
-
-// A compra do "Roteiro Inteligente" avulso libera todas as dicas Premium do
-// site por um período limitado, diferente do acesso ao próprio roteiro (que
-// não expira).
-export const ROTEIRO_UNICO_TIPS_UNLOCK_DAYS = 7;
-
-export function computeTipsUnlockExpiration(
-  purchaseDate: Date = new Date(),
-): string {
-  const expiration = new Date(purchaseDate);
-  expiration.setDate(expiration.getDate() + ROTEIRO_UNICO_TIPS_UNLOCK_DAYS);
-  return expiration.toISOString();
-}
 
 export function countDistinctCountries(
   attractions: { countrySlug: string }[],
@@ -64,6 +52,39 @@ export async function hasRoteiroUnicoAccess(
   return !!data;
 }
 
+// Usa um crédito não atribuído (roteiro comprado e ainda não usado, dentro da
+// validade) para este roteiro. Escreve com service role: usuários só leem.
+async function claimRoteiroCredit(
+  userId: string,
+  itineraryId: string,
+): Promise<boolean> {
+  const admin = createAdminClient();
+  const { data: credit, error } = await admin
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("plan_type", "roteiro_unico_1pais")
+    .eq("is_active", true)
+    .is("itinerary_id", null)
+    .gt("expiration_date", new Date().toISOString())
+    .order("expiration_date")
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!credit) return false;
+
+  // O filtro itinerary_id null evita duas requisições gastarem o mesmo crédito.
+  const { data: claimed, error: updateError } = await admin
+    .from("subscriptions")
+    .update({ itinerary_id: itineraryId })
+    .eq("id", credit.id)
+    .is("itinerary_id", null)
+    .select("id");
+  if (updateError) throw updateError;
+  // ponytail: perdeu a corrida, tenta o próximo crédito uma vez só por chamada.
+  return claimed.length > 0 || claimRoteiroCredit(userId, itineraryId);
+}
+
 export type AIAccessReason =
   | "premium"
   | "roteiro_unico"
@@ -93,11 +114,9 @@ export async function canUseAIForItinerary(
   }
 
   if (countryCount <= 1) {
-    const hasAccess = await hasRoteiroUnicoAccess(
-      supabase,
-      userId,
-      itineraryId,
-    );
+    const hasAccess =
+      (await hasRoteiroUnicoAccess(supabase, userId, itineraryId)) ||
+      (await claimRoteiroCredit(userId, itineraryId));
     return {
       allowed: hasAccess,
       reason: hasAccess ? "roteiro_unico" : "needs_payment",

@@ -18,6 +18,8 @@ interface SubscriptionState {
   // dicas desbloqueadas (ver ROTEIRO_UNICO_TIPS_UNLOCK_DAYS).
   hasUnlockedTips: boolean;
   roteiroUnicoItineraryIds: Set<string>;
+  // Roteiros comprados e ainda não usados, dentro da validade.
+  credits: number;
 }
 
 const EMPTY_STATE: SubscriptionState = {
@@ -25,6 +27,7 @@ const EMPTY_STATE: SubscriptionState = {
   isPremium: false,
   hasUnlockedTips: false,
   roteiroUnicoItineraryIds: new Set(),
+  credits: 0,
 };
 
 function deriveState(rows: SubscriptionRow[]): SubscriptionState {
@@ -51,7 +54,15 @@ function deriveState(rows: SubscriptionRow[]): SubscriptionState {
       .map((row) => row.itinerary_id as string),
   );
 
-  return { loading: false, isPremium, hasUnlockedTips, roteiroUnicoItineraryIds };
+  const credits = rows.filter(
+    (row) =>
+      row.plan_type === "roteiro_unico_1pais" &&
+      !row.itinerary_id &&
+      row.expiration_date &&
+      new Date(row.expiration_date).getTime() > now,
+  ).length;
+
+  return { loading: false, isPremium, hasUnlockedTips, roteiroUnicoItineraryIds, credits };
 }
 
 // Espelha o padrão de lib/auth.tsx: consulta `subscriptions` direto pelo

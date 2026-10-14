@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import OrnateFrame from "@/components/OrnateFrame";
 
 export default function AuthorBand({
   authorName,
@@ -40,17 +41,8 @@ export default function AuthorBand({
           </Link>
         </div>
 
-        <div className="relative mx-auto w-full max-w-sm shrink-0 rounded-2xl border border-areia/35 bg-branco/10 p-1.5 shadow-sm sm:p-2 lg:mx-0 lg:w-2/5">
-          <span
-            aria-hidden="true"
-            className="absolute -left-1 -top-1 h-7 w-7 rounded-tl-2xl border-l border-t border-terracota"
-          />
-          <span
-            aria-hidden="true"
-            className="absolute -bottom-1 -right-1 h-7 w-7 rounded-br-2xl border-b border-r border-terracota"
-          />
-
-          <div className="relative aspect-[9/10] overflow-hidden rounded-xl border border-branco/70">
+        <OrnateFrame className="mx-auto w-full max-w-[27rem] shrink-0 lg:mx-0 lg:w-[44%]">
+          <div className="relative h-full w-full overflow-hidden rounded-lg">
             {authorPhotoUrl ? (
               <Image
                 src={authorPhotoUrl}
@@ -67,7 +59,7 @@ export default function AuthorBand({
               </div>
             )}
           </div>
-        </div>
+        </OrnateFrame>
       </div>
     </section>
   );
