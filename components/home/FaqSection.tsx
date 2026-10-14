@@ -60,7 +60,7 @@ export default function FaqSection() {
           >
             Perguntas
             <br />
-            <span className="text-oliva italic">frequentes</span>
+            <span className="text-oliva">frequentes</span>
           </h2>
           <p className="mt-5 max-w-sm text-left text-sm leading-7 text-oliva sm:text-base">
             Da curadoria ao seu roteiro, tire suas dúvidas e comece a planejar
