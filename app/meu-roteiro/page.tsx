@@ -325,14 +325,14 @@ export default function MeuRoteiroPage() {
               <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
                 <Link
                   href="/#destinos"
-                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#A64F2E] px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#8F4226] motion-safe:active:translate-y-px"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#A64F2E] px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#8F4226] motion-safe:active:translate-y-px"
                 >
                   Explorar destinos
                 </Link>
                 <button
                   type="button"
                   onClick={handleOrganizarClick}
-                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-oliva px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#45553E] motion-safe:active:translate-y-px"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-oliva px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#45553E] motion-safe:active:translate-y-px"
                 >
                   Usar IA especializada
                 </button>
