@@ -325,19 +325,9 @@ export default function MeuRoteiroPage() {
               <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
                 <Link
                   href="/#destinos"
-                  className="group inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#A64F2E] px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#8F4226] motion-safe:active:translate-y-px"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#A64F2E] px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#8F4226] motion-safe:active:translate-y-px"
                 >
                   Explorar destinos
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 shrink-0 fill-none stroke-current motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
-                    strokeWidth={1.5}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M4 12h15m-6-6 6 6-6 6" />
-                  </svg>
                 </Link>
                 <button
                   type="button"
