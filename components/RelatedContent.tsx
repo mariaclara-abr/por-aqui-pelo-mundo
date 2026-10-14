@@ -267,10 +267,10 @@ function AttractionRecommendationCard({
   const categoryLabel = categoryLabels(attraction.categories);
 
   return (
-    <div className="w-40 shrink-0 snap-start sm:w-48">
+    <div className="flex w-40 shrink-0 snap-start flex-col sm:w-48">
       <Link
         href={`/${attraction.countrySlug}/${attraction.citySlug}/${attraction.slug}`}
-        className="group block"
+        className="group block flex-1"
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm">
           {attraction.coverPhotoUrl ? (
