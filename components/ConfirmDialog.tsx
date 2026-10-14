@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export default function ConfirmDialog({
   message,
@@ -37,7 +38,10 @@ export default function ConfirmDialog({
     };
   }, [onCancel]);
 
-  return (
+  // Portal no body: o Header tem backdrop-blur, que faz o "fixed" se ancorar
+  // nele em vez da tela, e o diálogo aparecia deslocado.
+  // Só é montado após interação do usuário, então document já existe.
+  return createPortal(
     <div className="fixed inset-0 z-[1200] flex items-center justify-center p-4">
       <div
         onClick={onCancel}
@@ -71,6 +75,7 @@ export default function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
