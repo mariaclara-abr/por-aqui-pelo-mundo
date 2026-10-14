@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // ponytail: cota de 5k imagens/mes da Vercel (Hobby) estourou; fotos vao direto do Supabase.
+    // Voltar a otimizar quando redimensionar no upload ou mudar de plano.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

@@ -43,6 +43,26 @@ async function toWebFile(file: File) {
   });
 }
 
+const MAX_EDGE = 1600;
+
+// Reduz o lado maior a 1600px e recomprime em JPEG: fotos de celular/câmera
+// (2 a 5 MB) viram ~200 a 400 KB. Se não ficar menor, mantém o original.
+async function shrink(file: File) {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, "image/jpeg", 0.82),
+  );
+  if (!blob || blob.size >= file.size) return file;
+  return new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" });
+}
+
 export default function PhotoUploader({
   photos,
   onChange,
@@ -68,7 +88,7 @@ export default function PhotoUploader({
     for (const original of files) {
       let file: File;
       try {
-        file = await toWebFile(original);
+        file = await shrink(await toWebFile(original));
       } catch (conversionError) {
         console.error("Falha ao converter foto:", original.name, conversionError);
         hadError = true;
