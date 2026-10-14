@@ -286,45 +286,79 @@ export default function MeuRoteiroPage() {
 
   if (items.length === 0) {
     return (
-      <main className="flex flex-1 items-center justify-center px-4 py-16 sm:px-6">
-        <div className="flex max-w-sm flex-col items-center gap-3 text-center">
-          <Image
-            src="/roteiro-vazio-ilustracao.png"
-            alt="Caderno de viagem aberto, mapa, lápis e avião de papel"
-            className="-mb-1 w-64 max-w-full sm:w-72"
-            width={288}
-            height={192}
-          />
-          <p className="text-center font-serif text-xl text-tinta">
-            Seu roteiro está vazio
-          </p>
-          <p className="text-center text-oliva">
-            Explore os destinos e adicione atrações para começar a montar sua
-            viagem.
-          </p>
-          <Link
-            href="/"
-            className="mt-2 rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+      <main className="flex flex-1 flex-col">
+        <section
+          aria-labelledby="empty-itinerary-title"
+          className="relative isolate flex flex-1 flex-col overflow-hidden px-6 pt-12 pb-64 sm:px-10 sm:pt-16 sm:pb-80 lg:min-h-[640px] lg:justify-center lg:px-16 lg:py-24"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-80 mix-blend-multiply [mask-image:linear-gradient(to_bottom,transparent,#000_30%)] sm:h-96 lg:inset-y-0 lg:left-auto lg:h-full lg:w-[78%] lg:[mask-image:linear-gradient(to_right,transparent,#000_35%)]"
           >
-            Explorar destinos
-          </Link>
-          <button
-            type="button"
-            onClick={handleOrganizarClick}
-            className="text-sm text-terracota hover:underline"
-          >
-            Fazer com IA
-          </button>
-          {user && (
-            <button
-              type="button"
-              onClick={() => setSwitcherOpen(true)}
-              className="text-sm text-terracota hover:underline"
-            >
-              Trocar de roteiro
-            </button>
-          )}
-        </div>
+            <Image
+              src="/roteiro-cachoeira-aquarela.webp"
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 78vw, 100vw"
+              loading="eager"
+              className="object-cover object-[65%_65%] opacity-90 lg:object-right"
+            />
+          </div>
+
+          <div className="mx-auto w-full max-w-[1312px]">
+            <div className="max-w-lg lg:max-w-xl">
+              <p className="mb-5 text-left text-xs font-semibold tracking-[0.18em] text-oliva uppercase">
+                Meu roteiro
+              </p>
+              <h1
+                id="empty-itinerary-title"
+                className="font-serif text-[2.5rem] leading-[1.08] tracking-tight text-tinta sm:text-5xl lg:text-6xl"
+              >
+                Sua próxima viagem
+                <span className="block text-oliva">começa aqui.</span>
+              </h1>
+              <p className="mt-6 max-w-sm text-left text-base leading-relaxed text-oliva sm:text-lg">
+                Seu roteiro ainda está em branco. Explore nossos destinos e salve
+                os lugares que você quer conhecer.
+              </p>
+
+              <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
+                <Link
+                  href="/#destinos"
+                  className="group inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#A64F2E] px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#8F4226] motion-safe:active:translate-y-px"
+                >
+                  Explorar destinos
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4 shrink-0 fill-none stroke-current motion-safe:transition-transform motion-safe:group-hover:translate-x-1"
+                    strokeWidth={1.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 12h15m-6-6 6 6-6 6" />
+                  </svg>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleOrganizarClick}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-oliva px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#45553E] motion-safe:active:translate-y-px"
+                >
+                  Usar IA especializada
+                </button>
+              </div>
+              {user && (
+                <button
+                  type="button"
+                  onClick={() => setSwitcherOpen(true)}
+                  className="mt-5 inline-flex min-h-11 items-center text-sm text-oliva underline decoration-oliva/40 underline-offset-4 transition-colors hover:text-tinta hover:decoration-tinta"
+                >
+                  Trocar de roteiro
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
         {premiumOpen && (
           <PremiumDialog
             itineraryId={itineraryId}

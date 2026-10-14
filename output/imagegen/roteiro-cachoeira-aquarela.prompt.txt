@@ -1,0 +1,12 @@
+Asset: public/roteiro-cachoeira-aquarela.webp
+Generator: built-in image_gen
+Reference: the user's woodland waterfall photograph.
+Delivery: 1536 x 1024 WebP, quality 86.
+
+Use case: illustration-story.
+Asset type: full-width watercolor background for the empty itinerary screen of an elegant Brazilian travel website, not a UI mockup.
+Primary request: paint a beautiful natural woodland waterfall inspired by the user's photo: a long low stepped line of several white cascading curtains over dark moss-covered rocks, lush green trees, crystalline turquoise emerald water and a tiny grassy islet. Transform into a real hand-painted watercolor travel-journal illustration.
+Style: delicate traditional watercolor on warm ivory paper, visible pigment granulation, transparent washes, occasional fine pencil details, softly bleeding organic unfinished edges. Elegant, calm, evocative. No photorealism or digital 3D.
+Composition: wide landscape 1536 x 1024. An asymmetrical scene occupying the RIGHT 62 percent and the lower edge; waterfall is clearest from center-right to right, framed by sparse olive trees, clear jade water across the lower quarter. LEFT 38 percent remains almost blank warm paper for a large heading and buttons that will be rendered separately in HTML. The forest and water progressively dissolve into the blank paper at the left and at all outer edges. Keep the upper left especially quiet. The scene should feel spacious and integrated into paper, not a framed rectangular picture.
+Palette: warm parchment ivory close to #F0E6D2, olive and sage foliage, muted jade and turquoise pool, moss greens, soft stone brown and white waterfalls. Strongest but still natural color is in the right waterfall. Paper background harmonizes with a sand-colored site.
+No text, no letters, no icons, no airplanes, no people, no buildings, no borders, no watermark.
