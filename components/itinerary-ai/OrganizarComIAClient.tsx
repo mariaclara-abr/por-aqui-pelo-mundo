@@ -576,6 +576,8 @@ export default function OrganizarComIAClient({
             name: item.name,
             categories: item.categories,
             cityName: item.cityName,
+            citySlug: item.citySlug,
+            countrySlug: item.countrySlug,
             curationRating: item.curationRating,
             description: item.description,
             coverPhotoUrl: item.coverPhotoUrl,

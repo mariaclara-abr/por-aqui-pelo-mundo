@@ -1,10 +1,14 @@
 import { slugify } from "@/lib/slugify";
 import { categoryLabels } from "@/types/database";
+import { createClient } from "@/lib/supabase-browser";
 
 export interface ExportAttractionItem {
   name: string;
   categories: string[];
   cityName: string;
+  // Com os slugs, o PDF busca os nomes reais (com acento) de cidade e país.
+  citySlug?: string;
+  countrySlug?: string;
   curationRating: number | null;
   description: string | null;
   coverPhotoUrl: string | null;
@@ -195,7 +199,53 @@ function buildFooter() {
   );
 }
 
-function buildCoverPage(itinerary: ExportItinerary) {
+// Título da capa: "Itália (Roma, Florença) · França (Paris)", na ordem em que
+// os lugares aparecem no roteiro. Sem país conhecido, só as cidades.
+function placesTitle(itinerary: ExportItinerary, countryNames: Map<string, string>) {
+  const byCountry = new Map<string, string[]>();
+  for (const item of itinerary.days.flatMap((d) => d.items)) {
+    const country = (item.countrySlug && countryNames.get(item.countrySlug)) || "";
+    const cities = byCountry.get(country) ?? [];
+    if (item.cityName && !cities.includes(item.cityName)) cities.push(item.cityName);
+    byCountry.set(country, cities);
+  }
+  return [...byCountry]
+    .map(([country, cities]) =>
+      country ? `${country} (${cities.join(", ")})` : cities.join(", "),
+    )
+    .filter(Boolean)
+    .join(" · ");
+}
+
+// Troca cityName pelo nome real da cidade e devolve os nomes dos países.
+async function resolvePlaceNames(itinerary: ExportItinerary) {
+  const items = itinerary.days.flatMap((d) => d.items);
+  const citySlugs = [...new Set(items.map((i) => i.citySlug).filter((s): s is string => !!s))];
+  const countryNames = new Map<string, string>();
+  if (citySlugs.length === 0) return countryNames;
+
+  const { data, error } = await createClient()
+    .from("cities")
+    .select("slug, name, countries(slug, name)")
+    .in("slug", citySlugs);
+  if (error) {
+    console.error("Não foi possível buscar os nomes de países e cidades:", error);
+    return countryNames;
+  }
+  const cityNames = new Map<string, string>();
+  for (const city of data ?? []) {
+    cityNames.set(city.slug, city.name);
+    const country = Array.isArray(city.countries) ? city.countries[0] : city.countries;
+    if (country) countryNames.set(country.slug, country.name);
+  }
+  for (const item of items) {
+    const name = item.citySlug && cityNames.get(item.citySlug);
+    if (name) item.cityName = name;
+  }
+  return countryNames;
+}
+
+function buildCoverPage(itinerary: ExportItinerary, countryNames: Map<string, string>) {
   const totalItems = itinerary.days.reduce((sum, day) => sum + day.items.length, 0);
 
   const page = el(
@@ -207,8 +257,13 @@ function buildCoverPage(itinerary: ExportItinerary) {
 
   const top = el("div");
   top.appendChild(el("div", "h-1.5 w-24 rounded-full bg-terracota"));
-  top.appendChild(el("h1", "mt-10 font-serif text-5xl leading-tight text-tinta", itinerary.title));
-  top.appendChild(el("p", "mt-4 text-lg text-oliva", "Roteiro de viagem"));
+  const places = placesTitle(itinerary, countryNames);
+  top.appendChild(
+    el("h1", "mt-10 font-serif text-5xl leading-tight text-tinta", places || itinerary.title),
+  );
+  top.appendChild(
+    el("p", "mt-4 text-lg text-oliva", places ? itinerary.title : "Roteiro de viagem"),
+  );
   top.appendChild(
     el(
       "p",
@@ -293,12 +348,15 @@ function buildItemCard(item: ExportAttractionItem) {
   return card;
 }
 
-function buildDayPage(day: ExportDay) {
-  const page = el("div", "bg-branco p-16 font-sans");
+// Página de altura fixa (1 página A4 do PDF). As atrações vêm já agrupadas por
+// paginateDay, então nenhum card é cortado na quebra de página.
+function buildDayPage(day: ExportDay, items: ExportAttractionItem[], continued: boolean) {
+  const page = el("div", "flex flex-col bg-branco p-16 font-sans");
   page.style.width = `${PAGE_WIDTH_PX}px`;
+  page.style.height = `${PAGE_HEIGHT_PX}px`;
 
   const header = el("div", "flex items-baseline justify-between border-b-2 border-terracota pb-4");
-  header.appendChild(el("h2", "font-serif text-3xl text-tinta", `Dia ${day.dayNumber}`));
+  header.appendChild(el("h2", "font-serif text-3xl text-tinta", `Dia ${day.dayNumber}${continued ? " (continuação)" : ""}`));
   if (day.date) {
     header.appendChild(
       el("p", "text-sm capitalize uppercase tracking-wide text-oliva", formatDate(day.date)),
@@ -306,14 +364,49 @@ function buildDayPage(day: ExportDay) {
   }
   page.appendChild(header);
 
-  const list = el("div", "mt-8 flex flex-col gap-6");
-  for (const item of day.items) {
+  const list = el("div", "mt-8 flex flex-1 flex-col gap-6");
+  list.dataset.list = "";
+  for (const item of items) {
     list.appendChild(buildItemCard(item));
   }
   page.appendChild(list);
   page.appendChild(buildFooter());
 
   return page;
+}
+
+const CARD_GAP_PX = 24; // gap-6 da lista
+
+// Mede os cards no DOM e agrupa as atrações de um dia em páginas, sem partir
+// nenhum card ao meio (um card maior que a página fica sozinho).
+function paginateDay(day: ExportDay, stage: HTMLElement): HTMLElement[] {
+  stage.innerHTML = "";
+  const empty = buildDayPage(day, [], false);
+  stage.appendChild(empty);
+  const available = empty.querySelector<HTMLElement>("[data-list]")!.clientHeight;
+
+  stage.innerHTML = "";
+  const probe = buildDayPage(day, day.items, false);
+  stage.appendChild(probe);
+  const heights = Array.from(probe.querySelector("[data-list]")!.children).map(
+    (card) => (card as HTMLElement).offsetHeight,
+  );
+  stage.innerHTML = "";
+
+  const chunks: ExportAttractionItem[][] = [[]];
+  let used = 0;
+  day.items.forEach((item, i) => {
+    const current = chunks[chunks.length - 1];
+    const needed = heights[i] + (current.length > 0 ? CARD_GAP_PX : 0);
+    if (current.length > 0 && used + needed > available) {
+      chunks.push([item]);
+      used = heights[i];
+    } else {
+      current.push(item);
+      used += needed;
+    }
+  });
+  return chunks.map((items, i) => buildDayPage(day, items, i > 0));
 }
 
 function waitForImages(container: HTMLElement, timeoutMs = 8000): Promise<void> {
@@ -369,6 +462,7 @@ export async function exportItineraryToPDF(itinerary: ExportItinerary): Promise<
   document.body.appendChild(stage);
 
   try {
+    const countryNames = await resolvePlaceNames(itinerary);
     const mapPoints = itinerary.mapPoints ?? [];
     // O mapa é um extra: se os tiles não carregarem, o PDF sai sem ele.
     const mapSections: HTMLElement[] = [];
@@ -391,9 +485,9 @@ export async function exportItineraryToPDF(itinerary: ExportItinerary): Promise<
     }
 
     const sections = [
-      buildCoverPage(itinerary),
+      buildCoverPage(itinerary, countryNames),
       ...mapSections,
-      ...itinerary.days.map((day) => buildDayPage(day)),
+      ...itinerary.days.flatMap((day) => paginateDay(day, stage)),
     ];
 
     let isVeryFirstSlice = true;

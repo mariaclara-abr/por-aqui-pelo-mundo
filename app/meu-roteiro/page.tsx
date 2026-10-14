@@ -227,6 +227,8 @@ export default function MeuRoteiroPage() {
                     : undefined,
                 categories: attraction.categories,
                 cityName: humanizeSlug(attraction.citySlug),
+                citySlug: attraction.citySlug,
+                countrySlug: attraction.countrySlug,
                 curationRating: attraction.curationRating,
                 description: description || null,
                 tips: summarizeText(info?.important_tips, 240) || null,
