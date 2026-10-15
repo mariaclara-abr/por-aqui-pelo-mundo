@@ -28,6 +28,7 @@ import {
   type UserPreferences,
 } from "@/types/database";
 import type { TipoRoteiro } from "@/lib/prompts/roteiro-scripts";
+import PremiumRoteiroProgresso from "@/components/itinerary-ai/PremiumRoteiroProgresso";
 import {
   budgetHint,
   MAX_DAYS_WITH_BUDGET_RANGE,
@@ -176,6 +177,7 @@ export default function OrganizarComIAClient({
   const [adults, setAdults] = useState("");
   const [minorAges, setMinorAges] = useState<string[]>([]);
   const [aiQuestions, setAiQuestions] = useState<string[]>([]);
+  const [premiumId, setPremiumId] = useState<string | null>(null);
   const [budget, setBudget] = useState<BudgetRange | null>(preferences.budget);
   const [pace, setPace] = useState<TravelPace | null>(preferences.pace);
   const [travelProfile, setTravelProfile] = useState<TravelProfile | null>(
@@ -346,6 +348,10 @@ export default function OrganizarComIAClient({
     }
     if (!filled("saida")) missing.push("cidade de saída");
     if (!filled("volta")) missing.push("cidade de volta");
+    if (!filled("voo_comprado")) missing.push("se o voo já foi comprado");
+    if (extra.voo_comprado?.includes("Já comprei") && !filled("dia1")) {
+      missing.push("como é o dia 1 da viagem");
+    }
     if (!pace) missing.push("ritmo");
     if (!budget && !customBudget) missing.push("orçamento");
     if (!filled("deslocamento")) missing.push("deslocamento");
@@ -493,13 +499,15 @@ export default function OrganizarComIAClient({
     setLoading(true);
     setError(null);
     setAiQuestions([]);
+    setPremiumId(null);
     setResult(null);
     setExcludedSuggestionIds(new Set());
     setSaved(false);
     setSaveError(null);
 
     try {
-      const response = await fetch("/api/generate-itinerary-ai", {
+      const endpoint = tipo === "internacional" ? "/api/premium-roteiro" : "/api/generate-itinerary-ai";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
@@ -531,6 +539,12 @@ export default function OrganizarComIAClient({
         | OrganizeResponse
         | GenerateErrorResponse
         | QuestionsResponse;
+
+      // Roteiro Premium (internacional): roda em segundo plano e a tela acompanha pelo id.
+      if (tipo === "internacional" && response.status === 202) {
+        setPremiumId((data as unknown as { id: string }).id);
+        return;
+      }
 
       if (response.ok && "questions" in data) {
         setAiQuestions(data.questions);
@@ -1343,6 +1357,10 @@ export default function OrganizarComIAClient({
         )}
         </div>
       </div>
+
+      {premiumId && (
+        <PremiumRoteiroProgresso id={premiumId} onFechar={() => setPremiumId(null)} />
+      )}
 
       {result && (
         <div className="flex flex-col gap-6">

@@ -50,3 +50,6 @@ next-env.d.ts
 /.design-sync/.cache/
 /.design-sync/learnings/
 /.design-sync/node_modules
+
+# roteiros de teste gerados na mão (Word e PDF pesados), só para conferência local
+/roteiros-teste/

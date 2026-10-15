@@ -82,3 +82,26 @@ body {
     animation: none;
   }
 }
+
+/* Cena da tela de geração do roteiro Premium: nuvens e pássaros à deriva. O
+   movimento é contínuo e linear (sem pulso), cada elemento com a sua duração e a
+   sua fase, para nunca repetir em sincronia. */
+@keyframes cena-deriva {
+  from {
+    transform: translateX(-30vw);
+  }
+  to {
+    transform: translateX(var(--cena-largura, 100vw));
+  }
+}
+
+.cena-deriva {
+  animation: cena-deriva linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cena-deriva {
+    animation: none;
+  }
+}

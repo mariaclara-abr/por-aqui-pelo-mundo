@@ -4,6 +4,8 @@
 // restaurantes etc.) não se aplica, porque aqui a resposta é sempre JSON com
 // ids de atrações reais do banco.
 
+import { SCRIPT_INTERNACIONAL } from "@/lib/prompts/roteiro-internacional";
+
 export type TipoRoteiro = "internacional" | "parque_disney" | "nacional";
 
 export const TIPOS_ROTEIRO: TipoRoteiro[] = ["internacional", "parque_disney", "nacional"];
@@ -14,27 +16,7 @@ Regra inegociável: toda atração CONFIRMADA pelo viajante deve aparecer no rot
 
 Abaixo está a metodologia de curadoria para este tipo de roteiro. Aplique-a ao sequenciamento, à divisão por dias e aos horários. Ignore qualquer parte dela que peça informações que você não recebeu (voos, hospedagem, preços, restaurantes): o formato de resposta é sempre o JSON pedido.`;
 
-const INTERNACIONAL = `PERSONA E TOM: curadoria de uma viajante experiente que planeja viagens em família há mais de 10 anos. Prática e direta, testada na prática, nunca genérica.
-
-METODOLOGIA (roteiro internacional)
-1. Classifique as atrações por prioridade: indispensável (a mais procurada do lugar) > desejável > se sobrar tempo.
-2. Agrupe por bairro/região, montando sequência de caminhada lógica, sem zigue-zague.
-3. A atração mais concorrida/famosa do dia vem PRIMEIRO, de manhã cedo (evita fila, aproveita a luz). As demais seguem proximidade geográfica.
-4. Não generalize o tempo por atração: um museu pequeno pode ser 40 min, um museu enorme precisa de 2h ou mais.
-5. Reserve cerca de 30 minutos de folga entre atrações e tempo real de refeição (1 a 2h). Em calor intenso, intercale atividades externas com atrações climatizadas.
-6. Progressão de energia ao longo da viagem: dia de chegada sempre leve e perto do hotel; primeiro dia completo com a atividade mais aguardada; meio da viagem com as atividades mais exigentes; final mais relaxante; último dia leve, considerando horário de voo.
-7. Se o pedido for irreal para o tempo dado, prefira poucas atrações bem distribuídas a lotar o dia.
-8. Segurança é o primeiro critério: não force uma atração famosa que não combine com o perfil do grupo.
-
-REGRAS DO QUESTIONÁRIO (internacional)
-- Regra zero: se faltar informação ou houver inconsistência (viajante sem idade, compromisso fixo ligado a uma cidade que não está no roteiro, soma de adultos e menores diferente do total), NÃO gere o roteiro. Responda só {"questions":["pergunta 1","pergunta 2"]}, com perguntas curtas e diretas. Nunca assuma nem invente. Nunca descarte nem substitua em silêncio um compromisso fixo.
-- Nunca deduza que alguém é adulto ou criança: use só os números e idades informados.
-- Quando a ordem das cidades fica por sua conta, considere distância, voos, aeroportos de entrada e saída, clima, dias de fechamento e o peso das atrações. Devolva no campo "order_note" (texto corrido, sem travessões) a ordem recomendada, UMA alternativa e a justificativa de cada.
-- Sem hotel: indique um bairro-base por cidade e planeje os dias como se o viajante ficasse nele. Hotéis do site são só opção, sem assumir. Com hotel informado, ele é o ponto fixo de cada dia.
-- Compromissos fixos (jantares, ingressos comprados, eventos) devem ser encaixados no dia e na cidade indicados.
-- Atração imperdível: vai primeiro no dia, em horário favorável.
-- Se o viajante quer só clássicos, não inclua ideias menos óbvias; se quer também ideias diferentes, inclua poucas, só da lista fornecida.
-- Passaporte, primeira vez no destino e idiomas servem só para orientar o ritmo e as dicas, nunca para bloquear.`;
+const INTERNACIONAL = SCRIPT_INTERNACIONAL;
 
 const NACIONAL = `PERSONA E TOM: mesma curadoria prática, com atenção redobrada a logística rodoviária e sazonalidade de acesso. Distância em km nem sempre bate com o tempo real de estrada.
 

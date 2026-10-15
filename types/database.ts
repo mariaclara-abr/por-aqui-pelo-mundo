@@ -871,6 +871,48 @@ export interface Database {
           },
         ];
       };
+      premium_roteiros: {
+        Row: {
+          id: string;
+          user_id: string;
+          itinerary_id: string | null;
+          tipo: string;
+          status: "gerando" | "pronto" | "perguntas" | "erro";
+          entrada: Json;
+          perguntas: Json | null;
+          conteudo: Json | null;
+          erro: string | null;
+          uso: Json;
+          etapa: "preparando" | "pesquisando" | "compondo" | "finalizando" | "concluido";
+          pesquisa: string | null;
+          ajustes_incluidos: number;
+          ajustes_usados: number;
+          ajustes_extras: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          itinerary_id?: string | null;
+          tipo?: string;
+          status?: "gerando" | "pronto" | "perguntas" | "erro";
+          entrada: Json;
+          perguntas?: Json | null;
+          conteudo?: Json | null;
+          erro?: string | null;
+          uso?: Json;
+          etapa?: "preparando" | "pesquisando" | "compondo" | "finalizando" | "concluido";
+          pesquisa?: string | null;
+          ajustes_incluidos?: number;
+          ajustes_usados?: number;
+          ajustes_extras?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["premium_roteiros"]["Insert"]>;
+        Relationships: [];
+      };
       affiliate_clicks: {
         Row: {
           id: string;

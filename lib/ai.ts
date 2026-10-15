@@ -136,7 +136,7 @@ function describeAttraction(a: OrganizeAttractionInput, index: number): string {
   return parts.join(" ");
 }
 
-function buildPreferenceLines(preferences: OrganizePreferencesInput): string[] {
+export function buildPreferenceLines(preferences: OrganizePreferencesInput): string[] {
   return [
     preferences.budget && `Orçamento: ${preferences.budget}`,
     preferences.pace && `Ritmo preferido: ${preferences.pace}`,
@@ -150,7 +150,7 @@ function buildPreferenceLines(preferences: OrganizePreferencesInput): string[] {
     preferences.interestCategories.length > 0 &&
       `Interesses prioritários: ${preferences.interestCategories.join(", ")}`,
     ...preferences.extras.map((e) =>
-      e.value.includes("A IA pode recomendar")
+      (e.value.includes("A IA pode recomendar") || e.value.includes("a IA recomenda o melhor"))
         ? `${e.label}: ${e.value}. Onde o viajante pediu recomendação, sugira o melhor meio de deslocamento para cada trecho do roteiro, considerando faixa de custo, distância entre as atrações e o orçamento informado`
         : `${e.label}: ${e.value}`,
     ),
@@ -314,7 +314,7 @@ function buildDestinationBlock(input: FromScratchItineraryInput): string {
   return lines.length > 0 ? `\n${lines.join("\n")}\n` : "";
 }
 
-function buildFromScratchPrompt(input: FromScratchItineraryInput): string {
+export function buildFromScratchPrompt(input: FromScratchItineraryInput): string {
   const candidatesList = input.candidates.map(describeAttraction).join("\n");
   const cityNames = input.chosenCityNames;
   const preferenceLines = buildPreferenceLines(input.preferences);
@@ -357,14 +357,14 @@ async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro, numD
     body: JSON.stringify({
       model: MODEL,
       // Cresce com o nº de dias: roteiros longos têm muitos itens em JSON.
-      max_tokens: Math.min(16000, 2048 + numDays * 450),
+      // Folga extra porque o raciocínio (thinking) também conta nos tokens de saída.
+      max_tokens: Math.min(16000, 3000 + numDays * 500),
+      // Custo: "low" gasta bem menos raciocínio; sobe para "medium" se a qualidade pedir.
+      output_config: { effort: "low" },
       system: getSystemPrompt(tipo),
-      messages: [
-        { role: "user", content: prompt },
-        // Prefill do turno do assistente: força a resposta a começar direto
-        // com "{", evitando que o modelo abra com explicações ou markdown.
-        { role: "assistant", content: "{" },
-      ],
+      // Sem prefill: Sonnet 5+ rejeita turno final do assistente (400).
+      // O JSON é extraído do texto abaixo, tolerando cerca de markdown.
+      messages: [{ role: "user", content: prompt }],
     }),
   });
 
@@ -376,14 +376,15 @@ async function callAnthropicForItinerary(prompt: string, tipo: TipoRoteiro, numD
   }
 
   const data = await response.json();
-  const text: unknown = data?.content?.[0]?.text;
+  // Com thinking ligado, o primeiro bloco pode ser "thinking": pega o de texto.
+  const text: unknown = data?.content?.find((b: { type?: string }) => b.type === "text")?.text;
   if (typeof text !== "string") {
     throw new Error("Resposta inesperada da API da Anthropic.");
   }
 
   let parsed: { questions?: unknown };
   try {
-    parsed = JSON.parse(`{${text}`);
+    parsed = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
   } catch {
     throw new Error("Não foi possível interpretar a resposta da IA como JSON.");
   }

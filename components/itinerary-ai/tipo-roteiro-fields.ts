@@ -53,6 +53,24 @@ export const INTERNACIONAL_FIELDS: ExtraField[] = [
     placeholder: "Cidade de volta",
   },
   {
+    key: "voo_comprado",
+    label: "Voo de ida e de volta já comprado?",
+    hint: "Com os horários, o dia de chegada e o último dia respeitam o voo. Sem voo comprado, o dia 1 já é o primeiro dia de passeios.",
+    required: true,
+    options: ["Já comprei", "Ainda não comprei"],
+    textOn: ["Já comprei"],
+    placeholder: "Horário de chegada no destino e horário do voo de volta",
+  },
+  {
+    key: "dia1",
+    label: "Como é o dia 1 da viagem?",
+    hint: "Só responder se o voo já foi comprado.",
+    options: [
+      "Chego tarde e só vou dormir (o dia 1 do roteiro já é o primeiro dia de passeios)",
+      "Chego de manhã ou à tarde e quero fazer algo no dia 1 (dia de chegada, mais tranquilo)",
+    ],
+  },
+  {
     key: "flex_datas",
     label: "Flexibilidade das datas",
     options: ["Datas fixas", "Flexível"],
@@ -88,7 +106,7 @@ export const INTERNACIONAL_FIELDS: ExtraField[] = [
       "Vou alugar carro",
       "Táxi/motoristas de aplicativo",
       "A IA pode recomendar",
-      "Ainda não decidi",
+      "Ainda não decidi (a IA recomenda o melhor para você)",
     ],
   },
   {
