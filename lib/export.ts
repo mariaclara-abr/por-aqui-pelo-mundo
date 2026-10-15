@@ -199,22 +199,54 @@ function buildFooter() {
   );
 }
 
-// Título da capa: "Itália (Roma, Florença) · França (Paris)", na ordem em que
-// os lugares aparecem no roteiro. Sem país conhecido, só as cidades.
-function placesTitle(itinerary: ExportItinerary, countryNames: Map<string, string>) {
-  const byCountry = new Map<string, string[]>();
+// Cidades da capa, uma por linha, na ordem em que aparecem no roteiro.
+function coverCities(itinerary: ExportItinerary) {
+  const cities: string[] = [];
   for (const item of itinerary.days.flatMap((d) => d.items)) {
-    const country = (item.countrySlug && countryNames.get(item.countrySlug)) || "";
-    const cities = byCountry.get(country) ?? [];
     if (item.cityName && !cities.includes(item.cityName)) cities.push(item.cityName);
-    byCountry.set(country, cities);
   }
-  return [...byCountry]
-    .map(([country, cities]) =>
-      country ? `${country} (${cities.join(", ")})` : cities.join(", "),
-    )
-    .filter(Boolean)
-    .join(" · ");
+  return cities;
+}
+
+// Países na ordem do roteiro: slugs (para achar a aquarela) e nomes (para o subtítulo).
+function coverCountries(itinerary: ExportItinerary, countryNames: Map<string, string>) {
+  const slugs: string[] = [];
+  for (const item of itinerary.days.flatMap((d) => d.items)) {
+    if (item.countrySlug && !slugs.includes(item.countrySlug)) slugs.push(item.countrySlug);
+  }
+  const names = slugs.map((slug) => countryNames.get(slug)).filter((n): n is string => !!n);
+  const text =
+    names.length > 1 ? `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}` : names[0] ?? "";
+  return { slugs, text };
+}
+
+// "01 a 15 de julho de 2027" (mesmo mês) ou "28 de junho a 03 de julho de 2027".
+function coverDates(itinerary: ExportItinerary) {
+  const dates = itinerary.days.map((d) => d.date).filter((d): d is string => !!d);
+  if (dates.length === 0) return "";
+  const first = new Date(`${dates[0]}T00:00:00`);
+  const last = new Date(`${dates[dates.length - 1]}T00:00:00`);
+  const part = (d: Date, opts: Intl.DateTimeFormatOptions) => d.toLocaleDateString("pt-BR", opts);
+  if (first.getTime() === last.getTime()) return part(first, { day: "2-digit", month: "long", year: "numeric" });
+  if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
+    return `${part(first, { day: "2-digit" })} a ${part(last, { day: "2-digit", month: "long", year: "numeric" })}`;
+  }
+  return `${part(first, { day: "2-digit", month: "long" })} a ${part(last, { day: "2-digit", month: "long", year: "numeric" })}`;
+}
+
+// Aquarela pronta por país (public/aquarelas/NOMEDOPAIS_AQUARELA.webp). País sem
+// arquivo fica sem imagem: nunca se gera nem se busca outra.
+async function availableAquarelas(countrySlugs: string[]) {
+  const urls = countrySlugs
+    .slice(0, 3)
+    .map((slug) => `/aquarelas/${slug.toUpperCase().replace(/-/g, "_")}_AQUARELA.webp`);
+  const checks = await Promise.all(
+    urls.map((url) => fetch(url, { method: "HEAD" }).then((r) => r.ok, () => false)),
+  );
+  return countrySlugs
+    .slice(0, 3)
+    .map((slug, i) => ({ slug, url: urls[i] }))
+    .filter((_, i) => checks[i]);
 }
 
 // Troca cityName pelo nome real da cidade e devolve os nomes dos países.
@@ -245,8 +277,14 @@ async function resolvePlaceNames(itinerary: ExportItinerary) {
   return countryNames;
 }
 
-function buildCoverPage(itinerary: ExportItinerary, countryNames: Map<string, string>) {
+function buildCoverPage(
+  itinerary: ExportItinerary,
+  countryNames: Map<string, string>,
+  aquarelas: { slug: string; url: string }[],
+  countriesText: string,
+) {
   const totalItems = itinerary.days.reduce((sum, day) => sum + day.items.length, 0);
+  const cities = coverCities(itinerary);
 
   const page = el(
     "div",
@@ -257,14 +295,27 @@ function buildCoverPage(itinerary: ExportItinerary, countryNames: Map<string, st
 
   const top = el("div");
   top.appendChild(el("div", "h-1.5 w-24 rounded-full bg-terracota"));
-  const places = placesTitle(itinerary, countryNames);
-  top.appendChild(
-    el("h1", "mt-10 font-serif text-5xl leading-tight text-tinta", places || itinerary.title),
+
+  const row = el("div", "mt-10 flex items-start justify-between gap-6");
+  const text = el("div", "min-w-0 flex-1");
+  text.appendChild(
+    el(
+      "p",
+      "text-xs font-semibold uppercase tracking-[0.18em] text-terracota",
+      cities.length > 0 ? itinerary.title : "Roteiro de viagem",
+    ),
   );
-  top.appendChild(
-    el("p", "mt-4 text-lg text-oliva", places ? itinerary.title : "Roteiro de viagem"),
-  );
-  top.appendChild(
+  const title = el("h1", "mt-4 font-serif text-5xl font-bold leading-tight text-oliva uppercase");
+  if (cities.length > 0) {
+    for (const city of cities) title.appendChild(el("div", undefined, city));
+  } else {
+    title.textContent = itinerary.title;
+  }
+  text.appendChild(title);
+  const dates = coverDates(itinerary);
+  if (countriesText) text.appendChild(el("p", "mt-6 font-serif text-xl text-tinta/70", countriesText));
+  if (dates) text.appendChild(el("p", "mt-1 font-serif text-xl text-tinta/70", dates));
+  text.appendChild(
     el(
       "p",
       "mt-8 text-sm uppercase tracking-wide text-oliva",
@@ -273,6 +324,20 @@ function buildCoverPage(itinerary: ExportItinerary, countryNames: Map<string, st
       }`,
     ),
   );
+  row.appendChild(text);
+
+  if (aquarelas.length > 0) {
+    const art = el("div", "flex shrink-0 gap-3");
+    for (const { slug, url } of aquarelas) {
+      const img = el("img", "h-auto");
+      img.src = url;
+      img.alt = `Ilustração em aquarela de ${countryNames.get(slug) ?? slug}`;
+      img.style.width = aquarelas.length === 1 ? "150px" : "100px";
+      art.appendChild(img);
+    }
+    row.appendChild(art);
+  }
+  top.appendChild(row);
   page.appendChild(top);
   page.appendChild(buildFooter());
 
@@ -484,8 +549,11 @@ export async function exportItineraryToPDF(itinerary: ExportItinerary): Promise<
       }
     }
 
+    const { slugs, text: countriesText } = coverCountries(itinerary, countryNames);
+    const aquarelas = await availableAquarelas(slugs);
+
     const sections = [
-      buildCoverPage(itinerary, countryNames),
+      buildCoverPage(itinerary, countryNames, aquarelas, countriesText),
       ...mapSections,
       ...itinerary.days.flatMap((day) => paginateDay(day, stage)),
     ];
