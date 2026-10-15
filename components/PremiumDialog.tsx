@@ -20,11 +20,12 @@ function SparkleIcon({ className }: { className?: string }) {
   );
 }
 
-function DownloadIcon({ className }: { className?: string }) {
+function RouteIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth={1.7}>
-      <path d="M10 3v9m0 0l-3.2-3.2M10 12l3.2-3.2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 14v1.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V14" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth={1.6}>
+      <circle cx="5" cy="15" r="1.7" />
+      <circle cx="15" cy="5" r="1.7" />
+      <path d="M6.7 15H12a2.5 2.5 0 0 0 0-5H8a2.5 2.5 0 0 1 0-5h5.3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -55,10 +56,10 @@ function LightbulbIcon({ className }: { className?: string }) {
   );
 }
 
-type PremiumHighlight = "dicas" | "ia" | "download";
+type PremiumHighlight = "dicas" | "ia";
 
 export const HERO_BENEFITS: {
-  id: PremiumHighlight | "economia";
+  id: PremiumHighlight | "sob-medida" | "economia";
   icon: (props: { className?: string }) => ReactElement;
   title: string;
   detail: string;
@@ -76,25 +77,23 @@ export const HERO_BENEFITS: {
     detail: "acesso completo às dicas imperdíveis, sem cards bloqueados",
   },
   {
-    id: "download",
-    icon: DownloadIcon,
-    title: "Baixe e leve com você",
-    detail: "acesso total ao roteiro mesmo sem internet",
+    id: "sob-medida",
+    icon: RouteIcon,
+    title: "Roteiro sob medida",
+    detail: "montado com base no seu estilo e ritmo de viagem",
   },
   {
     id: "economia",
     icon: TagIcon,
     title: "Economia garantida",
-    detail: "evite armadilhas turísticas e gaste só no que vale a pena",
+    detail: "evite armadilhas turísticas e gaste no que vale a pena",
   },
 ];
 
 export const COMPACT_BENEFITS = [
-  "Roteiro sob medida: montado com base no seu estilo e ritmo de viagem, não um modelo genérico",
   "A IA sugere atrações além das que você escolheu, alinhadas ao seu perfil",
   "Roteiro completo, dia a dia: sem lacunas, sem inventar na hora",
   "Dicas exclusivas do destino: informação que não está em blog nenhum",
-  "Suporte prioritário: resposta rápida quando você precisar",
   "Você pode fazer as alterações que quiser nos roteiros montados por IA",
 ];
 
@@ -122,7 +121,7 @@ const PLAN_INFO: Record<
     price: "R$ 299,90",
     originalPrice: "R$ 359,60",
     belowPriceNote: "R$ 74,98 por roteiro",
-    detail: "Quatro roteiros organizados pela nossa IA especializada, cada um com até 1 país",
+    detail: "Cada país é 1 crédito: faça 4 roteiros de 1 país ou combine vários países no mesmo roteiro",
   },
   pacote_8: {
     count: 8,
@@ -130,7 +129,7 @@ const PLAN_INFO: Record<
     price: "R$ 499,90",
     originalPrice: "R$ 719,20",
     belowPriceNote: "R$ 62,49 por roteiro",
-    detail: "Oito roteiros organizados pela nossa IA especializada, cada um com até 1 país",
+    detail: "Cada país é 1 crédito: faça 8 roteiros de 1 país ou combine vários países no mesmo roteiro",
   },
 };
 
@@ -337,6 +336,9 @@ export default function PremiumDialog({
           </h2>
           <p className="mt-1.5 text-base font-medium text-terracota">
             Desbloqueie ainda mais benefícios
+          </p>
+          <p className="mt-1 text-sm text-oliva">
+            IA especializada e treinada com o método da autora Rejane Abrantes, com base em anos de experiência.
           </p>
 
           <div className="mt-5 grid grid-cols-2 gap-3">

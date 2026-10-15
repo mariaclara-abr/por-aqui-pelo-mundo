@@ -19,7 +19,6 @@ import ItineraryChat from "@/components/itinerary-chat/ItineraryChat";
 import ItineraryPremiumBanner from "@/components/itinerary-ai/ItineraryPremiumBanner";
 import { humanizeSlug } from "@/lib/affiliates";
 import { exportItineraryToPDF, exportToGoogleMaps, summarizeText } from "@/lib/export";
-import { useUserSubscription } from "@/lib/useUserSubscription";
 import { categoryLabels } from "@/types/database";
 
 const RoteiroMap = dynamic(() => import("@/components/RoteiroMap"), {
@@ -150,7 +149,6 @@ export default function MeuRoteiroPage() {
     title,
   } = useRoteiro();
   const { user } = useAuth();
-  const { isPremium } = useUserSubscription();
   const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
@@ -182,10 +180,6 @@ export default function MeuRoteiroPage() {
 
   async function handleSalvarPDF() {
     setShareOpen(false);
-    if (!isPremium) {
-      setPremiumOpen(true);
-      return;
-    }
     setPdfStatus("busy");
     try {
       // O resumo e as dicas não vêm na lista do roteiro, então busca aqui.
@@ -455,7 +449,6 @@ export default function MeuRoteiroPage() {
             itineraryId={itineraryId}
             countryCount={countryCount}
             onClose={() => setPremiumOpen(false)}
-            highlight="download"
           />
         )}
 
