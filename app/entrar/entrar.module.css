@@ -1,0 +1,137 @@
+/* The login is a full-screen scene. Other routes retain the shared site shell. */
+:global(body):has(.page) > :global(header),
+:global(body):has(.page) > :global(footer),
+:global(body):has(.page) > :global([aria-label="Menu de navegação"]) {
+  display: none;
+}
+
+.page {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: 76px 20px 80px;
+  background: #f0e6d2;
+}
+
+.scene {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+}
+
+.back {
+  position: absolute;
+  z-index: 2;
+  top: 16px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 999px;
+  background: rgb(250 246 239 / 78%);
+  color: #4a5d43;
+  font-size: 12px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: background-color 180ms, color 180ms;
+}
+
+.back svg { width: 17px; height: 17px; }
+.back:hover { background: rgb(250 246 239 / 94%); color: #2b2620; }
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  min-width: 0;
+  padding: 30px 26px;
+  border: 1px solid rgb(255 255 255 / 72%);
+  border-radius: 20px;
+  background: rgb(250 246 239 / 86%);
+  box-shadow: 0 12px 50px rgb(43 38 32 / 12%);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+
+.eyebrow {
+  display: block;
+  color: #4a5d43;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-block: 12px;
+  color: #2b2620;
+  font-family: var(--font-fraunces), serif;
+  font-size: clamp(30px, 4vw, 38px);
+  font-weight: 400;
+  line-height: 1.13;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+
+.title em { color: #4a5d43; font-style: normal; font-weight: 400; }
+
+.intro {
+  max-width: 300px;
+  margin: 0 auto 24px;
+  color: #4a5d43;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.signup {
+  margin-top: 24px;
+  color: #4a5d43;
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.signup a {
+  display: inline-block;
+  color: #2b2620;
+  text-decoration: underline;
+  text-decoration-color: #c1653a;
+  text-underline-offset: 4px;
+  transition: color 180ms;
+}
+
+.signup a:hover { color: #4a5d43; }
+
+.note {
+  position: absolute;
+  bottom: 28px;
+  left: 30px;
+  color: #2b2620;
+  font-family: var(--font-fraunces), serif;
+  font-size: 15px;
+  text-align: left;
+}
+
+@media (min-width: 600px) {
+  .page { padding: 72px 32px; }
+  .back { top: 22px; left: 30px; }
+  .card { padding: 32px 38px; }
+}
+
+@media (max-width: 599px) {
+  .note { display: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card, .back { background: #f0e6d2; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
