@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRoteiro } from "@/lib/roteiro";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase-browser";
 import RelatedContent from "@/components/RelatedContent";
+import CachoeiraAnimada from "@/components/CachoeiraAnimada";
 import AffiliateCallout from "@/components/AffiliateCallout";
 import ShareItineraryDialog from "@/components/ShareItineraryDialog";
 import ItinerarySwitcherDialog from "@/components/ItinerarySwitcherDialog";
@@ -293,16 +293,9 @@ export default function MeuRoteiroPage() {
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-80 mix-blend-multiply [mask-image:linear-gradient(to_bottom,transparent,#000_30%)] sm:h-96 lg:inset-y-0 lg:left-auto lg:h-full lg:w-[78%] lg:[mask-image:linear-gradient(to_right,transparent,#000_35%)]"
+            className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-80 opacity-90 mix-blend-multiply [mask-image:linear-gradient(to_bottom,transparent,#000_30%)] sm:h-96 lg:inset-y-0 lg:left-auto lg:h-full lg:w-[78%] lg:[mask-image:linear-gradient(to_right,transparent,#000_35%)]"
           >
-            <Image
-              src="/roteiro-cachoeira-aquarela.webp"
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 78vw, 100vw"
-              loading="eager"
-              className="object-cover object-[65%_65%] opacity-90 lg:object-right"
-            />
+            <CachoeiraAnimada />
           </div>
 
           <div className="mx-auto w-full max-w-[1312px]">
