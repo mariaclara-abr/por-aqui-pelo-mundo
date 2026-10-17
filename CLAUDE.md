@@ -43,9 +43,13 @@ Princípios visuais:
 - Proibido o uso de travessões (—) em qualquer texto do projeto (código, copy da interface, conteúdo do banco, documentação). Use dois pontos, vírgula ou ponto final no lugar.
 - Toda imagem de conteúdo real (fotos de atrações, capas de país/cidade, fotos de viagem, fotos de roteiro) deve usar alt text descritivo (ex: nome da atração, da cidade, do país ou legenda da foto), nunca `alt=""`. `alt=""` só é permitido em imagens puramente decorativas (ícones, texturas de fundo) ou quando o mesmo texto já aparece visível ao lado da imagem (ex: nome do lugar num card, evitando leitor de tela anunciar duas vezes).
 
-## Fotos
-- Toda foto nova enviada ao bucket `media` deve ser otimizada antes do upload: lado maior de no máximo 1600px (sem ampliar) e JPEG com qualidade 82 (PNG vira JPEG). Mesmo padrão do `scripts/shrink-photos.mjs`, que serve para reduzir fotos antigas.
-- Toda foto de atração precisa de legenda com o crédito da fonte (ex: "Foto: Walt Disney World."). Fotos do Wikimedia Commons levam autor e licença na legenda.
+## Fotos (limites da Vercel e do Supabase)
+Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por mês) estourou e as fotos quebraram. O processo fixo desde então:
+- `images.unoptimized: true` em `next.config.ts`: as fotos vão direto do Supabase Storage, sem passar pelo otimizador da Vercel. Não remover sem trocar de plano.
+- Como a Vercel não reduz mais as fotos, **toda foto precisa ser reduzida antes de ir para o bucket `media`**: lado maior de no máximo 1600px (sem ampliar) e JPEG com qualidade 82 (PNG, WebP e HEIC viram JPEG). Se a versão reduzida não ficar menor que o original, mantém o original.
+- Pelo admin, o `components/admin/PhotoUploader.tsx` já faz isso no navegador. Em scripts e cargas em lote (que gravam direto no Storage), aplicar o mesmo padrão com `sharp`.
+- Fotos antigas grandes (acima de 600 KB) são reduzidas com `node --env-file=.env.local scripts/shrink-photos.mjs --apply`, que guarda o original em `~/Desktop/backup-fotos-supabase` antes de sobrescrever.
+- Toda foto de atração leva legenda com o crédito da fonte (ex: "Foto: Walt Disney World."). Fotos do Wikimedia Commons levam autor e licença na legenda.
 
 ## Dicas de viagem (cards)
 - Cards de dicas de países da Europa devem ficar todos agrupados juntos no mesmo capítulo "Europa".
