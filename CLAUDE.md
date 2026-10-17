@@ -43,6 +43,10 @@ Princípios visuais:
 - Proibido o uso de travessões (—) em qualquer texto do projeto (código, copy da interface, conteúdo do banco, documentação). Use dois pontos, vírgula ou ponto final no lugar.
 - Toda imagem de conteúdo real (fotos de atrações, capas de país/cidade, fotos de viagem, fotos de roteiro) deve usar alt text descritivo (ex: nome da atração, da cidade, do país ou legenda da foto), nunca `alt=""`. `alt=""` só é permitido em imagens puramente decorativas (ícones, texturas de fundo) ou quando o mesmo texto já aparece visível ao lado da imagem (ex: nome do lugar num card, evitando leitor de tela anunciar duas vezes).
 
+## Fotos
+- Toda foto nova enviada ao bucket `media` deve ser otimizada antes do upload: lado maior de no máximo 1600px (sem ampliar) e JPEG com qualidade 82 (PNG vira JPEG). Mesmo padrão do `scripts/shrink-photos.mjs`, que serve para reduzir fotos antigas.
+- Toda foto de atração precisa de legenda com o crédito da fonte (ex: "Foto: Walt Disney World."). Fotos do Wikimedia Commons levam autor e licença na legenda.
+
 ## Dicas de viagem (cards)
 - Cards de dicas de países da Europa devem ficar todos agrupados juntos no mesmo capítulo "Europa".
 - O nome do card deve sempre citar o país e/ou a cidade a que se refere.
