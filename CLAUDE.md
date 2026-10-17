@@ -11,7 +11,7 @@ Público-alvo: famílias e casais que quantidade priorizam qualidade de planejam
 - Supabase (banco de dados, storage de fotos, e futuramente autenticação)
 
 ## Estrutura de dados
-Hierarquia: País > Cidade > Atração. Atrações têm categoria (ponto turístico, restaurante, hotel, museu, natureza, compras, passeio, café, outro) e etiquetas (ex: ideal para famílias, crianças pequenas, alta temporada, gratuito, imperdível, reserva necessária, etc). Cada atração tem uma nota de curadoria própria de 1 a 5 estrelas (não é média de usuários).
+Hierarquia: País > Cidade > Atração. Atrações têm categoria (ponto turístico, restaurante, hotel, museu, natureza, compras, passeio, café, outro) e etiquetas (ex: ideal para famílias, crianças pequenas, alta temporada, gratuito, imperdível, reserva recomendada, etc). Cada atração tem uma nota de curadoria própria de 1 a 5 estrelas (não é média de usuários).
 
 ## Identidade visual: "Diário de bordo"
 Tom editorial, atemporal, com cara de revista de viagem bem cuidada. Não deve parecer um site genérico de IA nem um app estilo TripAdvisor.

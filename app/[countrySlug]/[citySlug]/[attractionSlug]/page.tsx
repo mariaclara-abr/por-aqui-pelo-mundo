@@ -178,10 +178,10 @@ export default async function AttractionPage(
       ? { label: "Esforço físico", content: "Intenso" as React.ReactNode }
       : null,
     attraction.requires_advance_purchase
-      ? { label: "Compra antecipada", content: "Necessária" as React.ReactNode }
+      ? { label: "Compra antecipada", content: "Recomendada" as React.ReactNode }
       : null,
     attraction.requires_reservation
-      ? { label: "Reserva", content: "Necessária" as React.ReactNode }
+      ? { label: "Reserva", content: "Recomendada" as React.ReactNode }
       : null,
     attraction.has_air_conditioning
       ? { label: "Ar condicionado", content: "Sim" as React.ReactNode }

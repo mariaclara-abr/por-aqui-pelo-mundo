@@ -525,7 +525,7 @@ export default function AttractionForm({
               checked={requiresAdvancePurchase}
               onChange={(event) => setRequiresAdvancePurchase(event.target.checked)}
             />
-            Precisa de compra antecipada
+            Compra antecipada recomendada
           </label>
           <label className="flex items-center gap-2 text-sm text-tinta">
             <input
@@ -533,7 +533,7 @@ export default function AttractionForm({
               checked={requiresReservation}
               onChange={(event) => setRequiresReservation(event.target.checked)}
             />
-            Precisa de reserva
+            Reserva recomendada
           </label>
           <label className="flex items-center gap-2 text-sm text-tinta">
             <input

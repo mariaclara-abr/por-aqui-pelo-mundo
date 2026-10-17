@@ -88,10 +88,10 @@ export default function AttractionPreview({
       ? { label: "Esforço físico", content: "Intenso" as React.ReactNode }
       : null,
     requiresAdvancePurchase
-      ? { label: "Compra antecipada", content: "Necessária" as React.ReactNode }
+      ? { label: "Compra antecipada", content: "Recomendada" as React.ReactNode }
       : null,
     requiresReservation
-      ? { label: "Reserva", content: "Necessária" as React.ReactNode }
+      ? { label: "Reserva", content: "Recomendada" as React.ReactNode }
       : null,
     hasAirConditioning
       ? { label: "Ar condicionado", content: "Sim" as React.ReactNode }
