@@ -109,6 +109,12 @@ export default function LoginForm() {
         </button>
       </form>
 
+      {loading && (
+        <div role="status" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-xl bg-tinta px-4 py-3 text-sm text-white">
+          Entrando na sua conta, só um instante...
+        </div>
+      )}
+
       <div className="flex items-center gap-4 text-[11px] text-oliva">
         <div className="h-px flex-1 bg-oliva/20" />
         ou continue com
