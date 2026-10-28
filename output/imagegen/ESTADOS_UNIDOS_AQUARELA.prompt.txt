@@ -1,0 +1,12 @@
+Generator: built-in image_gen
+Asset: public/aquarelas/ESTADOS_UNIDOS_AQUARELA.webp
+Original: output/imagegen/ESTADOS_UNIDOS_AQUARELA.original.png
+Delivery: 640 x 960 WebP, quality 90, alpha preserved.
+
+Use case: illustration-story.
+Asset type: standalone watercolor illustration for a small portrait vignette on a travel itinerary cover for the United States, part of the same Por Aqui Pelo Mundo collection as the approved Greece/Acropolis watercolor.
+Primary request: the Statue of Liberty in New York Harbor as the single clear focal point, full statue with raised torch and recognizable crown, on its warm limestone pedestal. A restrained, atmospheric suggestion of the Manhattan skyline across the water behind it, a little soft sage foliage and low grasses at the bottom. ONE coherent New York harbor scene, not a landmark collage.
+Style/medium: exquisite original hand-painted transparent watercolor, like the approved Greece illustration: translucent layered washes, fine granulated pigments, visible cotton-paper-like texture WITHIN painted areas, luminous warm afternoon light, sensitive dry-brush details, natural muted olive and sage greens, warm sandstone and ochre, very pale dusty blue sky, muted jade/verdigris statue and pale blue-gray harbor. Elegant painterly travel sketchbook, no photorealism or graphic clipart.
+Composition: portrait canvas 1024 x 1536, compact centered organically shaped scene, generous fully transparent margins ALL sides; statue and pedestal occupy the middle vertical axis, raised torch entirely visible, skyline stays subordinate and simple. Similar density, brightness, scale and visual weight to the approved Greece illustration. Readable and distinctive when printed just 4–5 cm wide. Avoid tiny excessive detailing.
+Edges and background: truly transparent RGBA outside the painting. Paint dissolves gently through sparse translucent watercolor blooms into full alpha transparency around every edge; soft irregular outer contour, no hard rectangular crop, no frame, no paper rectangle, no opaque background, no black or gray halo or drop shadow. Let the document's own white page be the paper around the painting.
+Constraints: deliver the illustration alone, no cover mockup, no text, no lettering or labels, no readable tablet inscription, no watermark, no logos, no flags, no people, no unrelated US landmarks. Keep traditional luminous watercolor character.

@@ -1,0 +1,11 @@
+Generator: built-in image_gen
+Asset: output/imagegen/grecia-capa-aquarela.png
+Transparent background: true
+
+Use case: illustration-story.
+Asset type: standalone watercolor illustration for the small upper-right vignette on a white printed Greece travel itinerary cover for Por Aqui Pelo Mundo. Deliver ONLY the illustration, not the cover or a page mockup.
+Primary request: an elegant hand-painted watercolor of the Acropolis of Athens, Greece, with the Parthenon clearly recognizable atop its warm limestone hill, a few restrained suggestions of pale Athenian houses below, and delicate olive foliage at the lower sides.
+Style/medium: exquisite traditional transparent watercolor travel sketchbook painting, gently granulated pigments, translucent washes, fine dry-brush architectural accents, soft atmospheric depth. Match the project's existing watercolor language: natural muted sage and olive greens, warm sand and limestone ochre, soft stone browns, a very pale dusty blue sky wash. Airy, refined and luminous.
+Composition/framing: portrait canvas approximately 1024 x 1536, compact organic vignette centered on the canvas with generous fully transparent margins around ALL sides. The Parthenon is the single clear focal point in the upper-middle, large enough to remain readable when the entire illustration is printed only 4–5 cm wide. Sparse simplified foreground, no tiny busy detailing. Lightly asymmetric natural painterly silhouette.
+Edges and transparency: genuinely transparent RGBA background. The painting fades gradually through pale translucent watercolor washes into full alpha transparency on every edge. No rectangular sky panel, no hard crop, no frame, no rectangular paper background, no white paper rectangle. Preserve delicate half-transparent pigment at the perimeter, so the artwork visually dissolves into a white document page.
+Constraints: no text, no labels, no lettering, no logos, no watermark, no people, no photorealism, no collage of unrelated Greek landmarks, no island domes, no decorative border, no mockup. A cohesive Athens watercolor, quietly beautiful, readable at small size.
