@@ -292,7 +292,9 @@ export default async function AttractionPage(
           </div>
         )}
 
-        {(!isContainer || attraction.categories.includes("parque_tematico")) && (
+        {(!isContainer ||
+          attraction.categories.includes("parque_tematico") ||
+          attraction.categories.includes("parque_aquatico")) && (
           <div className="mt-8">
             <AttractionPhotos photos={photos} attractionName={attraction.name} />
           </div>

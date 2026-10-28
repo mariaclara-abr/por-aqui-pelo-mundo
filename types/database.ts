@@ -12,6 +12,7 @@ export type AttractionCategory =
   | "rooftop"
   | "estacionamentos"
   | "parque_tematico"
+  | "parque_aquatico"
   | "outro";
 
 export const ATTRACTION_CATEGORIES: {
@@ -19,6 +20,7 @@ export const ATTRACTION_CATEGORIES: {
   label: string;
 }[] = [
   { value: "parque_tematico", label: "Parque temático" },
+  { value: "parque_aquatico", label: "Parque aquático" },
   { value: "ponto_turistico", label: "Ponto turístico" },
   { value: "restaurante", label: "Restaurante" },
   { value: "cafe", label: "Café" },

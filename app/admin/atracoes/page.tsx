@@ -83,14 +83,14 @@ export default async function AdminAtracoesPage(
         )
       : allAttractions;
 
-  // Pasta "Parques": parques temáticos completos (Disney, Universal),
+  // Pasta "Parques": parques temáticos e aquáticos completos (Disney, Universal),
   // agrupados à parte do restante das atrações da mesma cidade.
-  const parkAttractions = attractions.filter((attraction) =>
-    attraction.categories.includes("parque_tematico"),
-  );
-  const otherAttractions = attractions.filter(
-    (attraction) => !attraction.categories.includes("parque_tematico"),
-  );
+  const isPark = (attraction: (typeof attractions)[number]) =>
+    attraction.categories.some(
+      (category) => category === "parque_tematico" || category === "parque_aquatico",
+    );
+  const parkAttractions = attractions.filter(isPark);
+  const otherAttractions = attractions.filter((attraction) => !isPark(attraction));
 
   const totalCount = attractions.length;
   const withPhotoCount = attractions.filter(
