@@ -292,9 +292,8 @@ export default async function AttractionPage(
           </div>
         )}
 
-        {(!isContainer ||
-          attraction.categories.includes("parque_tematico") ||
-          attraction.categories.includes("parque_aquatico")) && (
+        {/* Atração com filhas (ex: parques, Kennedy Space Center) mostra a galeria quando tem fotos próprias. */}
+        {(!isContainer || photos.length > 0) && (
           <div className="mt-8">
             <AttractionPhotos photos={photos} attractionName={attraction.name} />
           </div>
