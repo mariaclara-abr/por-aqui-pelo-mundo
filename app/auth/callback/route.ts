@@ -10,6 +10,17 @@ export async function GET(request: Request) {
   const recovery = cookieStore.has("pm_recovery");
   const next = recovery ? "/esqueci-senha?nova=1" : safePath(searchParams.get("next"), "/");
 
+  // Link de redefinição de senha do e-mail: confirma o token direto no servidor,
+  // sem depender do mesmo navegador nem da lista de Redirect URLs do Supabase.
+  const tokenHash = searchParams.get("token_hash");
+  if (tokenHash && searchParams.get("type") === "recovery") {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" });
+    return NextResponse.redirect(
+      error ? `${origin}/esqueci-senha?expirado=1` : `${origin}/esqueci-senha?nova=1`,
+    );
+  }
+
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);

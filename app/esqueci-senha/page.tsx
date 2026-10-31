@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 export default async function EsqueciSenhaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ nova?: string }>;
+  searchParams: Promise<{ nova?: string; expirado?: string }>;
 }) {
-  const { nova } = await searchParams;
+  const { nova, expirado } = await searchParams;
   return (
     <main className={styles.page}>
       <div className={styles.scene}>
@@ -52,6 +52,12 @@ export default async function EsqueciSenhaPage({
             ? "Escolha a nova senha da sua conta."
             : "Informe seu e-mail para receber um link de redefinição."}
         </p>
+
+        {expirado && (
+          <p role="alert" className="mb-4 rounded-lg border border-terracota/30 bg-terracota/10 px-3 py-2 text-left text-sm text-tinta">
+            Esse link expirou ou já foi usado. Peça um novo abaixo.
+          </p>
+        )}
 
         <ForgotPasswordForm newPassword={Boolean(nova)} />
 
