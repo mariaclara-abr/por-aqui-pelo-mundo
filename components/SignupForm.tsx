@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { emailTypoMessage } from "@/lib/email-typo";
 import PasswordInput from "@/components/PasswordInput";
 
 export default function SignupForm() {
@@ -20,6 +21,12 @@ export default function SignupForm() {
     event.preventDefault();
     setError(null);
     setMessage(null);
+
+    const typo = emailTypoMessage(email);
+    if (typo) {
+      setError(typo);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("As senhas não coincidem.");

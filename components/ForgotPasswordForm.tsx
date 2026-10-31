@@ -1,15 +1,15 @@
 "use client";
 
+import { emailTypoMessage } from "@/lib/email-typo";
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import PasswordInput from "@/components/PasswordInput";
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({ newPassword = false }: { newPassword?: boolean }) {
   const router = useRouter();
-  const [step, setStep] = useState<"email" | "code">("email");
+  const [step, setStep] = useState<"email" | "sent" | "password">(newPassword ? "password" : "email");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -18,20 +18,27 @@ export default function ForgotPasswordForm() {
   async function handleSendCode(event: FormEvent) {
     event.preventDefault();
     setError(null);
-    setLoading(true);
 
-    const supabase = createClient();
-    const { error: sendError } = await supabase.auth.resetPasswordForEmail(
-      email,
-    );
-    setLoading(false);
-
-    if (sendError) {
-      setError("Não foi possível enviar o código. Tente novamente.");
+    const typo = emailTypoMessage(email);
+    if (typo) {
+      setError(typo);
       return;
     }
 
-    setStep("code");
+    setLoading(true);
+
+    const supabase = createClient();
+    const { error: sendError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/esqueci-senha?nova=1")}`,
+    });
+    setLoading(false);
+
+    if (sendError) {
+      setError("Não foi possível enviar o link. Tente novamente.");
+      return;
+    }
+
+    setStep("sent");
   }
 
   async function handleResetPassword(event: FormEvent) {
@@ -50,25 +57,13 @@ export default function ForgotPasswordForm() {
     setLoading(true);
     const supabase = createClient();
 
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      email,
-      token: code,
-      type: "recovery",
-    });
-
-    if (verifyError) {
-      setLoading(false);
-      setError("Código inválido ou expirado.");
-      return;
-    }
-
     const { error: updateError } = await supabase.auth.updateUser({
       password,
     });
     setLoading(false);
 
     if (updateError) {
-      setError("Não foi possível redefinir a senha. Tente novamente.");
+      setError("Não foi possível redefinir a senha. O link pode ter expirado: peça um novo.");
       return;
     }
 
@@ -80,86 +75,89 @@ export default function ForgotPasswordForm() {
     return (
       <form onSubmit={handleSendCode} className="flex flex-col gap-4">
         <div>
-          <label htmlFor="email" className="text-sm text-tinta">
+          <label htmlFor="email" className="text-xs font-medium text-tinta">
             E-mail
           </label>
           <input
             id="email"
             type="email"
+            autoComplete="email"
+            placeholder="Seu e-mail"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 text-sm text-tinta focus:border-terracota focus:outline-none"
+            className="mt-2 h-12 w-full rounded-lg border border-oliva/30 bg-white/55 px-4 text-sm text-tinta placeholder:text-oliva/75 transition-colors hover:border-oliva/50 focus:border-oliva focus:bg-white/80 focus:outline-2 focus:outline-offset-2 focus:outline-oliva/40"
           />
         </div>
 
-        {error && <p className="text-sm text-terracota">{error}</p>}
+        {error && <p role="alert" className="rounded-lg border border-terracota/30 bg-terracota/10 px-3 py-2 text-left text-sm text-tinta">{error}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+          className="group mt-1 flex h-12 items-center justify-center gap-3 rounded-lg bg-oliva px-6 text-sm font-medium text-white transition-colors hover:bg-tinta disabled:cursor-wait disabled:opacity-60"
         >
-          {loading ? "Enviando..." : "Enviar código"}
+          {loading ? "Enviando..." : "Enviar link"}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1">
+          <path d="M4 12h16m-6-6 6 6-6 6" />
+        </svg>
         </button>
       </form>
     );
   }
 
+  if (step === "sent") {
+    return (
+      <p className="text-sm text-tinta">
+        Enviamos um link de redefinição para {email}. Abra o e-mail e clique no
+        link para escolher a nova senha.
+      </p>
+    );
+  }
+
   return (
     <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
-      <p className="text-sm text-oliva">
-        Enviamos um código de verificação para {email}.
-      </p>
-
       <div>
-        <label htmlFor="code" className="text-sm text-tinta">
-          Código de verificação
-        </label>
-        <input
-          id="code"
-          inputMode="numeric"
-          required
-          value={code}
-          onChange={(event) => setCode(event.target.value)}
-          className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 text-sm text-tinta focus:border-terracota focus:outline-none"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="newPassword" className="text-sm text-tinta">
+        <label htmlFor="newPassword" className="mb-2 block text-xs font-medium text-tinta">
           Nova senha
         </label>
         <PasswordInput
           id="newPassword"
+          autoComplete="new-password"
+          placeholder="Crie uma senha"
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 pr-10 text-sm text-tinta focus:border-terracota focus:outline-none"
+          className="h-12 w-full rounded-lg border border-oliva/30 bg-white/55 px-4 pr-12 text-sm text-tinta placeholder:text-oliva/75 transition-colors hover:border-oliva/50 focus:border-oliva focus:bg-white/80 focus:outline-2 focus:outline-offset-2 focus:outline-oliva/40"
         />
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="text-sm text-tinta">
+        <label htmlFor="confirmPassword" className="mb-2 block text-xs font-medium text-tinta">
           Confirmar nova senha
         </label>
         <PasswordInput
           id="confirmPassword"
+          autoComplete="new-password"
+          placeholder="Repita a senha"
           required
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
-          className="mt-1 w-full rounded-lg border border-oliva/30 bg-branco px-3 py-2 pr-10 text-sm text-tinta focus:border-terracota focus:outline-none"
+          className="h-12 w-full rounded-lg border border-oliva/30 bg-white/55 px-4 pr-12 text-sm text-tinta placeholder:text-oliva/75 transition-colors hover:border-oliva/50 focus:border-oliva focus:bg-white/80 focus:outline-2 focus:outline-offset-2 focus:outline-oliva/40"
         />
       </div>
 
-      {error && <p className="text-sm text-terracota">{error}</p>}
+      {error && <p role="alert" className="rounded-lg border border-terracota/30 bg-terracota/10 px-3 py-2 text-left text-sm text-tinta">{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
-        className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+        className="group mt-1 flex h-12 items-center justify-center gap-3 rounded-lg bg-oliva px-6 text-sm font-medium text-white transition-colors hover:bg-tinta disabled:cursor-wait disabled:opacity-60"
       >
         {loading ? "Redefinindo..." : "Redefinir senha"}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1">
+          <path d="M4 12h16m-6-6 6 6-6 6" />
+        </svg>
       </button>
     </form>
   );
