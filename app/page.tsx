@@ -20,12 +20,12 @@ import JsonLd, { websiteLd } from "@/components/JsonLd";
 
 export const revalidate = 60;
 
-const TITLE = "Roteiros de viagem em família feitos por quem esteve lá";
+const TITLE = "Por Aqui Pelo Mundo: roteiros de viagem em família";
 const DESCRIPTION =
   "Roteiros e dicas de Disney, Europa, Dubai e Brasil, visitados e avaliados pessoalmente por Rejane Abrantes. Viagem com crianças e casal, sem lista genérica.";
 
 export const metadata: Metadata = {
-  title: TITLE,
+  title: { absolute: TITLE },
   description: DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: buildOpenGraph({ title: TITLE, description: DESCRIPTION }),

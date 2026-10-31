@@ -22,7 +22,7 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
-const HOME_TITLE = "Roteiros de viagem em família feitos por quem esteve lá";
+const HOME_TITLE = "Por Aqui Pelo Mundo: roteiros de viagem em família";
 const HOME_DESCRIPTION =
   "Roteiros e dicas de Disney, Europa, Dubai e Brasil, visitados e avaliados pessoalmente por Rejane Abrantes. Viagem com crianças e casal, sem lista genérica.";
 
