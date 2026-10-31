@@ -61,7 +61,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={pending}
-            className="flex-1 rounded-full border border-oliva/30 px-4 py-2.5 text-sm text-oliva transition-colors hover:bg-areia disabled:opacity-60"
+            className="flex-1 rounded-full border border-oliva/30 px-4 py-2.5 text-sm text-oliva transition-[background-color,transform] hover:bg-areia disabled:opacity-60 motion-safe:enabled:hover:scale-105"
           >
             {cancelLabel}
           </button>
@@ -69,7 +69,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={pending}
-            className="flex-1 rounded-full bg-terracota px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+            className="flex-1 rounded-full bg-terracota px-4 py-2.5 text-sm font-medium text-white transition-[background-color,transform] hover:bg-terracota/90 disabled:opacity-60 motion-safe:enabled:hover:scale-105"
           >
             {pending ? (pendingLabel ?? "Aguarde...") : confirmLabel}
           </button>
