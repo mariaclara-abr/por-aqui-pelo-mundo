@@ -29,7 +29,13 @@ import ExpandableText from "@/components/ExpandableText";
 import JsonLd, { breadcrumbLd, faqPageLd, qaPageLd } from "@/components/JsonLd";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
 import StateQuestionsSection from "@/components/state/QuestionsSection";
-import { buildOpenGraph, countLabel, joinNames } from "@/lib/metadata";
+import ComingSoonPage from "@/components/ComingSoonPage";
+import {
+  buildOpenGraph,
+  comingSoonMetadata,
+  countLabel,
+  joinNames,
+} from "@/lib/metadata";
 
 function firstValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -45,6 +51,22 @@ function buildCityDescription(cityName: string, attractionNames: string[]) {
   return `O que fazer em ${cityName}: roteiro com dicas de quem foi, para família e casal.`;
 }
 
+// Cidade "em breve" (draft) só abre para a autora. Para os demais, se existir
+// um estado com o mesmo slug (ex: /brasil/sao-paulo é cidade e estado), vale o
+// estado; sem estado, mostra a página "em breve" em vez de 404.
+async function resolveCityRoute(countrySlug: string, citySlug: string) {
+  const found = await getCityBySlug(citySlug).catch(() => null);
+  const city = found && found.countries.slug === countrySlug ? found : null;
+  if (city && (city.status === "published" || (await checkIsAuthor()))) {
+    return { city, comingSoonCity: null };
+  }
+  const state = await getStateBySlug(citySlug).catch(() => null);
+  if (state && state.countries.slug === countrySlug) {
+    return { city: null, comingSoonCity: null };
+  }
+  return { city: null, comingSoonCity: city };
+}
+
 // Este segundo segmento da rota (ex: /brasil/santa-catarina ou
 // /brasil/penha) tanto pode ser uma cidade quanto, para países grandes o
 // bastante (hoje só o Brasil), um estado que agrupa várias cidades. Cidade
@@ -55,9 +77,10 @@ export async function generateMetadata(
   props: PageProps<"/[countrySlug]/[citySlug]">,
 ): Promise<Metadata> {
   const { countrySlug, citySlug } = await props.params;
-  const city = await getCityBySlug(citySlug).catch(() => null);
+  const { city, comingSoonCity } = await resolveCityRoute(countrySlug, citySlug);
+  if (comingSoonCity) return comingSoonMetadata(comingSoonCity.name);
 
-  if (city && city.countries.slug === countrySlug) {
+  if (city) {
     const title = `O que fazer em ${city.name}, ${city.countries.name}: roteiro e dicas`;
 
     const attractions = await getAttractionNamesByCity(citySlug).catch(() => []);
@@ -114,12 +137,18 @@ export default async function CityOrStatePage(
   const { countrySlug, citySlug } = await props.params;
   const searchParams = await props.searchParams;
 
-  const city = await getCityBySlug(citySlug).catch(() => null);
+  const { city, comingSoonCity } = await resolveCityRoute(countrySlug, citySlug);
+  if (comingSoonCity) {
+    return (
+      <ComingSoonPage
+        type="city"
+        name={comingSoonCity.name}
+        parent={{ href: `/${countrySlug}`, label: comingSoonCity.countries.name }}
+      />
+    );
+  }
 
-  if (city && city.countries.slug === countrySlug) {
-    if (city.status === "draft" && !(await checkIsAuthor())) {
-      notFound();
-    }
+  if (city) {
 
     const categoriasParam = firstValue(searchParams.categorias);
     const validCategoryValues = new Set(

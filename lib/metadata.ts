@@ -114,3 +114,14 @@ export function truncateToSentence(text: string, max: number): string {
     .trim();
   return `${cut}…`;
 }
+
+// Metadata genérica (sem descrição nem foto do conteúdo) das páginas "em
+// breve" mostradas a quem não é a autora: não indexa e não vaza nada do que
+// ainda não foi publicado.
+export function comingSoonMetadata(name: string): Metadata {
+  return {
+    title: `${name}: em breve`,
+    description: `${name} ainda está em preparação no ${SITE_NAME}.`,
+    robots: { index: false, follow: false },
+  };
+}

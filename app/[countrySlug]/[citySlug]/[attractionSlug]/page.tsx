@@ -25,7 +25,13 @@ import { SunscreenCallout } from "@/components/AffiliateCallout";
 import UpdatedAt from "@/components/UpdatedAt";
 import JsonLd, { attractionLd, breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import { linkify } from "@/components/Linkify";
-import { buildOpenGraph, cutAtSentence, truncateToSentence } from "@/lib/metadata";
+import ComingSoonPage from "@/components/ComingSoonPage";
+import {
+  buildOpenGraph,
+  comingSoonMetadata,
+  cutAtSentence,
+  truncateToSentence,
+} from "@/lib/metadata";
 import { parseImagePosition } from "@/lib/image-position";
 
 type AttractionWithRelations = Database["public"]["Tables"]["attractions"]["Row"] & {
@@ -77,6 +83,10 @@ export async function generateMetadata(
     notFound();
   }
 
+  if (attraction.status === "draft" && !(await checkIsAuthor())) {
+    return comingSoonMetadata(attraction.name);
+  }
+
   const title = `${attraction.name}, ${attraction.cities.name}: vale a pena?`;
   const description = buildAttractionDescription(attraction);
 
@@ -118,7 +128,18 @@ export default async function AttractionPage(
   }
 
   if (attraction.status === "draft" && !(await checkIsAuthor())) {
-    notFound();
+    const cityPublished = attraction.cities.status === "published";
+    return (
+      <ComingSoonPage
+        type="attraction"
+        name={attraction.name}
+        parent={
+          cityPublished
+            ? { href: `/${countrySlug}/${citySlug}`, label: attraction.cities.name }
+            : { href: `/${countrySlug}`, label: attraction.cities.countries.name }
+        }
+      />
+    );
   }
 
   const photos = [...attraction.attraction_photos].sort(

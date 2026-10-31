@@ -16,7 +16,8 @@ import StateCard from "@/components/StateCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import ExpandableText from "@/components/ExpandableText";
 import JsonLd, { breadcrumbLd, qaPageLd } from "@/components/JsonLd";
-import { buildOpenGraph, countLabel, withDe } from "@/lib/metadata";
+import ComingSoonPage from "@/components/ComingSoonPage";
+import { buildOpenGraph, comingSoonMetadata, countLabel, withDe } from "@/lib/metadata";
 
 export async function generateMetadata(
   props: PageProps<"/[countrySlug]">,
@@ -27,7 +28,7 @@ export async function generateMetadata(
     notFound();
   }
   if (country.status === "draft" && !(await checkIsAuthor())) {
-    notFound();
+    return comingSoonMetadata(country.name);
   }
 
   // "O que fazer na {País}: cidades e atrações" estoura 60 caracteres com o
@@ -66,7 +67,7 @@ export default async function CountryPage(
     notFound();
   }
   if (country.status === "draft" && !(await checkIsAuthor())) {
-    notFound();
+    return <ComingSoonPage type="country" name={country.name} />;
   }
 
   // Países grandes o bastante (hoje só o Brasil) agrupam suas cidades em
