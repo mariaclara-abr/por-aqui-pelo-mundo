@@ -29,12 +29,12 @@ const faqs = [
   {
     question: "Posso alterar o roteiro depois de pronto?",
     answer:
-      "Pode. Você faz as alterações que quiser no roteiro montado pela IA e ainda consegue acessá-lo sem internet durante a viagem.",
+      "Pode. Você faz as alterações que quiser no roteiro montado pela IA e pode salvá-lo em PDF para levar com você na viagem.",
   },
   {
     question: "O que vem no acesso premium?",
     answer:
-      "Roteiro sob medida montado pela IA com a curadoria da Rejane, todas as dicas desbloqueadas, acesso offline e suporte prioritário. Há opção de 7 dias para uma viagem ou de um mês completo.",
+      "Roteiro sob medida montado pela IA com a curadoria da Rejane e todas as dicas Premium do site desbloqueadas. Você escolhe entre 1 roteiro (R$ 89,90), 4 roteiros (R$ 299,90) ou 8 roteiros (R$ 499,90). Cada país do roteiro usa 1 crédito, e os roteiros podem ser usados em até 6 meses após a compra.",
   },
 ];
 

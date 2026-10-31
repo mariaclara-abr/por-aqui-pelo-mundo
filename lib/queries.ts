@@ -238,13 +238,16 @@ export interface DestinationPickerCity {
 
 // Lista enxuta de cidades + país usada pelo seletor de destinos do roteiro
 // "do zero" com IA (components/itinerary-ai), só os campos necessários
-// pra montar a lista, sem o resto das colunas de cities/countries.
+// pra montar a lista, sem o resto das colunas de cities/countries. Cidades
+// e países "em breve" (draft) ficam de fora: ainda não têm conteúdo pronto.
 export async function getDestinationPickerCities(): Promise<
   DestinationPickerCity[]
 > {
   const { data, error } = await supabase
     .from("cities")
-    .select("slug, name, countries(slug, name)")
+    .select("slug, name, countries!inner(slug, name)")
+    .eq("status", "published")
+    .eq("countries.status", "published")
     .order("name");
 
   if (error) throw error;
