@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { safePath } from "@/lib/safe-path";
@@ -5,13 +6,17 @@ import { safePath } from "@/lib/safe-path";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = safePath(searchParams.get("next"), "/");
+  const cookieStore = await cookies();
+  const recovery = cookieStore.has("pm_recovery");
+  const next = recovery ? "/esqueci-senha?nova=1" : safePath(searchParams.get("next"), "/");
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      const response = NextResponse.redirect(`${origin}${next}`);
+      if (recovery) response.cookies.delete("pm_recovery");
+      return response;
     }
   }
 

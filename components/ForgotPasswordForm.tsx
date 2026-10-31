@@ -27,9 +27,12 @@ export default function ForgotPasswordForm({ newPassword = false }: { newPasswor
 
     setLoading(true);
 
+    // O callback lê este cookie para saber que o link é de redefinição (o endereço fica sem query, que o Supabase pode recusar).
+    document.cookie = "pm_recovery=1; path=/; max-age=3600; SameSite=Lax";
+
     const supabase = createClient();
     const { error: sendError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/esqueci-senha?nova=1")}`,
+      redirectTo: `${window.location.origin}/auth/callback`,
     });
     setLoading(false);
 
