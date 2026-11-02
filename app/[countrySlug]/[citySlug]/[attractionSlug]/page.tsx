@@ -163,9 +163,13 @@ export default async function AttractionPage(
   // Kingdom, que por sua vez tem seus restaurantes); senão, funciona como
   // uma cidade (lista atrações, ex: Magic Kingdom > Satu'li Canteen).
   const isContainer = childAttractions.length > 0;
+  const isPark = attraction.categories.some((c) =>
+    ["parque_tematico", "parque_aquatico"].includes(c),
+  );
   const isOutdoor =
     !attraction.categories.some((c) => ["restaurante", "cafe", "hotel"].includes(c)) &&
     (attraction.categories.includes("natureza") ||
+      isPark ||
       tags.some((tag) => tag.name === "Melhor em dias de sol"));
   const childrenWithChildren = isContainer
     ? await getAttractionIdsWithChildren(
@@ -329,7 +333,7 @@ export default async function AttractionPage(
             </section>
           )}
 
-          {!isContainer && isOutdoor && (
+          {(!isContainer || isPark) && isOutdoor && (
             <SunscreenCallout attractionId={attraction.id} />
           )}
 
