@@ -105,3 +105,115 @@ body {
     animation: none;
   }
 }
+
+/* Globo de carregamento (components/CarregandoGlobo.tsx). Movimento contínuo e
+   linear, sem pulso: o avião dá voltas na órbita e cada ponto da órbita acende
+   quando ele passa e apaga devagar, o que desenha o rastro; os meridianos
+   encolhem e crescem em fases defasadas, o que gira o globo. O avião e os pontos
+   andam no mesmo caminho (--rota), então o rastro nunca sai do compasso. */
+.carregando-cena {
+  --volta: 2.8s;
+  --giro: 4.5s;
+}
+
+@keyframes carregando-entrada {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* O véu só aparece depois de um instante, para não piscar em carregamentos rápidos. */
+.carregando-veu {
+  animation: carregando-entrada 0.4s ease-out 0.25s both;
+}
+
+.carregando-orbita {
+  position: absolute;
+  left: 0;
+  top: 0;
+  offset-path: var(--rota);
+  offset-anchor: 50% 50%;
+}
+
+@keyframes carregando-voo {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* Na metade de trás da órbita o avião passa por trás do globo. */
+@keyframes carregando-camada {
+  0% {
+    z-index: 4;
+  }
+  50%,
+  100% {
+    z-index: 1;
+  }
+}
+
+.carregando-aviao {
+  z-index: 4;
+  filter: drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff)
+    drop-shadow(0 -1px 0 #fff);
+  animation:
+    carregando-voo var(--volta) linear infinite,
+    carregando-camada var(--volta) step-end infinite;
+}
+
+@keyframes carregando-rastro {
+  0%,
+  10% {
+    opacity: 1;
+  }
+  75%,
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.carregando-ponto {
+  animation: carregando-rastro var(--volta) linear infinite;
+}
+
+/* Meio giro por ciclo: cada meridiano é um círculo que vai a uma linha e volta
+   (cosseno), por isso entra devagar no centro e passa rápido pelo meio. */
+@keyframes carregando-gira {
+  0% {
+    transform: scaleX(1);
+    animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
+  }
+  50% {
+    transform: scaleX(0.01);
+    animation-timing-function: cubic-bezier(0.61, 1, 0.88, 1);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.carregando-meridiano {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: carregando-gira var(--giro) infinite;
+}
+
+/* O véu continua aparecendo com atraso e em fade (opacidade não é movimento). */
+@media (prefers-reduced-motion: reduce) {
+  .carregando-aviao,
+  .carregando-ponto,
+  .carregando-meridiano {
+    animation: none;
+  }
+
+  .carregando-aviao {
+    offset-distance: 30%;
+  }
+
+  .carregando-ponto {
+    opacity: 0.35;
+  }
+}

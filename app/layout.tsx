@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/auth";
 import { RoteiroProvider } from "@/lib/roteiro";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import NavegacaoCarregando from "@/components/NavegacaoCarregando";
 import { SITE_NAME, SITE_URL, buildOpenGraph } from "@/lib/metadata";
 import "./globals.css";
 
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Footer />
           </RoteiroProvider>
         </AuthProvider>
+        <NavegacaoCarregando />
       </body>
     </html>
   );
