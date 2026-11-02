@@ -285,7 +285,7 @@ export default async function CityOrStatePage(
             </div>
           </section>
 
-          <section className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen py-8 sm:py-10">
+          <section className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen overflow-hidden py-8 sm:py-10">
             {coverImage && (
               <>
                 <Image
@@ -404,7 +404,7 @@ export default async function CityOrStatePage(
           </div>
         )}
 
-        <section className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen py-8 sm:py-10">
+        <section className="relative left-1/2 right-1/2 -mx-[50vw] mt-12 w-screen overflow-hidden py-8 sm:py-10">
           {coverImage && (
             <>
               <Image

@@ -60,38 +60,69 @@ export default function AttractionFilters({ tags }: { tags: Tag[] }) {
     navigate(params);
   }
 
+  const chip = (active: boolean, color: "terracota" | "oliva") =>
+    `rounded-lg border px-3.5 py-1.5 text-sm transition-colors ${
+      active
+        ? color === "terracota"
+          ? "border-terracota bg-terracota text-white"
+          : "border-oliva bg-oliva text-white"
+        : color === "terracota"
+          ? "border-tinta/15 text-tinta hover:border-terracota hover:text-terracota"
+          : "border-tinta/15 text-tinta hover:border-oliva hover:text-oliva"
+    }`;
+
+  const tab = (open: boolean, count: number, color: "terracota" | "oliva") =>
+    `group flex items-center gap-2 border-b-2 pb-2 font-serif text-lg transition-colors ${
+      open || count > 0
+        ? color === "terracota"
+          ? "border-terracota text-terracota"
+          : "border-oliva text-oliva"
+        : "border-tinta/15 text-tinta hover:border-tinta/40"
+    }`;
+
+  const chevron = (open: boolean) => (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 12 12"
+      className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2 4.5l4 4 4-4" />
+    </svg>
+  );
+
   return (
-    <div className="mt-6 flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
+    <div className="mt-6 flex flex-col gap-5">
+      <div className="flex flex-wrap gap-x-8 gap-y-3">
         <button
           type="button"
           onClick={() => setShowCategories((prev) => !prev)}
-          aria-pressed={showCategories}
           aria-expanded={showCategories}
-          className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-            showCategories || selectedCategories.length > 0
-              ? "border-terracota bg-terracota text-white"
-              : "border-terracota/30 text-terracota hover:border-terracota"
-          }`}
+          className={tab(showCategories, selectedCategories.length, "terracota")}
         >
-          Selecionar categorias
-          {selectedCategories.length > 0 ? ` (${selectedCategories.length})` : ""}
+          Categorias
+          {selectedCategories.length > 0 && (
+            <span className="font-sans text-sm">({selectedCategories.length})</span>
+          )}
+          {chevron(showCategories)}
         </button>
 
         {tags.length > 0 && (
           <button
             type="button"
             onClick={() => setShowTags((prev) => !prev)}
-            aria-pressed={showTags}
             aria-expanded={showTags}
-            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-              showTags || selectedTags.length > 0
-                ? "border-oliva bg-oliva text-white"
-                : "border-oliva/30 text-oliva hover:border-oliva"
-            }`}
+            className={tab(showTags, selectedTags.length, "oliva")}
           >
-            Selecionar preferências
-            {selectedTags.length > 0 ? ` (${selectedTags.length})` : ""}
+            Preferências
+            {selectedTags.length > 0 && (
+              <span className="font-sans text-sm">({selectedTags.length})</span>
+            )}
+            {chevron(showTags)}
           </button>
         )}
       </div>
@@ -102,11 +133,7 @@ export default function AttractionFilters({ tags }: { tags: Tag[] }) {
             type="button"
             onClick={clearCategories}
             aria-pressed={selectedCategories.length === 0}
-            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-              selectedCategories.length === 0
-                ? "border-terracota bg-terracota text-white"
-                : "border-terracota/30 text-terracota hover:border-terracota"
-            }`}
+            className={chip(selectedCategories.length === 0, "terracota")}
           >
             Todas
           </button>
@@ -118,11 +145,7 @@ export default function AttractionFilters({ tags }: { tags: Tag[] }) {
                 type="button"
                 onClick={() => toggleCategory(category.value)}
                 aria-pressed={active}
-                className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-                  active
-                    ? "border-terracota bg-terracota text-white"
-                    : "border-terracota/30 text-terracota hover:border-terracota"
-                }`}
+                className={chip(active, "terracota")}
               >
                 {category.label}
               </button>
@@ -141,11 +164,7 @@ export default function AttractionFilters({ tags }: { tags: Tag[] }) {
                 type="button"
                 onClick={() => toggleTag(tag.slug)}
                 aria-pressed={active}
-                className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-                  active
-                    ? "border-oliva bg-oliva text-white"
-                    : "border-oliva/30 text-oliva hover:border-oliva"
-                }`}
+                className={chip(active, "oliva")}
               >
                 {tag.name}
               </button>
