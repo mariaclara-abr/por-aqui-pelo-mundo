@@ -1036,6 +1036,7 @@ export interface Database {
           order: number;
           created_at: string;
           user_id: string | null;
+          photos: string[];
         };
         Insert: {
           id?: string;
@@ -1045,6 +1046,7 @@ export interface Database {
           order?: number;
           created_at?: string;
           user_id?: string | null;
+          photos?: string[];
         };
         Update: Partial<Database["public"]["Tables"]["site_reviews"]["Insert"]>;
         Relationships: [];

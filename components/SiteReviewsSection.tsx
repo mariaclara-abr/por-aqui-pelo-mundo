@@ -105,6 +105,23 @@ export default function SiteReviewsSection({
 
                 <ReviewComment text={review.comment} />
 
+                {review.photos.length > 0 && (
+                  <ul className="flex flex-wrap gap-2">
+                    {review.photos.map((url, index) => (
+                      <li key={url}>
+                        <a href={url} target="_blank" rel="noopener noreferrer">
+                          <img
+                            src={url}
+                            alt={`Foto ${index + 1} enviada por ${review.reviewerName}`}
+                            loading="lazy"
+                            className="h-24 w-24 rounded-lg object-cover"
+                          />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
                 <figcaption className="flex items-center gap-3">
                   <ReviewerLink review={review}>
                     <ReviewerAvatar review={review} />

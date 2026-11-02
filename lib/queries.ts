@@ -568,6 +568,7 @@ export interface SiteReviewWithProfile {
   comment: string;
   order: number;
   createdAt: string;
+  photos: string[];
   reviewerName: string;
   reviewerUsername: string | null;
   reviewerAvatarUrl: string | null;
@@ -609,6 +610,7 @@ export async function getSiteReviews(): Promise<SiteReviewWithProfile[]> {
       comment: review.comment,
       order: review.order,
       createdAt: review.created_at,
+      photos: review.photos,
       reviewerName: profile?.display_name || profile?.username || review.reviewer_name,
       reviewerUsername: profile?.username ?? null,
       reviewerAvatarUrl: profile?.avatar_url ?? null,

@@ -12,7 +12,7 @@ export interface AdminPhoto {
   position?: ImagePosition | null;
 }
 
-function sanitizeFileName(name: string) {
+export function sanitizeFileName(name: string) {
   const lastDot = name.lastIndexOf(".");
   const base = lastDot > 0 ? name.slice(0, lastDot) : name;
   const ext = lastDot > 0 ? name.slice(lastDot + 1) : "";
@@ -31,7 +31,7 @@ function sanitizeFileName(name: string) {
 }
 
 // Só o Safari exibe HEIC (foto de iPhone): converte pra JPEG antes de enviar.
-async function toWebFile(file: File) {
+export async function toWebFile(file: File) {
   if (!/\.(heic|heif)$/i.test(file.name) && !/hei[cf]/i.test(file.type)) {
     return file;
   }
@@ -47,10 +47,10 @@ const MAX_EDGE = 1600;
 
 // Reduz o lado maior a 1600px e recomprime em JPEG: fotos de celular/câmera
 // (2 a 5 MB) viram ~200 a 400 KB. Se não ficar menor, mantém o original.
-async function shrink(file: File) {
+export async function shrink(file: File, maxEdge = MAX_EDGE) {
   if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
   const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(bitmap.width * scale);
   canvas.height = Math.round(bitmap.height * scale);
@@ -97,7 +97,7 @@ export default function PhotoUploader({
       const path = `attractions/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
       const { error: uploadError } = await supabase.storage
         .from("media")
-        .upload(path, file);
+        .upload(path, file, { cacheControl: "31536000" });
 
       if (uploadError) {
         console.error("Falha ao enviar foto:", file.name, uploadError);
