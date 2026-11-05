@@ -59,7 +59,22 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
           </div>
 
           {showCounter && (
-            <p className="mt-5 text-center text-xs text-areia/90 sm:mt-6 sm:text-sm lg:text-left">
+            <>
+            <dl className="absolute right-10 top-1/2 hidden -translate-y-1/2 flex-col gap-8 border-r border-areia/40 pr-6 text-right lg:flex">
+              {[
+                [counts.countries, "países"],
+                [counts.cities, "cidades"],
+                [counts.attractions, "atrações visitadas e avaliadas"],
+              ].map(([n, label]) => (
+                <div key={label}>
+                  <dt className="font-lora text-6xl leading-none text-white">{n}</dt>
+                  <dd className="mt-2 max-w-[11rem] text-sm leading-snug text-areia/90">
+                    {label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-5 text-center text-xs text-areia/90 sm:mt-6 sm:text-sm lg:hidden">
               <span className="font-lora text-base text-white">
                 {counts.countries}
               </span>{" "}
@@ -73,6 +88,7 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
               </span>{" "}
               atrações visitadas e avaliadas
             </p>
+            </>
           )}
         </div>
       </div>
