@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import Link from "next/link";
 import { getOrCreateVisitorId } from "@/lib/visitor-id";
 import { createClient } from "@/lib/supabase-browser";
@@ -96,7 +97,7 @@ export default function ComingSoonAttractionCard({
     <>
       {coverPhoto ? (
         <Image
-          src={coverPhoto.url}
+          src={thumbUrl(coverPhoto.url)}
           alt={attraction.name}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"

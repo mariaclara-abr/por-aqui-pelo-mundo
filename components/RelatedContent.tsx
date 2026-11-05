@@ -10,6 +10,7 @@ import {
 } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import { useRoteiro } from "@/lib/roteiro";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import {
@@ -275,7 +276,7 @@ function AttractionRecommendationCard({
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm">
           {attraction.coverPhotoUrl ? (
             <Image
-              src={attraction.coverPhotoUrl}
+              src={thumbUrl(attraction.coverPhotoUrl)}
               alt={attraction.name}
               fill
               sizes="192px"

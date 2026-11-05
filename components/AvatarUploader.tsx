@@ -28,7 +28,7 @@ export default function AvatarUploader({
     const path = `${userId}/${crypto.randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(path, file);
+      .upload(path, file, { cacheControl: "31536000" });
 
     setUploading(false);
     event.target.value = "";

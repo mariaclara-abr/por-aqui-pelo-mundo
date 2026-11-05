@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import type { Database } from "@/types/database";
 import { categoryLabels } from "@/types/database";
 import RoteiroButton from "@/components/RoteiroButton";
@@ -38,7 +39,7 @@ export default function AttractionCard({
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm">
           {coverPhoto ? (
             <Image
-              src={coverPhoto.url}
+              src={thumbUrl(coverPhoto.url)}
               alt={attraction.name}
               fill
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import CountryFlag from "@/components/CountryFlag";
 import { imagePositionStyle, type ImagePosition } from "@/lib/image-position";
 
@@ -24,7 +25,7 @@ export default function DestinationCard({
       {imageUrl ? (
         <>
           <Image
-            src={imageUrl}
+            src={thumbUrl(imageUrl)}
             alt={name}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

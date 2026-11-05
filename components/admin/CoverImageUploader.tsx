@@ -3,6 +3,7 @@
 import { useId, useState, type ChangeEvent } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import ImagePositionPicker from "@/components/admin/ImagePositionPicker";
+import { shrink } from "@/components/admin/PhotoUploader";
 import {
   DEFAULT_IMAGE_POSITION,
   imagePositionStyle,
@@ -37,12 +38,18 @@ export default function CoverImageUploader({
     const path = `${folder}/${crypto.randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage
       .from("media")
-      .upload(path, file);
+      .upload(path, file, { cacheControl: "31536000" });
+
+    const { error: thumbError } = uploadError
+      ? { error: uploadError }
+      : await supabase.storage
+          .from("media")
+          .upload(`thumbs/${path}`, await shrink(file, 800), { cacheControl: "31536000" });
 
     setUploading(false);
     event.target.value = "";
 
-    if (uploadError) {
+    if (uploadError || thumbError) {
       setError("Não foi possível enviar a imagem. Tente novamente.");
       return;
     }

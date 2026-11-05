@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from "react";
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import type { Database } from "@/types/database";
 import { linkify } from "@/components/Linkify";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
@@ -212,7 +213,7 @@ function PhotoGalleryOverlay({
                   className="group relative aspect-square overflow-hidden bg-areia"
                 >
                   <Image
-                    src={photo.url}
+                    src={thumbUrl(photo.url)}
                     alt={photo.caption ?? ""}
                     fill
                     sizes="50vw"

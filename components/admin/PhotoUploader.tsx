@@ -99,8 +99,15 @@ export default function PhotoUploader({
         .from("media")
         .upload(path, file, { cacheControl: "31536000" });
 
-      if (uploadError) {
-        console.error("Falha ao enviar foto:", file.name, uploadError);
+      // Miniatura em thumbs/<mesmo caminho>: os cartões usam ela (ver lib/thumb.ts).
+      const { error: thumbError } = uploadError
+        ? { error: uploadError }
+        : await supabase.storage
+            .from("media")
+            .upload(`thumbs/${path}`, await shrink(file, 800), { cacheControl: "31536000" });
+
+      if (uploadError || thumbError) {
+        console.error("Falha ao enviar foto:", file.name, uploadError ?? thumbError);
         hadError = true;
         continue;
       }

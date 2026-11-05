@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
@@ -21,7 +22,7 @@ export default function ComingSoonCityCard({
     <>
       {city.cover_image_url ? (
         <Image
-          src={city.cover_image_url}
+          src={thumbUrl(city.cover_image_url)}
           alt={city.name}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

@@ -4,6 +4,7 @@ import CountryFlag from "@/components/CountryFlag";
 import { countryFlag } from "@/lib/country-flag";
 import { useEffect, useState, type MouseEvent } from "react";
 import Image from "next/image";
+import { thumbUrl } from "@/lib/thumb";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-browser";
 import { getOrCreateVisitorId } from "@/lib/visitor-id";
@@ -89,7 +90,7 @@ export default function ComingSoonCountryCard({
     <>
       {country.cover_image_url ? (
         <Image
-          src={country.cover_image_url}
+          src={thumbUrl(country.cover_image_url)}
           alt={country.name}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

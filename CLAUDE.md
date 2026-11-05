@@ -46,6 +46,13 @@ Princípios visuais:
 ## Fotos (limites da Vercel e do Supabase)
 Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por mês) estourou e as fotos quebraram. O processo fixo desde então:
 - `images.unoptimized: true` em `next.config.ts`: as fotos vão direto do Supabase Storage, sem passar pelo otimizador da Vercel. Não remover sem trocar de plano.
+- Em 31/10/2026 a cota de Egress do Supabase (Free, 5,5 GB) estourou e tudo (Storage, API REST, supabase-js) ficou bloqueado até 04/11. Só a conexão direta ao Postgres (`npm run sql`) e o dashboard continuam funcionando. Causa: fotos com `Cache-Control: max-age=3600`. Para não repetir:
+  - Todo upload ao Storage leva `cacheControl: "31536000"` (os caminhos têm UUID, então é seguro). Nunca enviar sem isso.
+  - Se aparecer foto nova sem cache longo: `update storage.objects set metadata = jsonb_set(metadata, '{cacheControl}', '"max-age=31536000"')` via `npm run sql` (funciona mesmo com a cota estourada).
+  - Cartões e grades usam miniaturas de 800px em `media/thumbs/<mesmo caminho>` via `thumbUrl()` (`lib/thumb.ts`), só ativas com `NEXT_PUBLIC_USE_THUMBS=1`. Os uploaders já criam a miniatura; fotos antigas dependem de `scripts/make-thumbs.mjs --apply`. Nunca ligar a flag antes de rodar o script.
+  - Nunca incluir foto acima de ~300 KB em página de listagem; manter a redução de 1600px/q82 e rodar `shrink-photos.mjs` nas fotos grandes (o script ainda ignora `.heic`).
+  - Antes de qualquer carga em lote que baixe fotos (scripts, auditorias), lembrar que download conta como egress.
+  - Ao sinal de 80% da cota (dashboard Supabase > Usage), avisar o usuário; opção final é upgrade para o Pro.
 - Como a Vercel não reduz mais as fotos, **toda foto precisa ser reduzida antes de ir para o bucket `media`**: lado maior de no máximo 1600px (sem ampliar) e JPEG com qualidade 82 (PNG, WebP e HEIC viram JPEG). Se a versão reduzida não ficar menor que o original, mantém o original.
 - Pelo admin, o `components/admin/PhotoUploader.tsx` já faz isso no navegador. Em scripts e cargas em lote (que gravam direto no Storage), aplicar o mesmo padrão com `sharp`.
 - Fotos antigas grandes (acima de 600 KB) são reduzidas com `node --env-file=.env.local scripts/shrink-photos.mjs --apply`, que guarda o original em `~/Desktop/backup-fotos-supabase` antes de sobrescrever.
