@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 
-const TOKEN_PATTERN = /(\*\*.+?\*\*|__.+?__|\*.+?\*|https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/g;
+const TOKEN_PATTERN = /(\[[^\]\n]+\]\(https?:\/\/[^\s)]+\)|\*\*.+?\*\*|__.+?__|\*.+?\*|https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/g;
 
 function toHref(match: string) {
   return match.startsWith("www.") ? `https://${match}` : match;
 }
 
 // Interpreta um texto vindo da curadoria (nunca HTML): reconhece apenas
-// **negrito**, *itálico*, __sublinhado__ e URLs, mantendo o resto como
+// **negrito**, *itálico*, __sublinhado__, [texto](url) e URLs soltas, mantendo o resto como
 // texto puro.
 export function linkify(text: string, linkClassName = "break-all text-terracota underline-offset-2 hover:underline"): ReactNode[] {
   const parts = text.split(TOKEN_PATTERN);
@@ -21,6 +21,20 @@ export function linkify(text: string, linkClassName = "break-all text-terracota 
     }
     if (part.startsWith("*") && part.endsWith("*") && part.length > 1) {
       return <em key={index}>{part.slice(1, -1)}</em>;
+    }
+    const labeled = part.match(/^\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)$/);
+    if (labeled) {
+      return (
+        <a
+          key={index}
+          href={labeled[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClassName.replace("break-all ", "")}
+        >
+          {labeled[1]}
+        </a>
+      );
     }
     if (/^(https?:\/\/|www\.)/.test(part)) {
       return (

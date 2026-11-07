@@ -99,6 +99,19 @@ export default function FormattingToolbarTextarea({ id, className, rows, value, 
     });
   }
 
+  // Link com texto clicável: seleciona o texto, pede o endereço e grava [texto](url).
+  function insertLink() {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const url = window.prompt("Endereço do link (https://...)");
+    if (!url || !/^https?:\/\//.test(url.trim())) return;
+    const label = value.slice(start, end) || "site oficial";
+    onChange(`${value.slice(0, start)}[${label}](${url.trim()})${value.slice(end)}`);
+    requestAnimationFrame(() => textarea.focus());
+  }
+
   return (
     <div>
       <div className="mb-1.5 flex gap-1">
@@ -117,6 +130,14 @@ export default function FormattingToolbarTextarea({ id, className, rows, value, 
             {button.label}
           </button>
         ))}
+        <button
+          type="button"
+          title="Inserir link: selecione o texto que será clicável"
+          onClick={insertLink}
+          className="flex h-7 items-center justify-center rounded border border-oliva/30 px-2 text-sm text-oliva hover:border-terracota hover:text-terracota"
+        >
+          Link
+        </button>
       </div>
       <textarea
         ref={textareaRef}

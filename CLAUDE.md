@@ -48,7 +48,7 @@ Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por m
 - `images.unoptimized: true` em `next.config.ts`: as fotos vão direto do Supabase Storage, sem passar pelo otimizador da Vercel. Não remover sem trocar de plano.
 - Em 31/10/2026 a cota de Egress do Supabase (Free, 5,5 GB) estourou e tudo (Storage, API REST, supabase-js) ficou bloqueado até 04/11. Só a conexão direta ao Postgres (`npm run sql`) e o dashboard continuam funcionando. Causa: fotos com `Cache-Control: max-age=3600`. Para não repetir:
   - Todo upload ao Storage leva `cacheControl: "31536000"` (os caminhos têm UUID, então é seguro). Nunca enviar sem isso.
-  - Se aparecer foto nova sem cache longo: `update storage.objects set metadata = jsonb_set(metadata, '{cacheControl}', '"max-age=31536000"')` via `npm run sql` (funciona mesmo com a cota estourada).
+  - O cabeçalho que o CDN entrega é o gravado no momento do upload. Atualizar `storage.objects.metadata` por SQL NÃO muda isso (testado em 05/11/2026: originais seguiram com `max-age=3600`). Reenviar a foto antiga com `cacheControl` (upsert ou remover e enviar de novo) também não mudou o cabeçalho nos testes; só uploads em caminho novo (ex: `thumbs/`) saem com cache de 1 ano. As originais antigas ficam com 1 hora até irem para o R2. Confira sempre com `curl -s -D - -o /dev/null <url>`.
   - Cartões e grades usam miniaturas de 800px em `media/thumbs/<mesmo caminho>` via `thumbUrl()` (`lib/thumb.ts`), só ativas com `NEXT_PUBLIC_USE_THUMBS=1`. Os uploaders já criam a miniatura; fotos antigas dependem de `scripts/make-thumbs.mjs --apply`. Nunca ligar a flag antes de rodar o script.
   - Nunca incluir foto acima de ~300 KB em página de listagem; manter a redução de 1600px/q82 e rodar `shrink-photos.mjs` nas fotos grandes (o script ainda ignora `.heic`).
   - Antes de qualquer carga em lote que baixe fotos (scripts, auditorias), lembrar que download conta como egress.
@@ -64,6 +64,14 @@ Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por m
 - O nome do card deve chamar atenção e despertar vontade de clicar: destaque em negrito uma ou duas palavras, as mais importantes do título.
 - Títulos devem ser sempre bem chamativos, com gancho que dê vontade de clicar (sem prometer o que o conteúdo não entrega).
 - Toda categoria de dicas deve ter pelo menos 1 card travado como premium (`is_premium`), e esse deve ser o de título mais chamativo.
+
+## Faixa de preço dos restaurantes (`price_range`, 1 a 4)
+Só as 4 opções existentes: 1 = $ Econômico, 2 = $$ Moderado, 3 = $$$ Caro, 4 = $$$$ Muito caro. Não criar categorias nem renomear.
+- Sempre o preço de uma refeição típica por adulto (nunca o total da família, nunca só o item mais barato ou mais caro). Buffet, restaurante com personagens e preço fechado: valor integral por adulto.
+- Internacionais (referência: faixas da Disney, em US$ por adulto): 1 até 14,99; 2 de 15 a 34,99; 3 de 35 a 59,99; 4 a partir de 60. Fora dos EUA, converter para dólar só internamente (a conversão não aparece no site).
+- Brasil (referência: Tripadvisor, adaptada): 1 = realmente econômico (pela análise dos preços); 2 = preços acessíveis, incluindo os $ do Tripadvisor quando adequado; 3 = $$-$$$ do Tripadvisor; 4 = $$$$ do Tripadvisor. Na dúvida, conferir o cardápio.
+- Atrações que não são restaurantes: avaliar ingresso/experiência separadamente, sem aplicar estas faixas.
+- Nunca chutar a faixa: só classificar com preço verificado em fonte (cardápio, site oficial, Tripadvisor).
 
 ## Banco de dados (Supabase)
 - Autorização permanente do usuário: rodar SQL/migrations diretamente no banco Supabase de produção (`SUPABASE_DB_URL` em `.env.local`) sem pedir confirmação antes, usando `npm run sql -- <arquivo.sql>` (script em `scripts/run-sql.mjs`, conecta via `pg`). Não é necessário pausar para perguntar antes desse tipo de execução.

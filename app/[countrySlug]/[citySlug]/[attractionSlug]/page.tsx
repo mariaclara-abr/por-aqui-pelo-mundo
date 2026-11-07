@@ -326,10 +326,13 @@ export default async function AttractionPage(
 
         <div className="mt-8">
           {attraction.description && (
-            <section>
-              <p className="leading-relaxed text-tinta whitespace-pre-line">
-                {linkify(attraction.description)}
-              </p>
+            <section className="space-y-5 leading-relaxed text-tinta">
+              {attraction.description
+                .split(/\n+/)
+                .filter((paragraph) => paragraph.trim())
+                .map((paragraph, index) => (
+                  <p key={index}>{linkify(paragraph)}</p>
+                ))}
             </section>
           )}
 
