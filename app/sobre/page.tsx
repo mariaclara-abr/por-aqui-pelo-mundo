@@ -1,3 +1,4 @@
+import PaperFrame from "@/components/PaperFrame";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getAboutPageContent, getAboutVisitedCountries } from "@/lib/queries";
@@ -51,11 +52,11 @@ export default async function SobrePage() {
     .filter(Boolean);
 
   return (
-    <main className="flex-1 bg-[url('/sobre-autora-background-v2.png')] bg-[length:100%_auto] bg-repeat-y bg-top">
+    <main className="flex-1 overflow-x-clip bg-[url('/sobre-autora-background-v2.png')] bg-[length:100%_auto] bg-repeat-y bg-top">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="flex flex-col items-center text-center">
-          <div className="shrink-0 rounded-full border border-oliva/20 bg-branco/70 p-1.5 shadow-sm">
-            <div className="relative h-44 w-44 overflow-hidden rounded-full border-4 border-branco bg-branco sm:h-56 sm:w-56">
+          <PaperFrame round className="shrink-0">
+            <div className="relative h-44 w-44 overflow-hidden rounded-full bg-branco sm:h-56 sm:w-56">
               {about.author_photo_url ? (
                 <Image
                   src={about.author_photo_url}
@@ -73,7 +74,7 @@ export default async function SobrePage() {
                 </div>
               )}
             </div>
-          </div>
+          </PaperFrame>
           <p className="mt-5 text-xs uppercase tracking-widest text-oliva">
             Sobre a autora
           </p>
@@ -82,7 +83,7 @@ export default async function SobrePage() {
           </h1>
         </div>
 
-        <div className="mx-auto mt-10 max-w-2xl">
+        <div className="mt-10">
           <div className="flex flex-col gap-5 text-left leading-relaxed text-tinta">
             {bioParagraphs.map((paragraph, index) => (
               <p key={index} className="whitespace-pre-line">{linkify(paragraph)}</p>
@@ -90,8 +91,8 @@ export default async function SobrePage() {
           </div>
         </div>
 
-        <div className="mt-10 rounded-2xl border border-oliva/20 bg-branco/70 p-2 shadow-sm sm:p-3">
-          <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl bg-branco">
+        <PaperFrame className="mt-28">
+          <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-lg bg-branco">
             {about.travel_photo_1_url ? (
               <Image
                 src={about.travel_photo_1_url}
@@ -105,9 +106,9 @@ export default async function SobrePage() {
               <span className="text-sm text-oliva">Foto de viagem em breve</span>
             )}
           </div>
-        </div>
+        </PaperFrame>
 
-        <div className="mx-auto max-w-2xl">
+        <div className="">
           <div className="mt-10 flex flex-col gap-5 text-left leading-relaxed text-tinta">
             <h2 className="font-serif text-2xl text-tinta">
               Por que esse site existe
@@ -123,8 +124,8 @@ export default async function SobrePage() {
 
         </div>
 
-        <div className="mt-10 rounded-2xl border border-oliva/20 bg-branco/70 p-2 shadow-sm sm:p-3">
-          <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-xl bg-branco">
+        <PaperFrame flip className="mt-28">
+          <div className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-lg bg-branco">
             {about.travel_photo_2_url ? (
               <Image
                 src={about.travel_photo_2_url}
@@ -138,9 +139,9 @@ export default async function SobrePage() {
               <span className="text-sm text-oliva">Foto de viagem em breve</span>
             )}
           </div>
-        </div>
+        </PaperFrame>
 
-        <div className="mx-auto max-w-2xl text-left">
+        <div className="text-left">
           <div className="mt-10">
             <h2 className="font-serif text-2xl text-tinta">
               Destinos já visitados
@@ -148,15 +149,31 @@ export default async function SobrePage() {
             {visitedCountries.length === 0 ? (
               <p className="mt-4 text-oliva">Novos destinos em breve.</p>
             ) : (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {visitedCountries.map((country) => (
-                  <span
-                    key={country.id}
-                    className="rounded-full border border-oliva/30 px-4 py-1.5 text-sm text-oliva"
-                  >
-                    {country.name}
-                  </span>
-                ))}
+              <div className="relative left-1/2 mt-4 w-screen -translate-x-1/2 overflow-hidden bg-terracota py-4">
+                <p className="sr-only">
+                  {visitedCountries.map((c) => c.name).join(", ")}
+                </p>
+                <div
+                  aria-hidden="true"
+                  className="marquee-track marquee-track-slow flex w-max items-center hover:[animation-play-state:paused]"
+                >
+                  {/* duas metades iguais (a animação anda -50%); cada uma repete a lista para cobrir a largura */}
+                  {Array.from({ length: 2 }, (_, half) =>
+                    Array.from({ length: 4 }, (_, rep) =>
+                      visitedCountries.map((country) => (
+                        <span
+                          key={`${half}-${rep}-${country.id}`}
+                          className="flex items-center"
+                        >
+                          <span className="whitespace-nowrap font-serif text-xl italic text-areia">
+                            {country.name}
+                          </span>
+                          <span className="px-6 text-sm text-areia/60">•</span>
+                        </span>
+                      )),
+                    ),
+                  )}
+                </div>
               </div>
             )}
           </div>

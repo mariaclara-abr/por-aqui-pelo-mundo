@@ -52,6 +52,11 @@ body {
   animation: marquee-scroll 40s linear infinite;
 }
 
+/* faixa dos destinos visitados (~20px/s: legível); largura da trilha ~22 mil px */
+.marquee-track-slow {
+  animation-duration: 280s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation-play-state: paused;
