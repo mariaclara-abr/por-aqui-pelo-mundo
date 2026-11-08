@@ -1,8 +1,4 @@
-"use client";
-
-import Link from "next/link";
 import Image from "next/image";
-import PlaneLaunchIcon from "@/components/PlaneLaunchIcon";
 
 interface HeroCounts {
   countries: number;
@@ -15,82 +11,39 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
     counts.countries > 0 && counts.cities > 0 && counts.attractions > 0;
 
   return (
-    <section className="relative flex min-h-[70svh] flex-col justify-center overflow-hidden sm:min-h-[82svh] lg:min-h-[88svh]">
+    // Sobe por baixo do cabeçalho (transparente na home) para a foto ocupar a tela inteira.
+    <section className="relative -mt-[var(--header-height,64px)] flex min-h-[100svh] flex-col items-center justify-center overflow-hidden">
       <Image
         src="/hero-por-do-sol.jpeg"
         alt="Pôr do sol visto pela janela do avião, com nuvens douradas acima da asa"
         fill
         preload
         sizes="100vw"
-        className="object-cover object-[60%_center] brightness-[0.72] sm:object-center"
+        className="object-cover object-[60%_center] sm:object-[center_42%]"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-tinta/65 via-tinta/15 to-tinta/35 lg:bg-gradient-to-r lg:from-tinta/85 lg:via-tinta/45 lg:to-transparent" />
+      {/* Véu leve só para o texto claro ler bem sobre as nuvens. */}
+      <div className="absolute inset-0 bg-tinta/25" />
+      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-tinta/40 to-transparent" />
 
-      <div className="relative mx-auto w-full max-w-[1440px] px-4 py-12 sm:px-6 sm:py-24 lg:px-10">
-        <div className="mx-auto flex max-w-[680px] flex-col text-center lg:mx-0 lg:text-left">
-          <h1 className="font-lora text-[3rem] leading-[0.98] tracking-[-0.035em] text-white sm:text-7xl lg:text-8xl">
-            Monte seu roteiro de viagem
-          </h1>
-          <p className="mt-4 text-center font-lora text-lg leading-snug text-areia sm:mt-6 sm:text-2xl lg:text-left lg:text-[1.7rem]">
-            Com base na experiência real de quem já esteve lá.
+      <div className="relative flex max-w-[760px] flex-col items-center px-4 pt-[var(--header-height,64px)] text-center text-white [text-shadow:0_1px_14px_rgba(43,38,32,0.35)] sm:px-6">
+        {showCounter && (
+          <p className="!text-center text-[11px] uppercase tracking-[0.28em] text-white/90 sm:text-xs">
+            {counts.countries} países · {counts.cities} cidades ·{" "}
+            {counts.attractions} atrações
           </p>
-          <p className="mt-3 max-w-[620px] text-center text-[13px] leading-relaxed text-areia/85 sm:mt-4 sm:text-base lg:text-left">
-            Atrações diversas, recomendadas e avaliadas pessoalmente pela viajante{" "}
-            <Link
-              href="/sobre"
-              className="text-white decoration-1 underline-offset-2 hover:underline"
-            >
-              Rejane Abrantes
-            </Link>
-            , que compartilha sua experiência real e dicas exclusivas.
-          </p>
-          <div className="relative mt-6 w-fit self-center sm:mt-8 lg:self-start">
-            <div className="relative inline-flex w-fit">
-              <a
-                href="#destinos"
-                className="relative inline-block min-h-12 w-auto rounded-lg bg-terracota px-7 py-3.5 text-center text-base font-medium text-white transition hover:scale-105 hover:bg-terracota/90 active:scale-95 sm:px-9"
-              >
-                Monte seu roteiro
-              </a>
-            </div>
-            <span className="absolute left-full top-1/2 ml-6 hidden h-[22px] w-[22px] -translate-y-1/2 sm:block">
-              <PlaneLaunchIcon />
-            </span>
-          </div>
-
-          {showCounter && (
-            <>
-            <dl className="absolute right-10 top-1/2 hidden -translate-y-1/2 flex-col gap-8 border-r border-areia/40 pr-6 text-right lg:flex">
-              {[
-                [counts.countries, "países"],
-                [counts.cities, "cidades"],
-                [counts.attractions, "atrações visitadas e avaliadas"],
-              ].map(([n, label]) => (
-                <div key={label}>
-                  <dt className="font-lora text-6xl leading-none text-white">{n}</dt>
-                  <dd className="mt-2 max-w-[11rem] text-sm leading-snug text-areia/90">
-                    {label}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-5 text-center text-xs text-areia/90 sm:mt-6 sm:text-sm lg:hidden">
-              <span className="font-lora text-base text-white">
-                {counts.countries}
-              </span>{" "}
-              países ·{" "}
-              <span className="font-lora text-base text-white">
-                {counts.cities}
-              </span>{" "}
-              cidades ·{" "}
-              <span className="font-lora text-base text-white">
-                {counts.attractions}
-              </span>{" "}
-              atrações visitadas e avaliadas
-            </p>
-            </>
-          )}
-        </div>
+        )}
+        <h1 className="mt-4 text-balance font-lora text-[2rem] uppercase leading-[1.12] tracking-[0.06em] sm:mt-5 sm:text-5xl lg:text-[3.6rem]">
+          Monte seu roteiro de viagem
+        </h1>
+        <p className="mt-4 !text-center text-balance font-lora text-base text-areia sm:mt-5 sm:text-xl">
+          Com base na experiência real de quem já esteve lá.
+        </p>
+        <a
+          href="#destinos"
+          className="mt-9 inline-flex min-h-11 items-center rounded-lg border border-white/70 px-6 text-[11px] font-light uppercase tracking-[0.28em] text-white backdrop-blur-[2px] [text-shadow:none] transition-colors duration-300 hover:border-terracota hover:bg-terracota sm:mt-11 sm:px-8"
+        >
+          Comece agora
+        </a>
       </div>
     </section>
   );

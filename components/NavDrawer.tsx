@@ -119,12 +119,12 @@ export default function NavDrawer() {
         type="button"
         onClick={() => setIsOpen(true)}
         aria-label="Abrir menu"
-        className="flex h-11 w-11 items-center justify-center rounded-full text-tinta transition-colors hover:bg-tinta/5 hover:text-terracota sm:h-9 sm:w-9"
+        className="flex h-11 w-11 items-center justify-center rounded-full text-tinta transition-colors hover:bg-tinta/5 hover:text-terracota sm:h-9 sm:w-9 group-data-hero/header:text-white group-data-hero/header:hover:bg-white/10 group-data-hero/header:hover:text-areia"
       >
         <svg
           viewBox="0 0 20 20"
           className="h-5 w-5 fill-none stroke-current"
-          strokeWidth={2}
+          strokeWidth={1.4}
         >
           <path d="M3 6h14M3 10h14M3 14h14" strokeLinecap="round" />
         </svg>

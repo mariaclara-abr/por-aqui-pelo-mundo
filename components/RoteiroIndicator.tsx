@@ -12,7 +12,7 @@ export default function RoteiroIndicator() {
       href="/meu-roteiro"
       aria-label={`Meus roteiros, ${count} ${count === 1 ? "item" : "itens"}`}
       title="Meus roteiros"
-      className="group relative flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota"
+      className="group relative flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota group-data-hero/header:text-white group-data-hero/header:hover:bg-white/10 group-data-hero/header:hover:text-areia"
     >
       <SuitcaseIcon />
       {count > 0 && <CountBadge count={count} />}
@@ -28,7 +28,7 @@ function SuitcaseIcon() {
     <svg
       viewBox="0 0 20 20"
       className="h-5 w-5 fill-none stroke-current"
-      strokeWidth={2}
+      strokeWidth={1.4}
       aria-hidden="true"
     >
       <rect x="3" y="6" width="14" height="10" rx="1.5" />

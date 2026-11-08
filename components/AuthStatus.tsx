@@ -91,7 +91,7 @@ export default function AuthStatus() {
     return (
       <Link
         href="/entrar"
-        className="rounded-full border border-terracota/30 px-4 py-1.5 text-sm text-terracota transition-colors hover:border-terracota"
+        className="rounded-full border border-terracota/30 px-4 py-1.5 text-sm font-light tracking-wide text-terracota transition-colors hover:border-terracota group-data-hero/header:border-white/60 group-data-hero/header:text-white group-data-hero/header:hover:border-white"
       >
         Entrar
       </Link>
