@@ -191,7 +191,7 @@ export default function PreferencesForm({
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+          className="btn btn-terracota"
         >
           {saving ? "Salvando..." : "Salvar preferências"}
         </button>

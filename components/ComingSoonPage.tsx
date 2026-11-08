@@ -38,7 +38,7 @@ export default function ComingSoonPage({
         <div className="mt-8 flex flex-col items-center gap-2 sm:flex-row sm:gap-9">
           <Link
             href="/"
-            className="inline-flex min-h-12 items-center justify-center whitespace-nowrap rounded-lg bg-areia px-8 py-3.5 text-[13px] font-semibold text-tinta transition-colors duration-200 hover:bg-branco focus-visible:outline-areia motion-safe:transition-[background-color,transform] motion-safe:active:scale-[0.98] sm:text-sm"
+            className="btn btn-claro whitespace-nowrap focus-visible:outline-areia"
           >
             Ver destinos disponíveis
           </Link>

@@ -222,3 +222,23 @@ body {
     opacity: 0.35;
   }
 }
+
+/* Botão do site: contorno fino, cantos de 8px, letra leve em caixa alta espaçada.
+   Combine .btn com uma cor (.btn-terracota, .btn-oliva ou .btn-claro). */
+@layer components {
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-6 text-center text-[11px] font-light uppercase tracking-[0.28em] transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-sm {
+    @apply min-h-9 px-4 text-[10px] tracking-[0.2em];
+  }
+  .btn-terracota {
+    @apply border-terracota text-terracota hover:bg-terracota hover:text-white;
+  }
+  .btn-oliva {
+    @apply border-oliva text-oliva hover:bg-oliva hover:text-white;
+  }
+  .btn-claro {
+    @apply border-white/70 text-white hover:border-terracota hover:bg-terracota;
+  }
+}

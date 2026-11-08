@@ -143,10 +143,10 @@ export default function RoteiroMap({
         <button
           type="button"
           onClick={() => setShowRoute((prev) => !prev)}
-          className={`absolute right-3 top-3 z-[1001] flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-colors ${
+          className={`btn btn-sm absolute right-3 top-3 z-[1001] ${
             showRoute
               ? "border-terracota bg-terracota text-white"
-              : "border-oliva/30 bg-branco text-oliva hover:border-terracota hover:text-terracota"
+              : "bg-branco btn-terracota"
           }`}
         >
           {showRoute ? <EyeIcon /> : <EyeOffIcon />}

@@ -231,10 +231,8 @@ function AddToRoteiroButton({ attraction }: { attraction: RecommendedAttraction 
           }
         }}
         disabled={pending}
-        className={`mt-2 w-full rounded-full px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60 ${
-          inRoteiro
-            ? "border border-terracota text-terracota hover:bg-terracota/10"
-            : "bg-terracota text-white hover:bg-terracota/90"
+        className={`btn btn-sm mt-2 w-full ${
+          inRoteiro ? "btn-oliva" : "btn-terracota"
         }`}
       >
         {inRoteiro ? "Adicionado ao roteiro" : "Adicionar ao roteiro"}

@@ -175,7 +175,7 @@ export default function ItinerarySwitcherDialog({
           type="button"
           onClick={handleCreateNew}
           disabled={pending}
-          className="mt-4 shrink-0 rounded-full bg-terracota px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+          className="btn btn-terracota mt-4 shrink-0"
         >
           + Criar novo roteiro
         </button>

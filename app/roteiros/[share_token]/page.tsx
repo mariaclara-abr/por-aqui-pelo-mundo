@@ -147,7 +147,7 @@ export default async function SharedItineraryPage(
           </p>
           <Link
             href="/"
-            className="mt-4 inline-block rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+            className="btn btn-terracota mt-4"
           >
             Conhecer o Por Aqui Pelo Mundo
           </Link>

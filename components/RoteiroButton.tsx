@@ -93,10 +93,8 @@ export default function RoteiroButton({
       onClick={handleClick}
       disabled={pending}
       aria-pressed={inRoteiro}
-      className={`rounded-full px-6 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 ${
-        inRoteiro
-          ? "border border-terracota text-terracota hover:bg-terracota/10"
-          : "bg-terracota text-white hover:bg-terracota/90"
+      className={`btn ${
+        inRoteiro ? "btn-oliva" : "btn-terracota"
       }`}
     >
       {inRoteiro ? "Remover do roteiro" : "Adicionar ao roteiro"}

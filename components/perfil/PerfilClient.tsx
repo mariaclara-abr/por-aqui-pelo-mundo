@@ -72,7 +72,7 @@ export default function PerfilClient({
           <h2 className="font-serif text-xl text-tinta">Dados do perfil</h2>
           <Link
             href={`/perfil/${profile.username}`}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-terracota px-3 py-1 text-xs font-medium text-terracota transition-colors hover:bg-terracota/10"
+            className="btn btn-terracota btn-sm shrink-0"
           >
             <svg
               viewBox="0 0 20 20"

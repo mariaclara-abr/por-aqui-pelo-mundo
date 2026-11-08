@@ -76,7 +76,7 @@ export default function TravelTipsGrid({
       >
         <a
           href="#afiliados"
-          className="rounded-full border border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota hover:text-white"
+          className="btn btn-terracota"
         >
           Afiliados
         </a>
@@ -88,10 +88,8 @@ export default function TravelTipsGrid({
               type="button"
               aria-pressed={active}
               onClick={() => toggleCategory(category)}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                active
-                  ? "border-terracota bg-terracota text-white"
-                  : "border-oliva/40 text-oliva hover:border-oliva"
+              className={`btn btn-sm ${
+                active ? "border-terracota bg-terracota text-white" : "btn-oliva"
               }`}
             >
               {category}

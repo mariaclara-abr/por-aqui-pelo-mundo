@@ -133,7 +133,7 @@ export default function SiteReviewSubmitForm() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="rounded-full border border-terracota px-6 py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+          className="btn btn-terracota"
         >
           Deixar minha avaliação
         </button>
@@ -231,7 +231,7 @@ export default function SiteReviewSubmitForm() {
         type="button"
         onClick={handleSubmit}
         disabled={saving || uploading || !comment.trim()}
-        className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+        className="btn btn-terracota"
       >
         {saving ? "Enviando..." : "Enviar avaliação"}
       </button>

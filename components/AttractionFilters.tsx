@@ -61,14 +61,14 @@ export default function AttractionFilters({ tags }: { tags: Tag[] }) {
   }
 
   const chip = (active: boolean, color: "terracota" | "oliva") =>
-    `rounded-lg border px-3.5 py-1.5 text-sm transition-colors ${
+    `btn btn-sm ${
       active
         ? color === "terracota"
           ? "border-terracota bg-terracota text-white"
           : "border-oliva bg-oliva text-white"
         : color === "terracota"
-          ? "border-tinta/15 text-tinta hover:border-terracota hover:text-terracota"
-          : "border-tinta/15 text-tinta hover:border-oliva hover:text-oliva"
+          ? "btn-terracota"
+          : "btn-oliva"
     }`;
 
   const tab = (open: boolean, count: number, color: "terracota" | "oliva") =>

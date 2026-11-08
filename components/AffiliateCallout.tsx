@@ -152,7 +152,7 @@ export function EasySimBanner() {
               target="_blank"
               rel="noopener noreferrer sponsored"
               onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-              className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-areia px-6 py-3 text-sm font-semibold text-tinta transition-colors hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none sm:w-auto"
+              className="btn btn-claro mt-5 w-full sm:w-auto"
             >
               Escolher meu plano na Easysim4U
             </a>
@@ -223,7 +223,7 @@ export function AchadinhosCard() {
                   target="_blank"
                   rel="noopener noreferrer sponsored"
                   onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-                  className="inline-flex min-h-12 items-center justify-center rounded-lg bg-oliva px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
+                  className="btn btn-oliva"
                 >
                   {program.checklistCtaLabel}
                 </a>
@@ -259,12 +259,9 @@ export function RentcarsBanner() {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="group mt-6 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-oliva px-6 py-3 text-center text-sm font-semibold text-branco transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none sm:w-auto"
+            className="btn btn-oliva group mt-6 w-full sm:w-auto"
           >
             Ver carros na Rentcars
-            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5">
-              <path d="M5 15 15 5M5 5h10v10" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </a>
           <p className="mt-4 text-left text-xs leading-relaxed text-oliva">Link de afiliada. Sem custo extra para você.</p>
         </div>
@@ -352,12 +349,9 @@ function SeguroViagemCard({ compact = false }: { compact?: boolean }) {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, context)}
-            className="group mt-5 flex min-h-12 items-center justify-center gap-3 rounded-lg bg-areia px-4 py-3.5 text-center text-sm font-semibold text-tinta transition-colors duration-200 hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none"
+            className="btn btn-claro group mt-5"
           >
             Comparar na Real
-            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5">
-              <path d="M5 15 15 5M5 5h10v10" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </a>
           <p className="mt-4 text-left text-[11px] leading-relaxed text-areia">
             Link de afiliada. Sem custo extra para você.
@@ -435,7 +429,7 @@ export function NaturaCard() {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="mt-5 inline-flex min-h-12 items-center justify-center rounded-lg bg-oliva px-6 py-3 text-center text-sm font-semibold text-branco transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
+            className="btn btn-oliva mt-5"
           >
             Comprar na Natura
           </a>
@@ -491,12 +485,9 @@ export function RentcarsSlimBanner() {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "home")}
-            className="group mt-7 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-lg bg-oliva px-6 py-3.5 text-center text-sm font-semibold text-branco transition-colors duration-200 hover:bg-tinta active:bg-tinta motion-reduce:transition-none sm:w-auto"
+            className="btn btn-oliva group mt-7 w-full sm:w-auto"
           >
             Ver carros na {program.label}
-            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:translate-x-1">
-              <path d="M5 15 15 5M5 5h10v10" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </a>
           <p className="mt-4 max-w-lg text-left text-xs leading-relaxed text-oliva">
             Link de afiliada. Sem custo extra para você.
@@ -558,7 +549,7 @@ export function EasySimSlimBanner() {
           target="_blank"
           rel="noopener noreferrer sponsored"
           onClick={() => trackClick(program, undefined, "home")}
-          className="inline-flex min-h-12 w-full shrink-0 items-center justify-center self-start rounded-lg bg-areia px-6 py-3 text-center text-sm font-semibold text-tinta transition-colors hover:bg-branco active:bg-branco focus-visible:outline-areia motion-reduce:transition-none lg:w-auto lg:self-center"
+          className="btn btn-claro w-full shrink-0 self-start lg:w-auto lg:self-center"
         >
           Comprar com desconto
         </a>
@@ -672,7 +663,7 @@ export function SunscreenCallout({
           target="_blank"
           rel="noopener noreferrer sponsored"
           onClick={() => trackClick(program, attractionId, context)}
-          className="mt-4 flex min-h-11 items-center justify-center gap-2 rounded-lg bg-oliva px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
+          className="btn btn-oliva mt-4"
         >
           {program.checklistCtaLabel}
           <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0">
@@ -716,7 +707,7 @@ export default function AffiliateCallout({
                 onClick={() =>
                   trackClick(program, attractionId, "attraction_page")
                 }
-                className="inline-flex min-h-11 items-center rounded-lg bg-oliva px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-tinta active:bg-tinta motion-reduce:transition-none"
+                className="btn btn-oliva"
               >
                 {program.attractionCtaLabel ?? program.label}
               </a>
@@ -805,7 +796,7 @@ export default function AffiliateCallout({
                   onClick={() =>
                     trackClick(program, attractionId, "meu_roteiro_checklist")
                   }
-                  className="w-44 shrink-0 whitespace-nowrap rounded-full bg-terracota px-4 py-1.5 text-center text-xs font-medium text-white transition-colors after:absolute after:inset-0 after:content-[''] hover:bg-terracota/90"
+                  className="btn btn-terracota btn-sm w-44 shrink-0 whitespace-nowrap after:absolute after:inset-0 after:content-['']"
                 >
                   {program.checklistCtaLabel ?? "Ver opções"}
                 </a>

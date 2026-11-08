@@ -40,7 +40,7 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
         </p>
         <a
           href="#destinos"
-          className="mt-9 inline-flex min-h-11 items-center rounded-lg border border-white/70 px-6 text-[11px] font-light uppercase tracking-[0.28em] text-white backdrop-blur-[2px] [text-shadow:none] transition-colors duration-300 hover:border-terracota hover:bg-terracota sm:mt-11 sm:px-8"
+          className="btn btn-claro mt-9 backdrop-blur-[2px] [text-shadow:none] sm:mt-11 sm:px-8"
         >
           Comece agora
         </a>

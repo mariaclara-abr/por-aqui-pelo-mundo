@@ -152,7 +152,7 @@ export default function ShareItineraryDialog({
               <button
                 type="button"
                 onClick={handleCopy}
-                className="shrink-0 rounded-full bg-terracota px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-terracota/90"
+                className="btn btn-terracota btn-sm shrink-0"
               >
                 {copied ? "Copiado!" : "Copiar"}
               </button>
@@ -163,7 +163,7 @@ export default function ShareItineraryDialog({
                 <button
                   type="button"
                   onClick={handleNativeShare}
-                  className="rounded-full border-2 border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+                  className="btn btn-terracota"
                 >
                   Compartilhar...
                 </button>
@@ -172,20 +172,20 @@ export default function ShareItineraryDialog({
                 href={`https://wa.me/?text=${encodeURIComponent(shareMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border-2 border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+                className="btn btn-terracota"
               >
                 WhatsApp
               </a>
               <a
                 href={`mailto:?subject=${encodeURIComponent(`Meu roteiro: ${itineraryTitle}`)}&body=${encodeURIComponent(shareMessage)}`}
-                className="rounded-full border-2 border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+                className="btn btn-terracota"
               >
                 E-mail
               </a>
               <button
                 type="button"
                 onClick={onSalvarPDF}
-                className="rounded-full border-2 border-terracota px-4 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+                className="btn btn-terracota"
               >
                 Salvar em PDF
               </button>

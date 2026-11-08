@@ -98,12 +98,9 @@ export default function ForgotPasswordForm({ newPassword = false }: { newPasswor
         <button
           type="submit"
           disabled={loading}
-          className="group mt-1 flex h-12 items-center justify-center gap-3 rounded-lg bg-oliva px-6 text-sm font-medium text-white transition-colors hover:bg-tinta disabled:cursor-wait disabled:opacity-60"
+          className="btn btn-oliva group mt-1"
         >
           {loading ? "Enviando..." : "Enviar link"}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1">
-          <path d="M4 12h16m-6-6 6 6-6 6" />
-        </svg>
         </button>
       </form>
     );
@@ -155,12 +152,9 @@ export default function ForgotPasswordForm({ newPassword = false }: { newPasswor
       <button
         type="submit"
         disabled={loading}
-        className="group mt-1 flex h-12 items-center justify-center gap-3 rounded-lg bg-oliva px-6 text-sm font-medium text-white transition-colors hover:bg-tinta disabled:cursor-wait disabled:opacity-60"
+        className="btn btn-oliva group mt-1"
       >
         {loading ? "Redefinindo..." : "Redefinir senha"}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1">
-          <path d="M4 12h16m-6-6 6 6-6 6" />
-        </svg>
       </button>
     </form>
   );

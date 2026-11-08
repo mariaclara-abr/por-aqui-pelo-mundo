@@ -125,7 +125,7 @@ export default function VisitedCountriesForm({
           type="button"
           onClick={handleAdd}
           disabled={saving || !selectedCountryId}
-          className="shrink-0 rounded-full bg-terracota px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+          className="btn btn-terracota btn-sm shrink-0"
         >
           Adicionar
         </button>

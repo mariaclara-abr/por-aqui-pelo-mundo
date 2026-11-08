@@ -331,7 +331,7 @@ export default function ItineraryHistory({
         </p>
         <Link
           href="/"
-          className="mt-2 rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
+          className="btn btn-terracota mt-2"
         >
           Explorar destinos
         </Link>

@@ -43,6 +43,13 @@ Princípios visuais:
 - Proibido o uso de travessões (—) em qualquer texto do projeto (código, copy da interface, conteúdo do banco, documentação). Use dois pontos, vírgula ou ponto final no lugar.
 - Toda imagem de conteúdo real (fotos de atrações, capas de país/cidade, fotos de viagem, fotos de roteiro) deve usar alt text descritivo (ex: nome da atração, da cidade, do país ou legenda da foto), nunca `alt=""`. `alt=""` só é permitido em imagens puramente decorativas (ícones, texturas de fundo) ou quando o mesmo texto já aparece visível ao lado da imagem (ex: nome do lugar num card, evitando leitor de tela anunciar duas vezes).
 
+## Botões
+Todo botão e link com cara de botão do site segue o mesmo estilo "diário de bordo": contorno fino de 1px, cantos de 8px (`rounded-lg`), fundo transparente, letra pequena (11px), leve (`font-light`), em caixa alta e com bastante espaço entre as letras (`tracking-[0.28em]`). Sem seta, sem sombra, sem preenchimento sólido (o preenchimento só aparece no hover, ou no estado ativo de filtros).
+- Usar sempre as classes de `app/globals.css`: `btn` mais uma cor: `btn-terracota` (padrão), `btn-oliva` (ações secundárias e filtros) ou `btn-claro` (sobre foto ou fundo escuro: hero, faixas oliva/terracota). `btn-sm` para botões pequenos (filtros, ações dentro de cards).
+- A cor pode variar conforme o fundo, mas traço, formato e letra não mudam. Não recriar o estilo com classes soltas.
+- Filtro/aba ativo: `border-terracota bg-terracota text-white` por cima do `btn` (ver `PillButton`).
+- Fora do padrão: botões só de ícone (menu, busca, mala, carrossel), links de texto e etiquetas/selos.
+
 ## Fotos (limites da Vercel e do Supabase)
 Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por mês) estourou e as fotos quebraram. O processo fixo desde então:
 - `images.unoptimized: true` em `next.config.ts`: as fotos vão direto do Supabase Storage, sem passar pelo otimizador da Vercel. Não remover sem trocar de plano.

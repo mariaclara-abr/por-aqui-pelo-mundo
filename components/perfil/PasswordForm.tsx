@@ -117,7 +117,7 @@ export default function PasswordForm() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+            className="btn btn-terracota"
           >
             {saving ? "Confirmando..." : "Confirmar"}
           </button>
@@ -127,7 +127,7 @@ export default function PasswordForm() {
               setStep("form");
               setError(null);
             }}
-            className="rounded-full border border-oliva/30 px-6 py-2.5 text-sm text-tinta transition-colors hover:border-terracota"
+            className="btn btn-oliva"
           >
             Voltar
           </button>
@@ -184,7 +184,7 @@ export default function PasswordForm() {
         <button
           type="submit"
           disabled={saving}
-          className="rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+          className="btn btn-terracota"
         >
           {saving ? "Enviando código..." : "Alterar senha"}
         </button>

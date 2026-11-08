@@ -294,14 +294,13 @@ export default function PremiumThanks({
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/meu-roteiro/organizar-com-ia"
-                className="inline-flex min-h-12 items-center justify-center gap-4 rounded-lg bg-terracota px-7 py-3.5 text-base font-medium text-white transition-colors hover:bg-terracota/90"
+                className="btn btn-terracota"
               >
                 Organizar meu roteiro com IA
-                <span aria-hidden="true">→</span>
               </Link>
               <Link
                 href="/dicas-de-viagem"
-                className="inline-flex min-h-12 items-center justify-center rounded-lg border border-oliva/40 px-7 py-3.5 text-base font-medium text-oliva transition-colors hover:border-oliva"
+                className="btn btn-oliva"
               >
                 Explorar as dicas
               </Link>

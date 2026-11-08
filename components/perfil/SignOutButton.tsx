@@ -25,7 +25,7 @@ export default function SignOutButton() {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="rounded-full border border-terracota px-6 py-2.5 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+        className="btn btn-terracota"
       >
         Sair da conta
       </button>

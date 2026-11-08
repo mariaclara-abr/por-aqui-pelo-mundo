@@ -100,12 +100,9 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="group mt-1 flex h-12 items-center justify-center gap-3 rounded-lg bg-oliva px-6 text-sm font-medium text-white transition-colors hover:bg-tinta disabled:cursor-wait disabled:opacity-60"
+          className="btn btn-oliva group mt-1"
         >
           {loading ? "Entrando..." : "Entrar"}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1">
-            <path d="M4 12h16m-6-6 6 6-6 6" />
-          </svg>
         </button>
       </form>
 
@@ -125,7 +122,7 @@ export default function LoginForm() {
         type="button"
         onClick={handleGoogleLogin}
         disabled={loading}
-        className="flex h-12 items-center justify-center gap-3 rounded-lg border border-oliva/30 bg-white/35 px-6 text-sm text-tinta transition-colors hover:border-oliva/60 hover:bg-white/70 disabled:opacity-60"
+        className="btn btn-oliva"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="currentColor">
           <path d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.01v2.51h3.24c1.89-1.74 2.98-4.3 2.98-7.35Z" />

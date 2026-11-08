@@ -78,15 +78,9 @@ export default function AIRoteiroBand() {
             <div className="mt-7">
               <Link
                 href="/meu-roteiro/organizar-com-ia"
-                className="group inline-flex min-h-12 w-full items-center justify-center gap-3 whitespace-nowrap rounded-lg bg-areia px-4 py-3.5 text-[13px] font-semibold text-tinta transition-colors duration-200 hover:bg-branco focus-visible:outline-areia motion-safe:transition-[background-color,transform] motion-safe:active:scale-[0.98] sm:w-auto sm:gap-5 sm:px-6 sm:text-sm"
+                className="btn btn-claro group w-full whitespace-nowrap hover:border-white hover:bg-white/15 focus-visible:outline-areia sm:w-auto"
               >
                 Montar meu roteiro com IA
-                <span
-                  aria-hidden="true"
-                  className="text-lg leading-none motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:translate-x-1"
-                >
-                  →
-                </span>
               </Link>
             </div>
           </motion.div>

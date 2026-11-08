@@ -94,7 +94,7 @@ export default async function DicaPage(
                 <li key={d.href}>
                   <Link
                     href={d.href}
-                    className="inline-block rounded-full border border-terracota/40 px-4 py-1.5 text-sm text-terracota transition-colors hover:bg-terracota hover:text-branco"
+                    className="btn btn-terracota btn-sm"
                   >
                     {d.name}
                   </Link>

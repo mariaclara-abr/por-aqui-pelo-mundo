@@ -80,7 +80,7 @@ export default function DestinationGrid({
                 <button
                   type="button"
                   onClick={() => setShowAll(true)}
-                  className="rounded-full border border-terracota px-6 py-2.5 text-sm font-semibold text-terracota transition-colors hover:bg-terracota hover:text-branco"
+                  className="btn btn-terracota"
                 >
                   Ver mais destinos
                 </button>

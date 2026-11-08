@@ -14,10 +14,8 @@ export default function PillButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-        active
-          ? "border-terracota bg-terracota text-white"
-          : "border-terracota/30 text-terracota hover:border-terracota"
+      className={`btn btn-sm ${
+        active ? "border-terracota bg-terracota text-white" : "btn-terracota"
       }`}
     >
       {children}

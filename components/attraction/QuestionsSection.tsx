@@ -198,7 +198,7 @@ function QuestionCard({
               type="button"
               onClick={handleSubmitAnswer}
               disabled={saving || !answerDraft.trim()}
-              className="rounded-full bg-oliva px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-oliva/90 disabled:opacity-60"
+              className="btn btn-oliva btn-sm"
             >
               {saving ? "Salvando..." : "Responder"}
             </button>
@@ -210,7 +210,7 @@ function QuestionCard({
                   setAnswerDraft(question.answer?.answer ?? "");
                 }}
                 disabled={saving}
-                className="rounded-full border border-oliva/30 px-4 py-1.5 text-xs text-oliva transition-colors hover:bg-areia disabled:opacity-60"
+                className="btn btn-oliva btn-sm"
               >
                 Cancelar
               </button>
@@ -334,7 +334,7 @@ export default function QuestionsSection({
             <button
               type="submit"
               disabled={submitting || !newQuestion.trim()}
-              className="shrink-0 rounded-full bg-oliva px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-oliva/90 disabled:opacity-60"
+              className="btn btn-oliva shrink-0"
             >
               {submitting ? "Enviando..." : "Perguntar"}
             </button>

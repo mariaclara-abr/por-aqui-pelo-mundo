@@ -807,7 +807,7 @@ export default function OrganizarComIAClient({
             <button
               type="button"
               onClick={() => setSwitcherOpen(true)}
-              className="flex min-h-11 items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-semibold text-terracota transition-colors hover:bg-terracota hover:text-white"
+              className="btn btn-terracota"
             >
               Trocar de roteiro
             </button>
@@ -1330,7 +1330,7 @@ export default function OrganizarComIAClient({
           type="button"
           onClick={handleGenerate}
           disabled={loading}
-          className="flex items-center justify-center gap-2 rounded-full bg-terracota px-7 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_-10px_rgba(193,101,58,0.9)] transition-all hover:-translate-y-0.5 hover:bg-terracota/90 disabled:transform-none disabled:opacity-60"
+          className="btn btn-terracota"
         >
           {loading && <Spinner />}
           {loading
@@ -1379,7 +1379,7 @@ export default function OrganizarComIAClient({
                   type="button"
                   onClick={handleSaveToRoteiro}
                   disabled={saving || saved}
-                  className="flex items-center gap-2 rounded-full bg-terracota px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-terracota/90 disabled:opacity-60"
+                  className="btn btn-terracota"
                 >
                   {saving && <Spinner />}
                   {saved ? "Salvo no roteiro" : saving ? "Salvando..." : "Salvar no meu roteiro"}
@@ -1388,7 +1388,7 @@ export default function OrganizarComIAClient({
               <button
                 type="button"
                 onClick={handleAddToCalendar}
-                className="flex items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10"
+                className="btn btn-terracota"
               >
                 Adicionar ao Google Agenda
               </button>
@@ -1396,7 +1396,7 @@ export default function OrganizarComIAClient({
                 type="button"
                 onClick={handleExportPDF}
                 disabled={exporting}
-                className="flex items-center gap-2 rounded-full border-2 border-terracota px-5 py-2 text-sm font-medium text-terracota transition-colors hover:bg-terracota/10 disabled:opacity-60"
+                className="btn btn-terracota"
               >
                 {exporting && <Spinner />}
                 {exporting ? "Gerando PDF..." : "Baixar PDF"}

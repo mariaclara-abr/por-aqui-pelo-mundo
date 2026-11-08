@@ -108,12 +108,9 @@ export default function FaqSection() {
             <p className="text-left font-serif text-xl text-tinta">Tudo pronto para o próximo destino?</p>
             <Link
               href="/meu-roteiro/organizar-com-ia"
-              className="group mt-4 inline-flex min-h-12 items-center gap-4 rounded-lg bg-oliva px-5 py-3.5 text-sm font-medium text-branco hover:bg-tinta focus-visible:outline-oliva motion-safe:transition-colors motion-safe:duration-200"
+              className="btn btn-oliva group mt-4"
             >
               <span>Montar meu roteiro personalizado</span>
-              <span aria-hidden="true" className="shrink-0 text-lg leading-none motion-safe:transition-transform motion-safe:group-hover:translate-x-1">
-                →
-              </span>
             </Link>
           </div>
         </div>

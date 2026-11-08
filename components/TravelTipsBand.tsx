@@ -35,12 +35,9 @@ export default function TravelTipsBand({ tipCount }: { tipCount: number }) {
           <div className="mt-8">
             <Link
               href="/dicas-de-viagem"
-              className="inline-flex items-center gap-2 rounded-lg bg-terracota px-7 py-3.5 text-sm font-medium text-branco transition-transform hover:scale-105 active:scale-95"
+              className="btn btn-terracota"
             >
               Abrir o caderno de bordo
-              <span aria-hidden="true" className="text-base leading-none">
-                →
-              </span>
             </Link>
           </div>
         </motion.div>
