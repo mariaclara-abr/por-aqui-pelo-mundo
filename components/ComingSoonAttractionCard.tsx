@@ -131,7 +131,7 @@ export default function ComingSoonAttractionCard({
   );
 
   const className =
-    "group relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm";
+    "group relative block aspect-[4/3] w-full overflow-hidden rounded-xl border-[3px] border-oliva bg-branco shadow-sm";
 
   // Só a autora pode entrar na página da atração em breve, para conferir a
   // prévia de como ela vai ficar quando publicada.
