@@ -50,7 +50,7 @@ export default function DestinationGrid({
           Explorar destinos
         </h2>
         <p className="mt-2 text-center text-oliva">
-          Menos horas pesquisando, mais dias aproveitando.
+          Cada lugar foi visitado e avaliado pessoalmente.
         </p>
 
         {allCards.length === 0 ? (

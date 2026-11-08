@@ -55,10 +55,7 @@ export default async function Home() {
         countries={publishedCountries}
         comingSoonCountries={comingSoonCountries}
       />
-      <AuthorBand
-        authorName={about.author_name}
-        authorPhotoUrl={about.author_photo_url}
-      />
+      <AuthorBand about={about} />
       <TravelTipsBand tipCount={tips.length} />
       <EasySimSlimBanner />
       <AIRoteiroBand />
