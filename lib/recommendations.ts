@@ -67,6 +67,8 @@ interface GeoIndexRow {
   curationRating: number | null;
   latitude: number | null;
   longitude: number | null;
+  // Todas as unidades (redes com várias lojas na cidade); a distância usa a mais próxima.
+  locations: { latitude: number; longitude: number }[];
   coverPhotoUrl: string | null;
   citySlug: string;
   cityName: string;
@@ -108,7 +110,7 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
   const { data, error } = await supabase
     .from("attractions")
     .select(
-      "id, name, slug, categories, curation_rating, latitude, longitude, attraction_photos(url, order), cities(name, slug, cover_image_url, latitude, longitude, countries(slug))",
+      "id, name, slug, categories, curation_rating, latitude, longitude, attraction_photos(url, order), attraction_locations(latitude, longitude), cities(name, slug, cover_image_url, latitude, longitude, countries(slug))",
     );
 
   if (error) throw error;
@@ -123,6 +125,7 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
       curationRating: row.curation_rating,
       latitude: row.latitude,
       longitude: row.longitude,
+      locations: row.attraction_locations,
       coverPhotoUrl:
         [...row.attraction_photos].sort((a, b) => a.order - b.order)[0]
           ?.url ?? null,
@@ -133,6 +136,19 @@ export async function getAttractionsGeoIndex(): Promise<GeoIndexRow[]> {
       cityLatitude: row.cities!.latitude,
       cityLongitude: row.cities!.longitude,
     }));
+}
+
+// Distância até a unidade mais próxima (a atração pode ter várias lojas na cidade).
+function nearestUnitDistanceKm(reference: GeoReference, item: GeoIndexRow): number | null {
+  const points =
+    item.locations.length > 0
+      ? item.locations
+      : item.latitude !== null && item.longitude !== null
+        ? [{ latitude: item.latitude, longitude: item.longitude }]
+        : [];
+  if (points.length === 0) return null;
+  const from = { latitude: reference.latitude as number, longitude: reference.longitude as number };
+  return Math.min(...points.map((point) => haversineDistanceKm(from, point)));
 }
 
 // Ordena por proximidade (atrações sem coordenadas ficam por último,
@@ -154,13 +170,7 @@ function rankAttractionsByCategory(
     )
     .map((item) => ({
       item,
-      distanceKm:
-        hasCoords && item.latitude !== null && item.longitude !== null
-          ? haversineDistanceKm(
-              { latitude: reference.latitude as number, longitude: reference.longitude as number },
-              { latitude: item.latitude, longitude: item.longitude },
-            )
-          : null,
+      distanceKm: hasCoords ? nearestUnitDistanceKm(reference, item) : null,
     }))
     .filter(({ item, distanceKm }) =>
       hasCoords ? distanceKm !== null && distanceKm <= NEARBY_RADIUS_KM : item.citySlug === reference.citySlug,

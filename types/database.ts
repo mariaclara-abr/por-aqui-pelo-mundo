@@ -365,6 +365,34 @@ export interface Database {
           },
         ];
       };
+      attraction_locations: {
+        Row: {
+          id: string;
+          attraction_id: string;
+          latitude: number;
+          longitude: number;
+          label: string | null;
+        };
+        Insert: {
+          id?: string;
+          attraction_id: string;
+          latitude: number;
+          longitude: number;
+          label?: string | null;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["attraction_locations"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "attraction_locations_attraction_id_fkey";
+            columns: ["attraction_id"];
+            isOneToOne: false;
+            referencedRelation: "attractions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tags: {
         Row: {
           id: string;
