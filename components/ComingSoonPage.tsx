@@ -38,7 +38,7 @@ export default function ComingSoonPage({
         <div className="mt-8 flex flex-col items-center gap-2 sm:flex-row sm:gap-9">
           <Link
             href="/"
-            className="btn btn-claro whitespace-nowrap focus-visible:outline-areia"
+            className="btn btn-claro btn-cheio whitespace-nowrap focus-visible:outline-areia"
           >
             Ver destinos disponíveis
           </Link>

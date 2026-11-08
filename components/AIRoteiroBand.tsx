@@ -78,7 +78,7 @@ export default function AIRoteiroBand() {
             <div className="mt-7">
               <Link
                 href="/meu-roteiro/organizar-com-ia"
-                className="btn btn-claro group w-full whitespace-nowrap hover:border-white hover:bg-white/15 focus-visible:outline-areia sm:w-auto"
+                className="btn btn-claro btn-cheio group w-full whitespace-nowrap focus-visible:outline-areia sm:w-auto"
               >
                 Montar meu roteiro com IA
               </Link>

@@ -46,6 +46,7 @@ Princípios visuais:
 ## Botões
 Todo botão e link com cara de botão do site segue o mesmo estilo "diário de bordo": contorno fino de 1px, cantos de 8px (`rounded-lg`), fundo transparente, letra pequena (11px), leve (`font-light`), em caixa alta e com bastante espaço entre as letras (`tracking-[0.28em]`). Sem seta, sem sombra, sem preenchimento sólido (o preenchimento só aparece no hover, ou no estado ativo de filtros).
 - Usar sempre as classes de `app/globals.css`: `btn` mais uma cor: `btn-terracota` (padrão), `btn-oliva` (ações secundárias e filtros) ou `btn-claro` (sobre foto ou fundo escuro: hero, faixas oliva/terracota). `btn-sm` para botões pequenos (filtros, ações dentro de cards).
+- `btn-cheio` (junto com a cor) deixa o botão "recheado" e esvazia no hover. Usar nas chamadas principais que precisam chamar atenção (cards de afiliados como o do seguro viagem, enviar formulário, CTA de faixa). Ações secundárias ficam só no contorno.
 - A cor pode variar conforme o fundo, mas traço, formato e letra não mudam. Não recriar o estilo com classes soltas.
 - Filtro/aba ativo: `border-terracota bg-terracota text-white` por cima do `btn` (ver `PillButton`).
 - Fora do padrão: botões só de ícone (menu, busca, mala, carrossel), links de texto e etiquetas/selos.

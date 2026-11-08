@@ -312,14 +312,14 @@ export default function MeuRoteiroPage() {
               <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
                 <Link
                   href="/#destinos"
-                  className="btn btn-terracota w-full"
+                  className="btn btn-terracota btn-cheio w-full"
                 >
                   Explorar destinos
                 </Link>
                 <button
                   type="button"
                   onClick={handleOrganizarClick}
-                  className="btn btn-oliva w-full"
+                  className="btn btn-oliva btn-cheio w-full"
                 >
                   Usar IA especializada
                 </button>

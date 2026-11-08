@@ -100,7 +100,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-oliva group mt-1"
+          className="btn btn-oliva btn-cheio group mt-1"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>

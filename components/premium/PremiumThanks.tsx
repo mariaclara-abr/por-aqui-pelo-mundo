@@ -294,7 +294,7 @@ export default function PremiumThanks({
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/meu-roteiro/organizar-com-ia"
-                className="btn btn-terracota"
+                className="btn btn-terracota btn-cheio"
               >
                 Organizar meu roteiro com IA
               </Link>

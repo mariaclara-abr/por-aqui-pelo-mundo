@@ -80,7 +80,7 @@ export default function DestinationGrid({
                 <button
                   type="button"
                   onClick={() => setShowAll(true)}
-                  className="btn btn-terracota"
+                  className="btn btn-terracota btn-cheio"
                 >
                   Ver mais destinos
                 </button>

@@ -241,4 +241,14 @@ body {
   .btn-claro {
     @apply border-white/70 text-white hover:border-terracota hover:bg-terracota;
   }
+  /* Recheado: chama mais atenção; esvazia no hover. */
+  .btn-cheio.btn-terracota {
+    @apply bg-terracota text-white hover:bg-transparent hover:text-terracota;
+  }
+  .btn-cheio.btn-oliva {
+    @apply bg-oliva text-white hover:bg-transparent hover:text-oliva;
+  }
+  .btn-cheio.btn-claro {
+    @apply border-areia bg-areia text-tinta hover:border-white hover:bg-transparent hover:text-white;
+  }
 }

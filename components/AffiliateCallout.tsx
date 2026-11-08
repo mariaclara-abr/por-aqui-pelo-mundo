@@ -152,7 +152,7 @@ export function EasySimBanner() {
               target="_blank"
               rel="noopener noreferrer sponsored"
               onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-              className="btn btn-claro mt-5 w-full sm:w-auto"
+              className="btn btn-claro btn-cheio mt-5 w-full sm:w-auto"
             >
               Escolher meu plano na Easysim4U
             </a>
@@ -223,7 +223,7 @@ export function AchadinhosCard() {
                   target="_blank"
                   rel="noopener noreferrer sponsored"
                   onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-                  className="btn btn-oliva"
+                  className="btn btn-oliva btn-cheio"
                 >
                   {program.checklistCtaLabel}
                 </a>
@@ -259,7 +259,7 @@ export function RentcarsBanner() {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="btn btn-oliva group mt-6 w-full sm:w-auto"
+            className="btn btn-oliva btn-cheio group mt-6 w-full sm:w-auto"
           >
             Ver carros na Rentcars
           </a>
@@ -349,7 +349,7 @@ function SeguroViagemCard({ compact = false }: { compact?: boolean }) {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, context)}
-            className="btn btn-claro group mt-5"
+            className="btn btn-claro btn-cheio group mt-5"
           >
             Comparar na Real
           </a>
@@ -429,7 +429,7 @@ export function NaturaCard() {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="btn btn-oliva mt-5"
+            className="btn btn-oliva btn-cheio mt-5"
           >
             Comprar na Natura
           </a>
@@ -485,7 +485,7 @@ export function RentcarsSlimBanner() {
             target="_blank"
             rel="noopener noreferrer sponsored"
             onClick={() => trackClick(program, undefined, "home")}
-            className="btn btn-oliva group mt-7 w-full sm:w-auto"
+            className="btn btn-oliva btn-cheio group mt-7 w-full sm:w-auto"
           >
             Ver carros na {program.label}
           </a>
@@ -549,7 +549,7 @@ export function EasySimSlimBanner() {
           target="_blank"
           rel="noopener noreferrer sponsored"
           onClick={() => trackClick(program, undefined, "home")}
-          className="btn btn-claro w-full shrink-0 self-start lg:w-auto lg:self-center"
+          className="btn btn-claro btn-cheio w-full shrink-0 self-start lg:w-auto lg:self-center"
         >
           Comprar com desconto
         </a>
@@ -663,7 +663,7 @@ export function SunscreenCallout({
           target="_blank"
           rel="noopener noreferrer sponsored"
           onClick={() => trackClick(program, attractionId, context)}
-          className="btn btn-oliva mt-4"
+          className="btn btn-oliva btn-cheio mt-4"
         >
           {program.checklistCtaLabel}
           <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0">
@@ -707,7 +707,7 @@ export default function AffiliateCallout({
                 onClick={() =>
                   trackClick(program, attractionId, "attraction_page")
                 }
-                className="btn btn-oliva"
+                className="btn btn-oliva btn-cheio"
               >
                 {program.attractionCtaLabel ?? program.label}
               </a>
@@ -796,7 +796,7 @@ export default function AffiliateCallout({
                   onClick={() =>
                     trackClick(program, attractionId, "meu_roteiro_checklist")
                   }
-                  className="btn btn-terracota btn-sm w-44 shrink-0 whitespace-nowrap after:absolute after:inset-0 after:content-['']"
+                  className="btn btn-terracota btn-sm btn-cheio w-44 shrink-0 whitespace-nowrap after:absolute after:inset-0 after:content-['']"
                 >
                   {program.checklistCtaLabel ?? "Ver opções"}
                 </a>

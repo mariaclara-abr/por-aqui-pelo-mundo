@@ -35,7 +35,7 @@ export default function TravelTipsBand({ tipCount }: { tipCount: number }) {
           <div className="mt-8">
             <Link
               href="/dicas-de-viagem"
-              className="btn btn-terracota"
+              className="btn btn-terracota btn-cheio"
             >
               Abrir o caderno de bordo
             </Link>

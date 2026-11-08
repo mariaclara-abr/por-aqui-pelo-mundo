@@ -98,7 +98,7 @@ export default function ForgotPasswordForm({ newPassword = false }: { newPasswor
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-oliva group mt-1"
+          className="btn btn-oliva btn-cheio group mt-1"
         >
           {loading ? "Enviando..." : "Enviar link"}
         </button>
@@ -152,7 +152,7 @@ export default function ForgotPasswordForm({ newPassword = false }: { newPasswor
       <button
         type="submit"
         disabled={loading}
-        className="btn btn-oliva group mt-1"
+        className="btn btn-oliva btn-cheio group mt-1"
       >
         {loading ? "Redefinindo..." : "Redefinir senha"}
       </button>

@@ -371,7 +371,7 @@ export default async function AttractionPage(
                   href={attraction.exclusive_perk_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-terracota mt-4"
+                  className="btn btn-terracota btn-cheio mt-4"
                 >
                   {attraction.exclusive_perk_cta_label ||
                     "Aproveitar parceria"}

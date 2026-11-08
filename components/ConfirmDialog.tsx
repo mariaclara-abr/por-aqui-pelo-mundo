@@ -69,7 +69,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={pending}
-            className="btn btn-terracota flex-1"
+            className="btn btn-terracota btn-cheio flex-1"
           >
             {pending ? (pendingLabel ?? "Aguarde...") : confirmLabel}
           </button>

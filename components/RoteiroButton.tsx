@@ -94,7 +94,7 @@ export default function RoteiroButton({
       disabled={pending}
       aria-pressed={inRoteiro}
       className={`btn ${
-        inRoteiro ? "btn-oliva" : "btn-terracota"
+        inRoteiro ? "btn-oliva" : "btn-terracota btn-cheio"
       }`}
     >
       {inRoteiro ? "Remover do roteiro" : "Adicionar ao roteiro"}

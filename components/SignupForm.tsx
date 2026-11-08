@@ -139,7 +139,7 @@ export default function SignupForm() {
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-oliva group mt-1"
+          className="btn btn-oliva btn-cheio group mt-1"
         >
           {loading ? "Criando conta..." : "Criar conta"}
         </button>

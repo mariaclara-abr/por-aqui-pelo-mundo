@@ -147,7 +147,7 @@ export default async function SharedItineraryPage(
           </p>
           <Link
             href="/"
-            className="btn btn-terracota mt-4"
+            className="btn btn-terracota btn-cheio mt-4"
           >
             Conhecer o Por Aqui Pelo Mundo
           </Link>
