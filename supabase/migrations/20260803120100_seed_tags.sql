@@ -6,7 +6,7 @@ insert into tags (name, slug) values
   ('Casais', 'casais'),
   ('Alta temporada', 'alta_temporada'),
   ('Baixa temporada', 'baixa_temporada'),
-  ('Melhor em dias de chuva', 'melhor_dias_chuva'),
+  ('Opção para dias de chuva', 'melhor_dias_chuva'),
   ('Melhor em dias de sol', 'melhor_dias_sol'),
   ('Gratuito', 'gratuito'),
   ('Econômico', 'economico'),

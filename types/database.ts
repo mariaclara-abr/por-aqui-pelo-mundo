@@ -5,6 +5,7 @@ export type AttractionCategory =
   | "museu"
   | "natureza"
   | "compras"
+  | "mercado"
   | "passeio"
   | "cafe"
   | "beach_club"
@@ -31,12 +32,13 @@ export const ATTRACTION_CATEGORIES: {
   { value: "museu", label: "Museu" },
   { value: "natureza", label: "Natureza" },
   { value: "compras", label: "Compras" },
+  { value: "mercado", label: "Mercado" },
   { value: "passeio", label: "Passeio" },
   { value: "estacionamentos", label: "Estacionamento" },
   { value: "outro", label: "Outro" },
 ];
 
-// Uma atração pode ter mais de uma categoria (ex: restaurante e café) — esta
+// Uma atração pode ter mais de uma categoria (ex: restaurante e café), esta
 // função monta o texto exibido nos badges/detalhes a partir da lista.
 export function categoryLabels(categories: string[]): string {
   return categories

@@ -15,6 +15,7 @@ const ALL_CATEGORIES: AttractionCategory[] = [
   "museu",
   "natureza",
   "compras",
+  "mercado",
   "passeio",
   "cafe",
   "beach_club",
