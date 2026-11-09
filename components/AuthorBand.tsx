@@ -1,5 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import type { Database } from "@/types/database";
 import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 import CountUp from "@/components/CountUp";
@@ -12,78 +12,93 @@ const STATS = [
   [8, "meses montando cada roteiro"],
 ] as const;
 
-// Colagem de 3 fotos sobrepostas (principal, paisagem e retrato menor),
-// no estilo de revista: borda fina clara só para separar as fotos.
-const PHOTO = "relative self-start overflow-hidden border-[3px] border-areia";
+// Cores tiradas da referência enviada pela autora do projeto (fora da paleta a pedido dela):
+// fundo creme, faixa dos números um tom abaixo, divisórias e texto quase preto.
+// As fotos não têm contorno: são separadas por faixas grossas da cor do fundo.
+const PHOTO = "absolute overflow-hidden border-[#F3F1E6]";
+// no desktop as fotos saem do posicionamento absoluto e viram células da grade
+const DESK = "lg:relative lg:inset-auto lg:h-auto lg:w-auto";
 
+// Celular: texto em cima e colagem numa caixa com fotos posicionadas em %.
+// Desktop: grade (colunas nas proporções da referência) com altura presa à tela,
+// para a seção caber numa tela só; o texto ocupa uma linha própria e nunca é cortado.
 export default function AuthorBand({ about }: { about: About }) {
   const name = about.author_name;
 
   return (
-    <section className="bg-oliva bg-[url('/author-paper.svg')] bg-[length:256px_256px] bg-blend-soft-light">
+    <section className="bg-[#F3F1E6] text-[#1D1D16]">
       {/* largura presa à altura da tela para a seção inteira caber numa tela só */}
-      <div className="mx-auto max-w-[min(72rem,calc((100svh-17rem)*1.85+5rem))] px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
-        <div className="grid grid-cols-12 grid-rows-[auto_3rem_auto_auto] gap-x-3 lg:grid-rows-[auto_4rem_auto] lg:gap-x-6">
-          <div className={`${PHOTO} col-start-1 col-end-8 row-start-1 row-end-3 aspect-[4/3] lg:col-end-5`}>
-            {about.author_photo_url && (
-              <Image
-                src={about.author_photo_url}
-                alt={name}
-                fill
-                sizes="(min-width: 1024px) 340px, 55vw"
-                className="object-cover"
-                style={imagePositionStyle(parseImagePosition(about.author_photo_position))}
-              />
-            )}
-          </div>
-
-          <div className="col-start-1 col-end-13 row-start-4 mt-8 lg:col-start-5 lg:row-start-1 lg:mt-0 lg:pb-5 lg:pl-4">
-            <h2 className="font-serif text-3xl text-branco lg:text-4xl">{name}</h2>
-            <p className="mt-2 text-xs uppercase tracking-widest text-areia/80">
+      <div className="mx-auto w-full px-4 pb-4 pt-5 sm:px-6 lg:max-w-[76rem] lg:px-10 lg:pb-8 lg:pt-8">
+        <div className="relative lg:grid lg:h-[clamp(24rem,calc(100svh-16.5rem),46rem)] lg:grid-cols-[26.3%_10.2%_4.1%_31.4%_10%_1fr] lg:grid-rows-[minmax(max-content,38%)_3.5rem_1fr_6%]">
+          <div className="lg:col-start-4 lg:col-end-7 lg:row-start-1 lg:max-w-[34rem] lg:pb-6 lg:pt-1">
+            <h2 className="font-lora text-[2rem] italic leading-tight text-[#282A23] lg:text-[2.1rem]">
+              {name}
+            </h2>
+            <p className="mt-2 text-xs font-medium uppercase tracking-[0.08em] text-[#2E2D28] lg:text-[0.8rem]">
               Quem está por trás da curadoria
             </p>
-            <p className="mt-4 text-sm leading-relaxed text-areia/90">
+            <p className="mt-2.5 !text-left text-sm leading-snug">
               Desde 2017, planeja cada detalhe das viagens da própria família:
               passagens, hospedagem, transporte e roteiro dia a dia. Mãe de dois
               filhos, monta roteiros equilibrados para todas as idades, testados
               na prática antes de virarem recomendação aqui no site.
             </p>
-            <Link
-              href="/sobre"
-              className="btn btn-terracota btn-cheio mt-5 w-fit font-medium hover:bg-terracota/85 hover:text-white"
-            >
+          </div>
+
+          <div className="relative mt-4 aspect-[1/0.83] lg:contents">
+            <div className={`${PHOTO} left-0 top-0 h-[60%] w-[54%] ${DESK} lg:col-start-1 lg:col-end-3 lg:row-start-1 lg:row-end-3`}>
+              {about.author_photo_url && (
+                <Image
+                  src={about.author_photo_url}
+                  alt={name}
+                  fill
+                  sizes="(min-width: 1024px) 460px, 55vw"
+                  className="object-cover object-[50%_60%]"
+                  style={imagePositionStyle(parseImagePosition(about.author_photo_position))}
+                />
+              )}
+            </div>
+
+            <div className={`${PHOTO} z-10 left-[18%] top-[44%] h-[56%] w-[66%] border-[8px] ${DESK} lg:col-start-2 lg:col-end-6 lg:row-start-2 lg:row-end-5 lg:border-[18px]`}>
+              <Image
+                src="/autora/rejane-varanda-interlaken.jpg"
+                alt={`${name} na varanda de um hotel alpino em Interlaken, na Suíça`}
+                fill
+                sizes="(min-width: 1024px) 700px, 70vw"
+                className="object-cover object-[50%_60%]"
+              />
+            </div>
+
+            <div className={`${PHOTO} z-20 right-0 top-[8%] h-[46%] w-[42%] border-[8px] ${DESK} lg:col-start-5 lg:col-end-7 lg:row-start-2 lg:row-end-4 lg:-mt-10 lg:border-[18px]`}>
+              <Image
+                src="/autora/rejane-por-do-sol-santorini.jpg"
+                alt={`${name} ao pôr do sol em Santorini, na Grécia`}
+                fill
+                sizes="(min-width: 1024px) 360px, 42vw"
+                className="object-cover object-[50%_20%]"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 flex justify-center lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:mt-6 lg:justify-start lg:self-start">
+            <Link href="/sobre" className="btn btn-sm btn-terracota btn-cheio">
               Saiba mais sobre a autora
             </Link>
           </div>
-
-          <div className={`${PHOTO} z-10 col-start-3 col-end-11 row-start-2 row-end-4 aspect-[16/10] lg:col-start-4 lg:col-end-10`}>
-            <Image
-              src="/autora/rejane-varanda-interlaken.jpg"
-              alt={`${name} na varanda de um hotel alpino em Interlaken, na Suíça`}
-              fill
-              sizes="(min-width: 1024px) 520px, 65vw"
-              className="object-cover object-[50%_70%]"
-            />
-          </div>
-
-          <div className={`${PHOTO} z-20 col-start-9 col-end-13 row-start-3 mt-6 aspect-square lg:col-start-9 lg:col-end-12 lg:mt-6`}>
-            <Image
-              src="/autora/rejane-rooftop-acropole-atenas.jpg"
-              alt={`${name} num rooftop com vista para a Acrópole, em Atenas`}
-              fill
-              sizes="(min-width: 1024px) 260px, 30vw"
-              className="object-cover object-[50%_89%]"
-            />
-          </div>
         </div>
+      </div>
 
-        <dl className="mt-8 grid grid-cols-3 divide-x divide-areia/25 border-t border-areia/25 pt-6 text-center lg:mt-10 lg:pt-8">
-          {STATS.map(([value, label]) => (
-            <div key={label} className="flex flex-col-reverse gap-1.5 px-2">
-              <dt className="text-[11px] uppercase leading-snug tracking-widest text-areia/80 sm:text-xs">
+      <div className="bg-[#E6E4D6]">
+        <dl className="mx-auto grid max-w-[64rem] grid-cols-3 px-4 py-5 text-center sm:px-6 lg:py-7">
+          {STATS.map(([value, label], i) => (
+            <div
+              key={label}
+              className={`flex flex-col-reverse items-center gap-2 px-2 ${i > 0 ? "border-l border-[#D2CFC2]" : ""}`}
+            >
+              <dt className="text-[10px] font-medium uppercase leading-snug tracking-[0.04em] text-[#15140A] sm:text-xs">
                 {label}
               </dt>
-              <dd className="font-serif text-4xl text-branco lg:text-5xl">
+              <dd className="font-serif text-[2.1rem] font-light leading-none tracking-[-0.02em] lg:text-[3rem]">
                 <CountUp to={value} suffix="+" />
               </dd>
             </div>

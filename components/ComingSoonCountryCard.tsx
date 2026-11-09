@@ -125,7 +125,7 @@ export default function ComingSoonCountryCard({
   );
 
   const className =
-    "group relative block aspect-[4/3] w-full overflow-hidden rounded-xl border-[3px] border-oliva bg-branco shadow-sm";
+    "group relative block aspect-[4/3] w-full overflow-hidden bg-branco";
 
   // Só a autora pode entrar na página do país em breve, para conferir a
   // prévia de como ela vai ficar quando publicada.

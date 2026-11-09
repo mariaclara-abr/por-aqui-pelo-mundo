@@ -12,8 +12,11 @@ export default function CountUp({ to, suffix = "" }: { to: number; suffix?: stri
 
   useEffect(() => {
     const el = ref.current;
-    if (!inView || !el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!inView) {
+      el.textContent = `0${suffix}`;
+      return;
+    }
     const controls = animate(0, to, {
       duration: 2,
       ease: [0.16, 1, 0.3, 1],

@@ -51,11 +51,11 @@ export default async function Home() {
     <main className="flex-1">
       <JsonLd data={websiteLd(DESCRIPTION)} />
       <HeroSection counts={counts} />
+      <AuthorBand about={about} />
       <DestinationGrid
         countries={publishedCountries}
         comingSoonCountries={comingSoonCountries}
       />
-      <AuthorBand about={about} />
       <TravelTipsBand tipCount={tips.length} />
       <EasySimSlimBanner />
       <AIRoteiroBand />

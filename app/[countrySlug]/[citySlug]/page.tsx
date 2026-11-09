@@ -232,7 +232,7 @@ export default async function CityOrStatePage(
               </p>
             </div>
           ) : (
-            <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="mt-8 grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 xl:grid-cols-4">
               {attractions
                 .filter((attraction) => attraction.status === "published")
                 .map((attraction) => (
@@ -386,7 +386,7 @@ export default async function CityOrStatePage(
             </p>
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {publishedCities.map((cityInState) => (
               <CityCard
                 key={cityInState.id}

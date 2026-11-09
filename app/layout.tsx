@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, Lora } from "next/font/google";
+import { Inter, Lora } from "next/font/google";
 import { AuthProvider } from "@/lib/auth";
 import { RoteiroProvider } from "@/lib/roteiro";
 import Header from "@/components/Header";
@@ -7,11 +7,6 @@ import Footer from "@/components/Footer";
 import NavegacaoCarregando from "@/components/NavegacaoCarregando";
 import { SITE_NAME, SITE_URL, buildOpenGraph } from "@/lib/metadata";
 import "./globals.css";
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,6 +16,7 @@ const inter = Inter({
 const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
 const HOME_TITLE = "Por Aqui Pelo Mundo: roteiros de viagem em família";
@@ -50,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${fraunces.variable} ${inter.variable} ${lora.variable} h-full scroll-smooth antialiased`}
+      className={`${inter.variable} ${lora.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
         <AuthProvider>

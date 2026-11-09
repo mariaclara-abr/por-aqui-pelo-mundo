@@ -134,7 +134,7 @@ export default async function CountryPage(
         )}
 
         {hasStates ? (
-          <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {states.map((state) => (
               <StateCard key={state.id} state={state} countrySlug={countrySlug} />
             ))}
@@ -149,7 +149,7 @@ export default async function CountryPage(
             </p>
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
             {publishedCities.map((city) => (
               <CityCard key={city.id} city={city} countrySlug={countrySlug} />
             ))}

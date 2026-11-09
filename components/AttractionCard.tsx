@@ -36,7 +36,7 @@ export default function AttractionCard({
         href={`/${countrySlug}/${citySlug}/${attraction.slug}`}
         className="block"
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border-[3px] border-oliva bg-branco shadow-sm">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-branco">
           {coverPhoto ? (
             <Image
               src={thumbUrl(coverPhoto.url)}

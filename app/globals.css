@@ -21,6 +21,11 @@ body {
 }
 
 @layer base {
+  /* todos os títulos em Lora itálico, igual ao "Rejane Abrantes" da home */
+  h1, h2, h3, h4, h5, h6 {
+    font-style: italic;
+  }
+
   p {
     text-align: left;
     hyphens: none;

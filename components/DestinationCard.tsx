@@ -20,7 +20,7 @@ export default function DestinationCard({
   return (
     <Link
       href={href}
-      className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl border-[3px] border-oliva bg-branco shadow-sm"
+      className="group relative block aspect-[4/3] w-full overflow-hidden bg-branco"
     >
       {imageUrl ? (
         <>

@@ -9,9 +9,69 @@ import { imagePositionStyle, parseImagePosition } from "@/lib/image-position";
 
 type Photo = Database["public"]["Tables"]["attraction_photos"]["Row"];
 
-// Quantas fotos "extras" (além da principal) aparecem na prévia embutida na
-// página antes de precisar abrir a galeria completa.
-const PREVIEW_COUNT = 3;
+// Mosaico de 4 colunas x 2 linhas (6 fotos): pequena, alta, larga / 3 pequenas.
+// A célula 1 ocupa 2 linhas e a 2 ocupa 2 colunas.
+const MOSAIC_SIZE = 6;
+const MOSAIC_SPANS = ["", "row-span-2", "col-span-2", "", "", ""];
+
+function PhotoMosaic({
+  photos,
+  offset,
+  attractionName,
+  onPick,
+  moreOnLast = false,
+  priority = false,
+}: {
+  photos: Photo[];
+  offset: number;
+  attractionName: string;
+  onPick: (index: number) => void;
+  moreOnLast?: boolean;
+  priority?: boolean;
+}) {
+  // Bloco incompleto: grade simples sem buracos (1 foto = largura toda).
+  const complete = photos.length === MOSAIC_SIZE;
+  const cols = ["", "grid-cols-1", "grid-cols-2", "grid-cols-3", "grid-cols-2", "grid-cols-3"][photos.length];
+  return (
+    <div
+      className={`grid gap-2 sm:gap-3 ${
+        complete ? "aspect-[2/1] grid-cols-4 grid-rows-2" : cols
+      }`}
+    >
+      {photos.map((photo, i) => {
+        const isMore = moreOnLast && i === MOSAIC_SIZE - 1;
+        return (
+          <button
+            key={photo.id}
+            type="button"
+            onClick={() => onPick(isMore ? -1 : offset + i)}
+            aria-label={isMore ? "Ver todas as fotos" : (photo.caption ?? attractionName)}
+            className={`group relative overflow-hidden bg-branco ${
+              complete ? MOSAIC_SPANS[i] : photos.length === 1 ? "aspect-[16/9]" : "aspect-[4/3]"
+            }`}
+          >
+            <Image
+              src={thumbUrl(photo.url)}
+              alt={isMore ? "" : (photo.caption ?? attractionName)}
+              fill
+              sizes="(min-width: 1024px) 33vw, 50vw"
+              preload={priority && i === 0}
+              className={`object-cover transition-[filter,transform] duration-300 ${
+                isMore ? "brightness-[0.2] group-hover:brightness-[0.15]" : "group-hover:scale-105"
+              }`}
+              style={imagePositionStyle(parseImagePosition(photo.position))}
+            />
+            {isMore && (
+              <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white">
+                Ver mais
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function FocusedPhotoTrack({
   photos,
@@ -118,13 +178,15 @@ function FocusedPhotoTrack({
 function PhotoGalleryOverlay({
   photos,
   attractionName,
+  initialIndex,
   onClose,
 }: {
   photos: Photo[];
   attractionName: string;
+  initialIndex: number | null;
   onClose: () => void;
 }) {
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(initialIndex);
   const [entered, setEntered] = useState(false);
 
   useEffect(() => {
@@ -203,24 +265,15 @@ function PhotoGalleryOverlay({
             </button>
           </div>
           <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-2 gap-0.5 p-0.5 sm:gap-1 sm:p-1">
-              {photos.map((photo, index) => (
-                <button
-                  key={photo.id}
-                  type="button"
-                  onClick={() => setFocusedIndex(index)}
-                  aria-label={photo.caption ?? `Foto ${index + 1}`}
-                  className="group relative aspect-square overflow-hidden bg-areia"
-                >
-                  <Image
-                    src={thumbUrl(photo.url)}
-                    alt={photo.caption ?? ""}
-                    fill
-                    sizes="50vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    style={imagePositionStyle(parseImagePosition(photo.position))}
-                  />
-                </button>
+            <div className="flex flex-col gap-2 p-2 sm:gap-3 sm:p-4">
+              {Array.from({ length: Math.ceil(photos.length / MOSAIC_SIZE) }, (_, c) => (
+                <PhotoMosaic
+                  key={c}
+                  photos={photos.slice(c * MOSAIC_SIZE, (c + 1) * MOSAIC_SIZE)}
+                  offset={c * MOSAIC_SIZE}
+                  attractionName={attractionName}
+                  onPick={setFocusedIndex}
+                />
               ))}
             </div>
           </div>
@@ -292,7 +345,8 @@ export default function AttractionPhotos({
   photos: Photo[];
   attractionName: string;
 }) {
-  const [galleryOpen, setGalleryOpen] = useState(false);
+  // null = fechada; -1 = grade completa; >= 0 = foto aberta direto.
+  const [gallery, setGallery] = useState<number | null>(null);
 
   if (photos.length === 0) {
     return (
@@ -302,75 +356,26 @@ export default function AttractionPhotos({
     );
   }
 
-  // Uma vez que a atração tenha 4 fotos ou mais, a prévia mostra só a
-  // principal + 3 (a última delas com um convite pra ver o resto), em vez de
-  // empilhar todas as fotos direto na página.
-  const showTeaser = photos.length >= 1 + PREVIEW_COUNT;
-  const rest = showTeaser ? photos.slice(1, 1 + PREVIEW_COUNT) : photos.slice(1);
+  // Prévia limitada a 2 linhas (6 fotos); a última vira "Ver mais" se houver mais.
+  const preview = photos.slice(0, MOSAIC_SIZE);
 
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-branco">
-          <Image
-            src={photos[0].url}
-            alt={attractionName}
-            fill
-            sizes="(min-width: 1024px) 66vw, 100vw"
-            preload
-            className="object-cover"
-            style={imagePositionStyle(parseImagePosition(photos[0].position))}
-          />
-        </div>
-        {rest.length > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            {rest.map((photo, index) => {
-              const isTeaser = showTeaser && index === rest.length - 1;
-              return isTeaser ? (
-                <button
-                  key={photo.id}
-                  type="button"
-                  onClick={() => setGalleryOpen(true)}
-                  aria-label="Ver todas as fotos"
-                  className="group relative aspect-[4/3] overflow-hidden rounded-lg bg-branco"
-                >
-                  <Image
-                    src={photo.url}
-                    alt=""
-                    fill
-                    sizes="33vw"
-                    className="object-cover brightness-[0.2] transition-[filter] group-hover:brightness-[0.15]"
-                    style={imagePositionStyle(parseImagePosition(photo.position))}
-                  />
-                  <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white">
-                    Ver mais
-                  </span>
-                </button>
-              ) : (
-                <div
-                  key={photo.id}
-                  className="relative aspect-[4/3] overflow-hidden rounded-lg bg-branco"
-                >
-                  <Image
-                    src={photo.url}
-                    alt={attractionName}
-                    fill
-                    sizes="33vw"
-                    className="object-cover"
-                    style={imagePositionStyle(parseImagePosition(photo.position))}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      <PhotoMosaic
+        photos={preview}
+        offset={0}
+        attractionName={attractionName}
+        onPick={setGallery}
+        moreOnLast={photos.length > MOSAIC_SIZE}
+        priority
+      />
 
-      {galleryOpen && (
+      {gallery !== null && (
         <PhotoGalleryOverlay
           photos={photos}
           attractionName={attractionName}
-          onClose={() => setGalleryOpen(false)}
+          initialIndex={gallery >= 0 ? gallery : null}
+          onClose={() => setGallery(null)}
         />
       )}
     </>

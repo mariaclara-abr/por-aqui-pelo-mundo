@@ -220,7 +220,7 @@ export default async function AttractionPage(
   const qa = qaPageLd(questions, path);
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+    <main className="flex-1 px-4 pb-10 sm:px-6 sm:pb-14 lg:px-10">
       <JsonLd
         data={[
           breadcrumbLd([
@@ -247,6 +247,8 @@ export default async function AttractionPage(
         ]}
       />
       <div className="mx-auto max-w-6xl">
+        <div className="relative left-1/2 w-screen -translate-x-1/2 bg-[#FCFAF6] px-4 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-14 lg:px-10">
+          <div className="mx-auto max-w-6xl">
         {attraction.status === "draft" && (
           <p className="mb-4 inline-block rounded-full bg-terracota/10 px-3 py-1 text-sm font-medium text-terracota">
             Prévia: esta atração ainda está marcada como em breve, só você
@@ -260,7 +262,7 @@ export default async function AttractionPage(
           >
             {attraction.cities.countries.name}
           </Link>
-          <span>/</span>
+          <span aria-hidden>•</span>
           <Link
             href={`/${countrySlug}/${citySlug}`}
             className="transition-colors hover:text-terracota"
@@ -269,7 +271,7 @@ export default async function AttractionPage(
           </Link>
           {ancestors.map((ancestor) => (
             <span key={ancestor.id} className="flex items-center gap-1">
-              <span>/</span>
+              <span aria-hidden>•</span>
               <Link
                 href={`/${countrySlug}/${citySlug}/${ancestor.slug}`}
                 className="transition-colors hover:text-terracota"
@@ -323,6 +325,8 @@ export default async function AttractionPage(
             <AttractionPhotos photos={photos} attractionName={attraction.name} />
           </div>
         )}
+          </div>
+        </div>
 
         <div className="mt-8">
           {attraction.description && (
@@ -407,7 +411,7 @@ export default async function AttractionPage(
 
         {isContainer && (
           <section className="mt-8">
-            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${childrenAreDestinations ? "gap-5 sm:gap-6" : "gap-x-5 gap-y-8 sm:gap-x-6"}`}>
               {childrenAreDestinations
                 ? childAttractions.map((child) => {
                     const childPhoto = [...child.attraction_photos].sort(

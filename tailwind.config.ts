@@ -11,11 +11,14 @@ const config: Config = {
         terracota: "#C1653A",
         oliva: "#4A5D43",
         areia: "#F0E6D2",
+        // areia escura: fundo da seção de destinos da home, com texto claro (contraste AA)
+        "areia-escura": "#85705A",
         tinta: "#2B2620",
         branco: "#FFFFFF",
       },
       fontFamily: {
-        serif: ["var(--font-fraunces)", "serif"],
+        // Lora é a fonte de todos os títulos do site
+        serif: ["var(--font-lora)", "serif"],
         sans: ["var(--font-inter)", "sans-serif"],
         lora: ["var(--font-lora)", "serif"],
       },

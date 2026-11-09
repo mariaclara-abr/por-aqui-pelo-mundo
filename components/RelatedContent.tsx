@@ -112,7 +112,7 @@ function RecommendationGroup({ title, children }: { title?: string; children: Re
       <div className="relative mt-3">
         <div
           ref={scrollRef}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-5 sm:gap-6 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {children}
         </div>
@@ -271,7 +271,7 @@ function AttractionRecommendationCard({
         href={`/${attraction.countrySlug}/${attraction.citySlug}/${attraction.slug}`}
         className="group block flex-1"
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-branco shadow-sm">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-branco">
           {attraction.coverPhotoUrl ? (
             <Image
               src={thumbUrl(attraction.coverPhotoUrl)}

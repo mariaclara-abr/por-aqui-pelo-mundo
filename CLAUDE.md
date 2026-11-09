@@ -24,7 +24,7 @@ Paleta de cores:
 - Branco (fundos alternativos): #FFFFFF
 
 Tipografia:
-- Títulos e nomes de atrações: fonte serifada editorial (ex: "Fraunces", "Playfair Display" ou "Lora" via Google Fonts)
+- Títulos e nomes de atrações: sempre a fonte "Lora" (Google Fonts), em itálico, igual ao título "Rejane Abrantes" da home (o itálico vem de `h1` a `h6` no `app/globals.css`). É a fonte padrão de todos os títulos do site: usar `font-serif` (que aponta para a Lora no `tailwind.config.ts`). Não introduzir outra fonte serifada.
 - Corpo de texto, botões, filtros, navegação: fonte sans-serif neutra e legível (ex: "Inter" ou "Work Sans")
 
 Princípios visuais:
@@ -50,6 +50,11 @@ Todo botão e link com cara de botão do site segue o mesmo estilo "diário de b
 - A cor pode variar conforme o fundo, mas traço, formato e letra não mudam. Não recriar o estilo com classes soltas.
 - Filtro/aba ativo: `border-terracota bg-terracota text-white` por cima do `btn` (ver `PillButton`).
 - Fora do padrão: botões só de ícone (menu, busca, mala, carrossel), links de texto e etiquetas/selos.
+
+## Cards de fotos (destinos, países, estados, cidades e atrações)
+Todo card de foto do site segue o mesmo formato: cantos retos (sem `rounded`), sem contorno (sem `border`) e sem sombra, proporção 4:3. O padrão vale para a home, países, estados, cidades, atrações e carrosséis de relacionados.
+- Espaçamento entre os cards: `gap-5` no celular e `sm:gap-6` a partir de tablet. Em grades com texto abaixo da foto (atrações), `gap-x-5 sm:gap-x-6 gap-y-8`. Carrosséis usam o mesmo `gap-5 sm:gap-6`.
+- Reutilizar `DestinationCard` (países, estados, cidades) e `AttractionCard`; os cards "em breve" seguem o mesmo formato. Não criar variações com cantos arredondados ou borda.
 
 ## Fotos (limites da Vercel e do Supabase)
 Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por mês) estourou e as fotos quebraram. O processo fixo desde então:
