@@ -272,6 +272,7 @@ function AttractionRecommendationCard({
         className="group block flex-1"
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-branco">
+          <div className="foto-contorno" />
           {attraction.coverPhotoUrl ? (
             <Image
               src={thumbUrl(attraction.coverPhotoUrl)}

@@ -22,6 +22,7 @@ export default function DestinationCard({
       href={href}
       className="group relative block aspect-[4/3] w-full overflow-hidden bg-branco"
     >
+      <div className="foto-contorno" />
       {imageUrl ? (
         <>
           <Image
@@ -33,7 +34,7 @@ export default function DestinationCard({
             style={imagePositionStyle(imagePosition)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/0 to-transparent" />
-          <h2 className="absolute bottom-4 left-4 font-serif text-xl text-white transition-colors group-hover:text-terracota">
+          <h2 className="absolute bottom-4 left-4 font-serif text-xl text-white">
             {flag && <CountryFlag src={flag} />}
             {name}
           </h2>

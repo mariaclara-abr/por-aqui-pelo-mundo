@@ -1,17 +1,17 @@
-## Por Aqui Pelo Mundo — design conventions
+## Por Aqui Pelo Mundo, design conventions
 
 "Diário de bordo" editorial travel style: quiet, photo-led, no gradients or generic
-review-app chrome. Curation over crowds — star ratings are curatorial (1–5, never a
+review-app chrome. Curation over crowds, star ratings are curatorial (1–5, never a
 crowd average) and always render in terracota, never yellow/gold.
 
 ### No provider wrapper needed
-Every synced component renders standalone — there is no root `ThemeProvider` or
+Every synced component renders standalone, there is no root `ThemeProvider` or
 similar to wrap. A few components (`Header`, and internals it composes) read from
 React Context for auth/session state, but that Context has a safe default value, so
 omitting a wrapper just renders the signed-out/default state, not an error.
 
 ### Styling idiom: Tailwind utility classes with this brand's custom names
-Not generic Tailwind — the palette and type scale are custom tokens (from
+Not generic Tailwind, the palette and type scale are custom tokens (from
 `tailwind.config.ts`, shipped in `styles.css`). Use these names, not raw hex or
 default Tailwind colors:
 
@@ -26,16 +26,16 @@ default Tailwind colors:
 Typography: `font-serif` (Fraunces, via `--font-fraunces`) for titles and attraction
 names; `font-sans` (Inter, via `--font-inter`, Tailwind's default) for body text,
 buttons, nav. Corners are soft, never sharp or bubble-round: `rounded-lg`/`rounded-xl`
-(cards, dialogs), `rounded-full` (pills, avatars, icon buttons) — avoid `rounded-sm`
+(cards, dialogs), `rounded-full` (pills, avatars, icon buttons), avoid `rounded-sm`
 or square corners on cards.
 
 No box-shadows beyond `shadow-sm` (cards use it sparingly); no gradients except the
 deliberate photo-legibility overlay on `DestinationCard` (`bg-gradient-to-t
-from-black/65`) — don't reuse that pattern elsewhere, it's specific to text-over-photo
+from-black/65`), don't reuse that pattern elsewhere, it's specific to text-over-photo
 legibility, not a general decorative device.
 
 ### Where the truth lives
-Read `styles.css` (imports the compiled `_ds_bundle.css` closure — every class above
+Read `styles.css` (imports the compiled `_ds_bundle.css` closure, every class above
 is defined there) before styling. Each component's `.prompt.md` carries its
 prop contract and a real usage example ported from this repo's own compositions.
 
@@ -55,4 +55,4 @@ prop contract and a real usage example ported from this repo's own compositions.
 For new layout glue (grids, section wrappers) that isn't one of the 17 shipped
 components, follow the same idiom: `bg-areia`/`bg-branco` backgrounds, `font-serif`
 headings in `text-tinta`, `oliva` for supporting copy, `terracota` for the one primary
-action per section — never introduce a color outside this table.
+action per section, never introduce a color outside this table.

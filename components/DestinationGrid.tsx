@@ -7,7 +7,17 @@ import type { Database } from "@/types/database";
 
 type Country = Database["public"]["Tables"]["countries"]["Row"];
 
-const DESTINATIONS_PER_PAGE = 8;
+// Duas linhas visíveis antes do "Ver mais destinos". A grade tem 1, 2, 3 e 4
+// colunas (base, sm, lg, xl), então o limite (2, 4, 6, 8) muda com a tela e é
+// feito por CSS: os cards extras ficam escondidos até o breakpoint que os comporta.
+const HIDDEN_UNTIL = ["hidden", "hidden sm:block", "hidden lg:block", "hidden xl:block"];
+const LIMITS = [2, 4, 6, 8];
+
+function hiddenClass(index: number) {
+  const step = LIMITS.findIndex((limit) => index < limit);
+  if (step === -1) return "hidden";
+  return step === 0 ? "" : HIDDEN_UNTIL[step];
+}
 
 export default function DestinationGrid({
   countries,
@@ -26,9 +36,15 @@ export default function DestinationGrid({
     })),
   ];
 
-  const visibleCards = showAll
-    ? allCards
-    : allCards.slice(0, DESTINATIONS_PER_PAGE);
+  // Botão só aparece nas larguras em que ainda há cards escondidos.
+  // (classes completas, para o Tailwind enxergá-las)
+  const n = allCards.length;
+  const buttonClass = [
+    n > 2 ? "block" : "hidden",
+    n > 4 ? "sm:block" : "sm:hidden",
+    n > 6 ? "lg:block" : "lg:hidden",
+    n > 8 ? "xl:block" : "xl:hidden",
+  ].join(" ");
 
   return (
     <section
@@ -56,17 +72,22 @@ export default function DestinationGrid({
         ) : (
           <>
             <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-10 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
-              {visibleCards.map(({ country, comingSoon }) =>
-                comingSoon ? (
-                  <ComingSoonCountryCard key={country.id} country={country} />
-                ) : (
-                  <CountryCard key={country.id} country={country} />
-                )
-              )}
+              {allCards.map(({ country, comingSoon }, index) => (
+                <div
+                  key={country.id}
+                  className={showAll ? "" : hiddenClass(index)}
+                >
+                  {comingSoon ? (
+                    <ComingSoonCountryCard country={country} />
+                  ) : (
+                    <CountryCard country={country} />
+                  )}
+                </div>
+              ))}
             </div>
 
-            {!showAll && allCards.length > DESTINATIONS_PER_PAGE && (
-              <div className="mt-10 text-center sm:mt-14">
+            {!showAll && (
+              <div className={`mt-10 text-center sm:mt-14 ${buttonClass}`}>
                 <button
                   type="button"
                   onClick={() => setShowAll(true)}

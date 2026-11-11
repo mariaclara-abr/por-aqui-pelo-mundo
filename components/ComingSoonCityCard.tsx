@@ -20,6 +20,7 @@ export default function ComingSoonCityCard({
 
   const content = (
     <>
+      <div className="foto-contorno" />
       {city.cover_image_url ? (
         <Image
           src={thumbUrl(city.cover_image_url)}

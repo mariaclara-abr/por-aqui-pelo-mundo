@@ -1,4 +1,4 @@
-// design-sync build shim for next/link — the real component reads
+// design-sync build shim for next/link, the real component reads
 // process.env.__NEXT_* internals set up by Next's client runtime, which
 // don't exist in a standalone esbuild bundle and throw on load. This
 // renders the same markup (an <a>) without any Next.js router coupling.

@@ -88,6 +88,7 @@ export default function ComingSoonCountryCard({
 
   const content = (
     <>
+      <div className="foto-contorno" />
       {country.cover_image_url ? (
         <Image
           src={thumbUrl(country.cover_image_url)}

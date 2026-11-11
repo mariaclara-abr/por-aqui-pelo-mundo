@@ -12,7 +12,7 @@ const config: Config = {
         oliva: "#4A5D43",
         areia: "#F0E6D2",
         // areia escura: fundo da seção de destinos da home, com texto claro (contraste AA)
-        "areia-escura": "#85705A",
+        "areia-escura": "#5C3F2D",
         tinta: "#2B2620",
         branco: "#FFFFFF",
       },

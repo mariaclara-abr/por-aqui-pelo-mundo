@@ -1,4 +1,4 @@
-# Cards de afiliados — home e dicas de viagem
+# Cards de afiliados, home e dicas de viagem
 
 ## Direção e escopo
 

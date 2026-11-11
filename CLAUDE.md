@@ -54,6 +54,7 @@ Todo botão e link com cara de botão do site segue o mesmo estilo "diário de b
 ## Cards de fotos (destinos, países, estados, cidades e atrações)
 Todo card de foto do site segue o mesmo formato: cantos retos (sem `rounded`), sem contorno (sem `border`) e sem sombra, proporção 4:3. O padrão vale para a home, países, estados, cidades, atrações e carrosséis de relacionados.
 - Espaçamento entre os cards: `gap-5` no celular e `sm:gap-6` a partir de tablet. Em grades com texto abaixo da foto (atrações), `gap-x-5 sm:gap-x-6 gap-y-8`. Carrosséis usam o mesmo `gap-5 sm:gap-6`.
+- No hover, além do leve zoom, a foto ganha um contorno branco fino interno (classe `foto-contorno` em `app/globals.css`, num `div` dentro do card com `group`). Todo card de foto novo deve ter.
 - Reutilizar `DestinationCard` (países, estados, cidades) e `AttractionCard`; os cards "em breve" seguem o mesmo formato. Não criar variações com cantos arredondados ou borda.
 
 ## Fotos (limites da Vercel e do Supabase)

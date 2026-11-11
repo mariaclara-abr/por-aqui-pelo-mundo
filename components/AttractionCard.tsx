@@ -37,6 +37,7 @@ export default function AttractionCard({
         className="block"
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-branco">
+          <div className="foto-contorno" />
           {coverPhoto ? (
             <Image
               src={thumbUrl(coverPhoto.url)}

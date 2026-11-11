@@ -114,7 +114,7 @@ export default function RoteiroMap({
         className="h-80 w-full rounded-xl border-2 border-oliva"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {showRoute && coords.length > 1 && (

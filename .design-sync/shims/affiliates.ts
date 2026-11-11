@@ -1,4 +1,4 @@
-// design-sync build shim for @/lib/affiliates — identical to the real module
+// design-sync build shim for @/lib/affiliates, identical to the real module
 // except the two env reads are guarded with `typeof process`, since the bare
 // `process` global doesn't exist in a standalone esbuild bundle (no Next.js
 // env inlining) and throws on load, before any component even renders.

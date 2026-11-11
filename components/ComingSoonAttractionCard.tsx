@@ -95,6 +95,7 @@ export default function ComingSoonAttractionCard({
 
   const content = (
     <>
+      <div className="foto-contorno" />
       {coverPhoto ? (
         <Image
           src={thumbUrl(coverPhoto.url)}
