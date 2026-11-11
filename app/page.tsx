@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   getAboutPageContent,
   getCountries,
+  getCitiesBySlugs,
   getCounts,
   getSiteReviews,
   getTravelTips,
@@ -15,6 +16,7 @@ import { EasySimSlimBanner, RentcarsSlimBanner, SeguroViagemSlimBanner } from "@
 import TravelTipsBand from "@/components/TravelTipsBand";
 import SiteReviewsSection from "@/components/SiteReviewsSection";
 import FaqSection from "@/components/home/FaqSection";
+import TrendingDestinations from "@/components/home/TrendingDestinations";
 import { buildOpenGraph } from "@/lib/metadata";
 import JsonLd, { websiteLd } from "@/components/JsonLd";
 
@@ -32,12 +34,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [countries, counts, siteReviews, about, tips] = await Promise.all([
+  const [countries, counts, siteReviews, about, tips, trendingCities] = await Promise.all([
     getCountries(),
     getCounts(),
     getSiteReviews(),
     getAboutPageContent(),
     getTravelTips(),
+    getCitiesBySlugs(["orlando", "florianopolis", "gramado"]),
   ]);
 
   const publishedCountries = countries.filter(
@@ -60,6 +63,7 @@ export default async function Home() {
       <EasySimSlimBanner />
       <AIRoteiroBand />
       <WelcomeMarquee />
+      <TrendingDestinations cities={trendingCities} />
       <RentcarsSlimBanner />
       <SeguroViagemSlimBanner />
       <SiteReviewsSection reviews={siteReviews} />

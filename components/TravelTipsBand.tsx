@@ -10,53 +10,37 @@ export default function TravelTipsBand({ tipCount }: { tipCount: number }) {
   if (tipCount === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-areia px-4 py-14 sm:px-6 sm:py-20 lg:px-10">
-      <div className="relative mx-auto flex max-w-[1440px] flex-col-reverse items-center gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
+    <section className="bg-areia p-3 sm:p-4 lg:p-6">
+      <div className="relative mx-auto flex aspect-[4/5] max-w-[1440px] items-center justify-center overflow-hidden sm:aspect-[16/9] lg:aspect-[13/5]">
+        <Image
+          src="/dicas-por-do-sol-serra.jpg"
+          alt="Pôr do sol visto de uma varanda de madeira com duas cadeiras, sobre vales e um mar de nuvens na serra"
+          fill
+          sizes="100vw"
+          className="object-cover object-[50%_55%] lg:object-[50%_50%]"
+        />
+        <div className="absolute inset-0 bg-tinta/35" aria-hidden="true" />
+
         <motion.div
-          className="w-full max-w-xl"
+          className="relative max-w-3xl px-6 text-center text-white"
           initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-oliva/75">
-            <span className="h-px w-8 bg-terracota" aria-hidden="true" />
-            Caderno de bordo
-          </p>
-          <h2 className="mt-4 font-serif text-3xl leading-tight text-tinta sm:text-4xl lg:text-5xl">
-            As dicas que nenhum guia te conta
+          <h2 className="text-balance font-serif text-2xl uppercase leading-tight tracking-[0.04em] sm:text-3xl lg:text-4xl">
+            As dicas que nenhum guia <span className="whitespace-nowrap">te conta</span>
           </h2>
-          <p className="mt-5 text-sm leading-relaxed text-oliva sm:text-base">
-            Antes de fechar as malas, veja o que só quem já viveu a viagem
-            sabe: truques práticos, avisos importantes reunidos e pequenos
-            achados anotados no caminho.
+          <p className="mx-auto mt-4 !text-center text-balance font-lora text-base text-areia sm:mt-5 sm:text-xl">
+            Truques práticos, avisos importantes e exclusivos,
+            <br className="hidden sm:block" />
+            anotados por quem já viveu a viagem.
           </p>
-
-          <div className="mt-8">
-            <Link
-              href="/dicas-de-viagem"
-              className="btn btn-terracota btn-cheio"
-            >
+          <div className="mt-7">
+            <Link href="/dicas-de-viagem" className="btn btn-claro">
               Abrir o caderno de bordo
             </Link>
           </div>
-        </motion.div>
-
-        <motion.div
-          className="w-full max-w-[380px] sm:max-w-[460px] lg:max-w-[520px] lg:-translate-x-8"
-          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-        >
-          <Image
-            src="/dicas-viagem-caderno.png"
-            alt="Caderno de viagem aberto com anotações, mapa e objetos de viagem"
-            width={1536}
-            height={1024}
-            sizes="(min-width: 1024px) 40vw, (min-width: 640px) 60vw, 88vw"
-            className="h-auto w-full object-contain"
-          />
         </motion.div>
       </div>
     </section>

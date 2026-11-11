@@ -640,3 +640,14 @@ export async function getTravelTipBySlug(slug: string) {
   if (error) throw error;
   return data;
 }
+
+// Cidades da seção "Destinos em alta" da home, na ordem em que os slugs vêm.
+export async function getCitiesBySlugs(slugs: string[]) {
+  const { data, error } = await supabase
+    .from("cities")
+    .select("name, slug, status, cover_image_url, cover_image_position, countries(name, slug), states(name)")
+    .in("slug", slugs);
+
+  if (error) throw error;
+  return slugs.flatMap((slug) => data.filter((city) => city.slug === slug));
+}

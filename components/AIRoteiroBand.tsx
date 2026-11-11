@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import AIRoteiroFlourishes from "./AIRoteiroFlourishes";
 
 const differentials = [
   {
@@ -48,13 +47,12 @@ export default function AIRoteiroBand() {
       <div className="relative mx-auto max-w-[1440px]">
         <div className="grid items-center gap-9 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12 xl:gap-16">
           <motion.div
-            className="relative pt-16 lg:pt-10"
+            className="relative"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: "easeOut" }}
           >
-            <AIRoteiroFlourishes />
             <p className="text-left text-xs font-medium tracking-wide text-areia sm:text-sm">
               Seu planejador de viagens com IA
             </p>
@@ -104,24 +102,38 @@ export default function AIRoteiroBand() {
           </figure>
         </div>
 
-        <div className="mt-12 border-t border-areia/25 pt-9 sm:mt-16 sm:pt-11">
-          <h3 className="max-w-2xl text-balance font-serif text-2xl leading-snug text-areia sm:text-3xl">
-            O que faz a diferença no seu roteiro
-          </h3>
-          <div
-            aria-label="Diferenciais do roteiro personalizado com IA"
-            className="mt-7 grid gap-x-14 gap-y-8 sm:grid-cols-2 sm:gap-y-10 lg:mt-9 xl:gap-x-24"
-          >
-            {differentials.map((differential) => (
-              <article key={differential.title}>
-                <h4 className="font-serif text-xl leading-snug text-branco sm:text-2xl">
-                  {differential.title}
-                </h4>
-                <p className="mt-2.5 max-w-xl text-left text-sm leading-7 text-areia sm:text-base">
-                  {differential.description}
-                </p>
-              </article>
-            ))}
+        <div className="mt-12 bg-areia px-5 py-12 text-tinta sm:mt-16 sm:px-10 sm:py-16 lg:py-24">
+          <div className="mx-auto flex max-w-5xl flex-col items-center lg:flex-row">
+            <figure className="relative aspect-[3/4] w-full max-w-sm shrink-0 lg:w-[44%] lg:max-w-none">
+              <Image
+                src="/roteiro-toscana-vitaleta.jpg"
+                alt="Capela de Vitaleta ao pôr do sol, entre ciprestes e um pinheiro, em San Quirico d'Orcia, na Toscana"
+                fill
+                sizes="(min-width: 1024px) 450px, (min-width: 640px) 384px, 100vw"
+                className="object-cover"
+              />
+            </figure>
+
+            <div className="relative -mt-16 w-[90%] border border-oliva/25 bg-branco px-6 py-8 sm:max-w-md sm:px-8 lg:-ml-20 lg:mt-0 lg:w-auto lg:max-w-none lg:flex-1 lg:px-10 lg:py-10">
+              <h3 className="text-balance font-serif text-2xl leading-snug text-tinta sm:text-3xl">
+                O que faz a diferença no seu roteiro
+              </h3>
+              <div
+                aria-label="Diferenciais do roteiro personalizado com IA"
+                className="mt-6 space-y-5"
+              >
+                {differentials.map((differential) => (
+                  <article key={differential.title}>
+                    <h4 className="font-serif text-lg leading-snug text-oliva">
+                      {differential.title}
+                    </h4>
+                    <p className="mt-1 text-left text-sm leading-6 text-tinta/80">
+                      {differential.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
