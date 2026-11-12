@@ -79,6 +79,14 @@ Em 14/10/2026 a cota de Image Optimization da Vercel (Hobby, 5 mil imagens por m
 - Títulos devem ser sempre bem chamativos, com gancho que dê vontade de clicar (sem prometer o que o conteúdo não entrega).
 - Toda categoria de dicas deve ter pelo menos 1 card travado como premium (`is_premium`), e esse deve ser o de título mais chamativo.
 
+## Ao cadastrar atrações (sempre que o usuário pedir)
+Pesquisar o máximo possível em fontes confiáveis (site oficial, órgãos de turismo, imprensa): é a parte que agrega valor ao site. Nunca inventar.
+- **Dicas** (`important_tips`): sem negrito; preferencialmente sem link (já há no conteúdo), a não ser algo bem específico; cada dica com ✓; uma linha embaixo da outra, sem linha em branco.
+- **Detalhes rápidos**: preencher tudo o que for possível (tempo de visita, melhor horário, época, público, flags de clima/ar-condicionado/reserva, coordenadas, etiquetas, faixa de preço só se for restaurante e verificada).
+- **Conteúdo** (`description`): destacar em negrito algo relevante do lugar, linha em branco entre os parágrafos e indicar o site oficial no final.
+- **Fotos**: no mínimo 3 fotos bonitas por atração, com crédito na legenda. Restaurante: só fotos de comida apetitosa, nunca prato feio ou nojento. Sem 3 fotos boas, a atração fica como rascunho (`draft`).
+- Conferir as fotos visualmente antes de usar (miniaturas numeradas) e usar o Wikimedia Commons com autor e licença livre.
+
 ## Faixa de preço dos restaurantes (`price_range`, 1 a 4)
 Só as 4 opções existentes: 1 = $ Econômico, 2 = $$ Moderado, 3 = $$$ Caro, 4 = $$$$ Muito caro. Não criar categorias nem renomear.
 - Sempre o preço de uma refeição típica por adulto (nunca o total da família, nunca só o item mais barato ou mais caro). Buffet, restaurante com personagens e preço fechado: valor integral por adulto.
