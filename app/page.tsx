@@ -55,15 +55,15 @@ export default async function Home() {
       <JsonLd data={websiteLd(DESCRIPTION)} />
       <HeroSection counts={counts} />
       <AuthorBand about={about} />
+      <TrendingDestinations cities={trendingCities} />
+      <TravelTipsBand tipCount={tips.length} />
+      <AIRoteiroBand />
+      <EasySimSlimBanner />
+      <WelcomeMarquee />
       <DestinationGrid
         countries={publishedCountries}
         comingSoonCountries={comingSoonCountries}
       />
-      <TravelTipsBand tipCount={tips.length} />
-      <EasySimSlimBanner />
-      <AIRoteiroBand />
-      <WelcomeMarquee />
-      <TrendingDestinations cities={trendingCities} />
       <RentcarsSlimBanner />
       <SeguroViagemSlimBanner />
       <SiteReviewsSection reviews={siteReviews} />

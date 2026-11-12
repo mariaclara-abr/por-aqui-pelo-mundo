@@ -51,7 +51,10 @@ export default function AIRoteiroBand() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: "easeOut" }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.5,
+              ease: "easeOut",
+            }}
           >
             <p className="text-left text-xs font-medium tracking-wide text-areia sm:text-sm">
               Seu planejador de viagens com IA
@@ -101,38 +104,39 @@ export default function AIRoteiroBand() {
             </figcaption>
           </figure>
         </div>
+      </div>
 
-        <div className="mt-12 bg-areia px-5 py-12 text-tinta sm:mt-16 sm:px-10 sm:py-16 lg:py-24">
-          <div className="mx-auto flex max-w-5xl flex-col items-center lg:flex-row">
-            <figure className="relative aspect-[3/4] w-full max-w-sm shrink-0 lg:w-[44%] lg:max-w-none">
-              <Image
-                src="/roteiro-toscana-vitaleta.jpg"
-                alt="Capela de Vitaleta ao pôr do sol, entre ciprestes e um pinheiro, em San Quirico d'Orcia, na Toscana"
-                fill
-                sizes="(min-width: 1024px) 450px, (min-width: 640px) 384px, 100vw"
-                className="object-cover"
-              />
-            </figure>
+      {/* No desktop o bloco ocupa uma tela inteira, de ponta a ponta. */}
+      <div className="relative mt-12 bg-areia px-5 py-12 text-tinta sm:mt-16 sm:px-10 sm:py-16 lg:-mx-10 lg:-mb-20 lg:mt-20 lg:flex lg:min-h-[calc(100svh-var(--header-height,64px))] lg:items-center lg:py-12">
+        <div className="mx-auto flex max-w-5xl flex-col items-center lg:flex-row">
+          <figure className="relative aspect-[3/4] w-full max-w-sm shrink-0 lg:aspect-auto lg:h-[calc(100svh-var(--header-height,64px)-6rem)] lg:w-[44%] lg:max-w-none">
+            <Image
+              src="/roteiro-toscana-vitaleta.jpg"
+              alt="Capela de Vitaleta ao pôr do sol, entre ciprestes e um pinheiro, em San Quirico d'Orcia, na Toscana"
+              fill
+              sizes="(min-width: 1024px) 450px, (min-width: 640px) 384px, 100vw"
+              className="object-cover"
+            />
+          </figure>
 
-            <div className="relative -mt-16 w-[90%] border border-oliva/25 bg-branco px-6 py-8 sm:max-w-md sm:px-8 lg:-ml-20 lg:mt-0 lg:w-auto lg:max-w-none lg:flex-1 lg:px-10 lg:py-10">
-              <h3 className="text-balance font-serif text-2xl leading-snug text-tinta sm:text-3xl">
-                O que faz a diferença no seu roteiro
-              </h3>
-              <div
-                aria-label="Diferenciais do roteiro personalizado com IA"
-                className="mt-6 space-y-5"
-              >
-                {differentials.map((differential) => (
-                  <article key={differential.title}>
-                    <h4 className="font-serif text-lg leading-snug text-oliva">
-                      {differential.title}
-                    </h4>
-                    <p className="mt-1 text-left text-sm leading-6 text-tinta/80">
-                      {differential.description}
-                    </p>
-                  </article>
-                ))}
-              </div>
+          <div className="relative -mt-16 w-[90%] border border-oliva/25 bg-branco px-6 py-8 sm:max-w-md sm:px-8 lg:-ml-20 lg:mt-0 lg:w-auto lg:max-w-none lg:flex-1 lg:px-10 lg:py-10">
+            <h3 className="text-balance font-serif text-2xl leading-snug text-tinta sm:text-3xl">
+              O que faz a diferença no seu roteiro
+            </h3>
+            <div
+              aria-label="Diferenciais do roteiro personalizado com IA"
+              className="mt-6 space-y-5"
+            >
+              {differentials.map((differential) => (
+                <article key={differential.title}>
+                  <h4 className="font-serif text-lg leading-snug text-oliva">
+                    {differential.title}
+                  </h4>
+                  <p className="mt-1 text-left text-sm leading-6 text-tinta/80">
+                    {differential.description}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </div>

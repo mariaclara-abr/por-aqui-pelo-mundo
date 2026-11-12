@@ -12,12 +12,12 @@ export default function TrendingDestinations({ cities }: { cities: City[] }) {
   return (
     <section
       aria-labelledby="destinos-em-alta-title"
-      className="bg-areia px-4 py-10 sm:px-6 sm:py-12 lg:px-10"
+      className="bg-areia-escura bg-[url('/author-paper.svg')] bg-[length:256px_256px] bg-blend-soft-light px-4 py-14 sm:px-6 sm:py-24 lg:px-10"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-[1440px]">
         <h2
           id="destinos-em-alta-title"
-          className="text-center font-lora text-3xl uppercase leading-[1.12] tracking-[0.06em] text-tinta sm:text-4xl lg:text-5xl"
+          className="text-center font-serif text-3xl text-branco sm:text-4xl"
         >
           Destinos em alta
         </h2>
@@ -43,12 +43,12 @@ export default function TrendingDestinations({ cities }: { cities: City[] }) {
                     />
                   )}
                 </div>
-                <h3 className="mt-4 font-serif text-xl text-tinta sm:text-2xl">
+                <h3 className="mt-4 font-serif text-xl text-branco sm:text-2xl">
                   {city.name}
                 </h3>
-                <p className="mt-1 text-left text-sm text-oliva">{place}</p>
+                <p className="mt-1 text-left text-sm text-areia">{place}</p>
                 {!isPublished && (
-                  <p className="mt-2 text-left text-[11px] uppercase tracking-[0.2em] text-terracota">
+                  <p className="mt-2 text-left text-[11px] uppercase tracking-[0.2em] text-areia">
                     Em breve
                   </p>
                 )}
@@ -70,7 +70,7 @@ export default function TrendingDestinations({ cities }: { cities: City[] }) {
         </ul>
 
         <div className="mt-8 text-center sm:mt-10">
-          <a href="#destinos" className="btn btn-oliva">
+          <a href="#destinos" className="btn btn-claro">
             Ver todos os destinos
           </a>
         </div>
