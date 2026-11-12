@@ -330,10 +330,10 @@ export default function ItineraryHistory({
           viagem.
         </p>
         <Link
-          href="/"
+          href="/paises"
           className="btn btn-terracota mt-2"
         >
-          Explorar destinos
+          Explorar países
         </Link>
       </div>
     );

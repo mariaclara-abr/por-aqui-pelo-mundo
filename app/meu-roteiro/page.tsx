@@ -311,10 +311,10 @@ export default function MeuRoteiroPage() {
 
               <div className="mt-9 flex w-fit max-w-full flex-col gap-3">
                 <Link
-                  href="/#destinos"
+                  href="/paises"
                   className="btn btn-terracota btn-cheio w-full"
                 >
-                  Explorar destinos
+                  Explorar países
                 </Link>
                 <button
                   type="button"

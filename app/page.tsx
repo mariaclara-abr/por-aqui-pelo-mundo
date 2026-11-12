@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import {
   getAboutPageContent,
-  getCountries,
   getCitiesBySlugs,
   getCounts,
   getSiteReviews,
   getTravelTips,
 } from "@/lib/queries";
 import HeroSection from "@/components/HeroSection";
-import DestinationGrid from "@/components/DestinationGrid";
 import WelcomeMarquee from "@/components/WelcomeMarquee";
 import AuthorBand from "@/components/AuthorBand";
 import AIRoteiroBand from "@/components/AIRoteiroBand";
@@ -34,21 +32,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [countries, counts, siteReviews, about, tips, trendingCities] = await Promise.all([
-    getCountries(),
+  const [counts, siteReviews, about, tips, trendingCities] = await Promise.all([
     getCounts(),
     getSiteReviews(),
     getAboutPageContent(),
     getTravelTips(),
     getCitiesBySlugs(["orlando", "florianopolis", "gramado"]),
   ]);
-
-  const publishedCountries = countries.filter(
-    (country) => country.status === "published",
-  );
-  const comingSoonCountries = countries.filter(
-    (country) => country.status === "draft",
-  );
 
   return (
     <main className="flex-1">
@@ -60,10 +50,6 @@ export default async function Home() {
       <AIRoteiroBand />
       <EasySimSlimBanner />
       <WelcomeMarquee />
-      <DestinationGrid
-        countries={publishedCountries}
-        comingSoonCountries={comingSoonCountries}
-      />
       <RentcarsSlimBanner />
       <SeguroViagemSlimBanner />
       <SiteReviewsSection reviews={siteReviews} />

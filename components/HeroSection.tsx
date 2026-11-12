@@ -38,7 +38,7 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
           Com base na experiência real de quem já esteve lá.
         </p>
         <a
-          href="#destinos"
+          href="/paises"
           className="btn btn-claro mt-9 backdrop-blur-[2px] [text-shadow:none] sm:mt-11 sm:px-8"
         >
           Comece agora

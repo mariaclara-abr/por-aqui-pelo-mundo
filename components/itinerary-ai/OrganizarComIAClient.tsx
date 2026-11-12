@@ -820,7 +820,7 @@ export default function OrganizarComIAClient({
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <p className="text-sm font-medium text-tinta">Para onde você quer ir?</p>
               <Link
-                href="/#destinos"
+                href="/paises"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-terracota underline-offset-2 hover:underline"

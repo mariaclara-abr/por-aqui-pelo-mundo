@@ -11,8 +11,14 @@ const config: Config = {
         terracota: "#C1653A",
         oliva: "#4A5D43",
         areia: "#F0E6D2",
-        // areia escura: fundo da seção de destinos da home, com texto claro (contraste AA)
-        "areia-escura": "#5C3F2D",
+        // Fundos por nível de navegação, do mais escuro ao mais claro:
+        // Destinos em alta (home) > países > estados > cidades > atrações.
+        // Os dois primeiros levam texto claro; os demais, texto escuro.
+        "fundo-alta": "#5C3F2D",
+        "fundo-paises": "#7A5B44",
+        "fundo-estados": "#DAC39E",
+        "fundo-cidades": "#E5D4B6",
+        "fundo-atracoes": "#F0E6D2",
         tinta: "#2B2620",
         branco: "#FFFFFF",
       },

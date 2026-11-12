@@ -119,13 +119,13 @@ export default function AIRoteiroBand() {
             />
           </figure>
 
-          <div className="relative -mt-16 w-[90%] border border-oliva/25 bg-branco px-6 py-8 sm:max-w-md sm:px-8 lg:-ml-20 lg:mt-0 lg:w-auto lg:max-w-none lg:flex-1 lg:px-10 lg:py-10">
+          <div className="relative -mt-16 w-[90%] border border-oliva/25 bg-branco px-6 py-8 sm:max-w-md sm:px-8 lg:-ml-20 lg:mt-0 lg:w-auto lg:max-w-none lg:flex-1 lg:px-10 lg:py-8">
             <h3 className="text-balance font-serif text-2xl leading-snug text-tinta sm:text-3xl">
               O que faz a diferença no seu roteiro
             </h3>
             <div
               aria-label="Diferenciais do roteiro personalizado com IA"
-              className="mt-6 space-y-5"
+              className="mt-6 space-y-5 lg:space-y-4"
             >
               {differentials.map((differential) => (
                 <article key={differential.title}>
@@ -137,6 +137,15 @@ export default function AIRoteiroBand() {
                   </p>
                 </article>
               ))}
+            </div>
+
+            <div className="mt-7 lg:mt-6">
+              <Link
+                href="/meu-roteiro/organizar-com-ia"
+                className="btn btn-terracota btn-cheio w-full whitespace-nowrap sm:w-auto"
+              >
+                Montar meu roteiro com IA
+              </Link>
             </div>
           </div>
         </div>

@@ -184,7 +184,7 @@ export default async function CityOrStatePage(
     const faqLd = faqPageLd(faq);
 
     return (
-      <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+      <main className="flex-1 bg-fundo-atracoes px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
         <JsonLd
           data={[
             breadcrumbLd([
@@ -346,7 +346,7 @@ export default async function CityOrStatePage(
   const stateQa = qaPageLd(stateQuestions, `/${countrySlug}/${citySlug}`);
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+    <main className="flex-1 bg-fundo-cidades px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
       <JsonLd
         data={[
           breadcrumbLd([

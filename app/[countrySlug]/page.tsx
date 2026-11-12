@@ -100,7 +100,7 @@ export default async function CountryPage(
   const qa = qaPageLd(questions, `/${countrySlug}`);
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-10">
+    <main className={`flex-1 ${hasStates ? "bg-fundo-estados" : "bg-fundo-cidades"} px-4 py-10 sm:px-6 sm:py-14 lg:px-10`}>
       <JsonLd
         data={[
           breadcrumbLd([

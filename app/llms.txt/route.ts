@@ -17,6 +17,7 @@ ${countries.map((c) => `- [${c.name}](${SITE_URL}/${c.slug}): cidades e atraçõ
 - [Todas as dicas](${SITE_URL}/dicas-de-viagem): ${tips.length} dicas práticas (documentos, dinheiro, parques, Europa, Dubai)
 
 ## Sobre
+- [Explorar países](${SITE_URL}/paises): todos os países com curadoria
 - [Quem avalia](${SITE_URL}/sobre): autoria e método de curadoria
 `;
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });

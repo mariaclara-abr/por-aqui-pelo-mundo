@@ -185,7 +185,7 @@ export default function NavDrawer() {
 
                   {destinosOpen && (
                     <div className="ml-3 flex flex-col gap-1 border-l border-branco/15 pl-3">
-                      <MenuItem onClick={() => navigate("/#destinos")}>
+                      <MenuItem onClick={() => navigate("/paises")}>
                         Ver tudo
                       </MenuItem>
                       {renderList({

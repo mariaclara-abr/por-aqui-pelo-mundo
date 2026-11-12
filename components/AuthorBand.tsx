@@ -88,12 +88,12 @@ export default function AuthorBand({ about }: { about: About }) {
         </div>
       </div>
 
-      <div className="bg-[#E6E4D6]">
+      <div className="bg-[#EBD9BA]">
         <dl className="mx-auto grid max-w-[64rem] grid-cols-3 px-4 py-5 text-center sm:px-6 lg:py-7">
           {STATS.map(([value, label], i) => (
             <div
               key={label}
-              className={`flex flex-col-reverse items-center gap-2 px-2 ${i > 0 ? "border-l border-[#D2CFC2]" : ""}`}
+              className={`flex flex-col-reverse items-center gap-2 px-2 ${i > 0 ? "border-l border-[#D3BC93]" : ""}`}
             >
               <dt className="text-[10px] font-medium uppercase leading-snug tracking-[0.04em] text-[#15140A] sm:text-xs">
                 {label}

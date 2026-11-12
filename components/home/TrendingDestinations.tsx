@@ -12,12 +12,12 @@ export default function TrendingDestinations({ cities }: { cities: City[] }) {
   return (
     <section
       aria-labelledby="destinos-em-alta-title"
-      className="bg-areia-escura bg-[url('/author-paper.svg')] bg-[length:256px_256px] bg-blend-soft-light px-4 py-14 sm:px-6 sm:py-24 lg:px-10"
+      className="bg-fundo-alta bg-[url('/author-paper.svg')] bg-[length:256px_256px] bg-blend-soft-light px-4 py-14 sm:px-6 sm:py-24 lg:px-10"
     >
       <div className="mx-auto max-w-[1440px]">
         <h2
           id="destinos-em-alta-title"
-          className="text-center font-serif text-3xl text-branco sm:text-4xl"
+          className="text-center font-serif text-4xl text-branco sm:text-5xl lg:text-6xl"
         >
           Destinos em alta
         </h2>
@@ -70,7 +70,7 @@ export default function TrendingDestinations({ cities }: { cities: City[] }) {
         </ul>
 
         <div className="mt-8 text-center sm:mt-10">
-          <a href="#destinos" className="btn btn-claro">
+          <a href="/paises" className="btn btn-claro btn-cheio">
             Ver todos os destinos
           </a>
         </div>
