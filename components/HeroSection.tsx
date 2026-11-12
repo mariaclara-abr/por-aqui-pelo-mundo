@@ -23,7 +23,6 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
       />
       {/* Véu leve só para o texto claro ler bem sobre as nuvens. */}
       <div className="absolute inset-0 bg-tinta/25" />
-      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-tinta/40 to-transparent" />
 
       <div className="relative flex max-w-[760px] flex-col items-center px-4 pt-[var(--header-height,64px)] text-center text-white [text-shadow:0_1px_14px_rgba(43,38,32,0.35)] sm:px-6">
         {showCounter && (
