@@ -288,6 +288,7 @@ export interface Database {
           exclusive_perk_3_description: string | null;
           exclusive_perk_3_url: string | null;
           exclusive_perk_3_cta_label: string | null;
+          show_sunscreen: boolean | null;
           status: CountryStatus;
           created_at: string;
           updated_at: string;
@@ -325,6 +326,7 @@ export interface Database {
           exclusive_perk_3_description?: string | null;
           exclusive_perk_3_url?: string | null;
           exclusive_perk_3_cta_label?: string | null;
+          show_sunscreen?: boolean | null;
           status?: CountryStatus;
           created_at?: string;
           updated_at?: string;

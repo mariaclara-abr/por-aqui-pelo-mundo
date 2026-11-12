@@ -91,6 +91,9 @@ export default function AttractionForm({
   const [noAirConditioning, setNoAirConditioning] = useState(
     attraction?.no_air_conditioning ?? false,
   );
+  const [showSunscreen, setShowSunscreen] = useState<string>(
+    attraction?.show_sunscreen == null ? "auto" : attraction.show_sunscreen ? "sim" : "nao",
+  );
   const [latitude, setLatitude] = useState(
     attraction?.latitude != null ? String(attraction.latitude) : "",
   );
@@ -180,6 +183,7 @@ export default function AttractionForm({
       has_air_conditioning: hasAirConditioning,
       no_air_conditioning: noAirConditioning,
       curation_rating: null,
+      show_sunscreen: showSunscreen === "auto" ? null : showSunscreen === "sim",
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
       ...Object.fromEntries(
@@ -605,6 +609,23 @@ export default function AttractionForm({
           </div>
         );
       })}
+
+      <FormField
+        label="Protetor solar Natura"
+        htmlFor="showSunscreen"
+        helpText="Automático: aparece em natureza, parques e atrações com a etiqueta 'Melhor em dias de sol'. Mostrar ou ocultar força a escolha."
+      >
+        <select
+          id="showSunscreen"
+          className={inputClass}
+          value={showSunscreen}
+          onChange={(event) => setShowSunscreen(event.target.value)}
+        >
+          <option value="auto">Automático</option>
+          <option value="sim">Mostrar</option>
+          <option value="nao">Ocultar</option>
+        </select>
+      </FormField>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <FormField

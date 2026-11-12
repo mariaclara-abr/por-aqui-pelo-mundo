@@ -343,10 +343,6 @@ export default async function AttractionPage(
             </section>
           )}
 
-          {(!isContainer || isPark) && isOutdoor && (
-            <SunscreenCallout attractionId={attraction.id} />
-          )}
-
           {quickFacts.length > 0 && (
             <div className="mt-6 rounded-xl p-5">
               <h2 className="font-serif text-lg text-oliva">
@@ -366,6 +362,10 @@ export default async function AttractionPage(
           )}
 
           <ExclusivePerks perks={perksFromRow(attraction)} />
+
+          {(attraction.show_sunscreen ?? ((!isContainer || isPark) && isOutdoor)) && (
+            <SunscreenCallout attractionId={attraction.id} />
+          )}
 
           <ProtectedContent>
           {attraction.personal_experience && (
