@@ -13,6 +13,7 @@ import { PRICE_RANGE_LABELS } from "@/components/PriceRange";
 import { ATTRACTION_CATEGORIES, categoryLabels } from "@/types/database";
 import type { AttractionCategory, Database } from "@/types/database";
 import { imagePositionToJson, parseImagePosition } from "@/lib/image-position";
+import { perksFromRow, type Perk } from "@/components/ExclusivePerks";
 
 type Attraction = Database["public"]["Tables"]["attractions"]["Row"] & {
   attraction_photos: Database["public"]["Tables"]["attraction_photos"]["Row"][];
@@ -96,15 +97,7 @@ export default function AttractionForm({
   const [longitude, setLongitude] = useState(
     attraction?.longitude != null ? String(attraction.longitude) : "",
   );
-  const [exclusivePerkDescription, setExclusivePerkDescription] = useState(
-    attraction?.exclusive_perk_description ?? "",
-  );
-  const [exclusivePerkUrl, setExclusivePerkUrl] = useState(
-    attraction?.exclusive_perk_url ?? "",
-  );
-  const [exclusivePerkCtaLabel, setExclusivePerkCtaLabel] = useState(
-    attraction?.exclusive_perk_cta_label ?? "",
-  );
+  const [perks, setPerks] = useState<Perk[]>(perksFromRow(attraction));
   const [isDraft, setIsDraft] = useState(attraction?.status === "draft");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
     attraction?.attraction_tags.map((entry) => entry.tags.id) ?? [],
@@ -189,9 +182,13 @@ export default function AttractionForm({
       curation_rating: null,
       latitude: latitude ? Number(latitude) : null,
       longitude: longitude ? Number(longitude) : null,
-      exclusive_perk_description: exclusivePerkDescription || null,
-      exclusive_perk_url: exclusivePerkUrl || null,
-      exclusive_perk_cta_label: exclusivePerkCtaLabel || null,
+      ...Object.fromEntries(
+        ["exclusive_perk", "exclusive_perk_2", "exclusive_perk_3"].flatMap((p, i) => [
+          [`${p}_description`, perks[i].description || null],
+          [`${p}_url`, perks[i].url || null],
+          [`${p}_cta_label`, perks[i].ctaLabel || null],
+        ]),
+      ),
       status: isDraft ? ("draft" as const) : ("published" as const),
     };
 
@@ -554,54 +551,60 @@ export default function AttractionForm({
         </div>
       </FormField>
 
-      <div className="flex flex-col gap-5 rounded-xl border border-terracota/30 bg-terracota/5 p-4">
-        <p className="text-sm font-medium text-terracota">
-          Parceria exclusiva (opcional)
-        </p>
+      {perks.map((perk, i) => {
+        const set = (patch: Partial<Perk>) =>
+          setPerks((all) => all.map((p, j) => (j === i ? { ...p, ...patch } : p)));
+        return (
+          <div key={i} className="flex flex-col gap-5 rounded-xl border border-terracota/30 bg-terracota/5 p-4">
+            <p className="text-sm font-medium text-terracota">
+              Parceria exclusiva {i + 1} (opcional)
+            </p>
 
-        <FormField
-          label="Descrição da vantagem"
-          htmlFor="exclusivePerkDescription"
-          helpText="Só aparece na página se for preenchido. Ex: Reserve com 10% de desconto exclusivo para leitores do Por Aqui Pelo Mundo."
-        >
-          <FormattingToolbarTextarea
-            id="exclusivePerkDescription"
-            className={inputClass}
-            rows={2}
-            value={exclusivePerkDescription}
-            onChange={setExclusivePerkDescription}
-          />
-        </FormField>
+            <FormField
+              label="Descrição da vantagem"
+              htmlFor={`exclusivePerkDescription${i}`}
+              helpText="Só aparece na página se for preenchido. Ex: Reserve com 10% de desconto exclusivo para leitores do Por Aqui Pelo Mundo."
+            >
+              <FormattingToolbarTextarea
+                id={`exclusivePerkDescription${i}`}
+                className={inputClass}
+                rows={2}
+                value={perk.description}
+                onChange={(description) => set({ description })}
+              />
+            </FormField>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <FormField
-            label="Link da parceria"
-            htmlFor="exclusivePerkUrl"
-            helpText="URL de reserva, cupom ou página do parceiro."
-          >
-            <input
-              id="exclusivePerkUrl"
-              type="url"
-              className={inputClass}
-              value={exclusivePerkUrl}
-              onChange={(event) => setExclusivePerkUrl(event.target.value)}
-            />
-          </FormField>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <FormField
+                label="Link da parceria"
+                htmlFor={`exclusivePerkUrl${i}`}
+                helpText="URL de reserva, cupom ou página do parceiro. Abre em nova aba."
+              >
+                <input
+                  id={`exclusivePerkUrl${i}`}
+                  type="url"
+                  className={inputClass}
+                  value={perk.url}
+                  onChange={(event) => set({ url: event.target.value })}
+                />
+              </FormField>
 
-          <FormField
-            label="Texto do botão"
-            htmlFor="exclusivePerkCtaLabel"
-            helpText='Ex: "Reservar com desconto". Padrão: "Aproveitar parceria".'
-          >
-            <input
-              id="exclusivePerkCtaLabel"
-              className={inputClass}
-              value={exclusivePerkCtaLabel}
-              onChange={(event) => setExclusivePerkCtaLabel(event.target.value)}
-            />
-          </FormField>
-        </div>
-      </div>
+              <FormField
+                label="Texto do botão"
+                htmlFor={`exclusivePerkCtaLabel${i}`}
+                helpText='Ex: "Reservar com desconto". Padrão: "Aproveitar parceria".'
+              >
+                <input
+                  id={`exclusivePerkCtaLabel${i}`}
+                  className={inputClass}
+                  value={perk.ctaLabel}
+                  onChange={(event) => set({ ctaLabel: event.target.value })}
+                />
+              </FormField>
+            </div>
+          </div>
+        );
+      })}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <FormField
@@ -731,9 +734,7 @@ export default function AttractionForm({
             requiresReservation={requiresReservation}
             hasAirConditioning={hasAirConditioning}
             noAirConditioning={noAirConditioning}
-            exclusivePerkDescription={exclusivePerkDescription}
-            exclusivePerkUrl={exclusivePerkUrl}
-            exclusivePerkCtaLabel={exclusivePerkCtaLabel}
+            perks={perks}
           />
         </PreviewModal>
       )}

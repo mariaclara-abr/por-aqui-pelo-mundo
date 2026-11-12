@@ -1,6 +1,7 @@
 import PriceRange from "@/components/PriceRange";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
 import { linkify } from "@/components/Linkify";
+import ExclusivePerks, { type Perk } from "@/components/ExclusivePerks";
 import type { AdminPhoto } from "@/components/admin/PhotoUploader";
 import { imagePositionToJson } from "@/lib/image-position";
 import type { Database } from "@/types/database";
@@ -28,9 +29,7 @@ export default function AttractionPreview({
   requiresReservation,
   hasAirConditioning,
   noAirConditioning,
-  exclusivePerkDescription,
-  exclusivePerkUrl,
-  exclusivePerkCtaLabel,
+  perks,
 }: {
   name: string;
   categoryLabel: string;
@@ -52,9 +51,7 @@ export default function AttractionPreview({
   requiresReservation: boolean;
   hasAirConditioning: boolean;
   noAirConditioning: boolean;
-  exclusivePerkDescription: string;
-  exclusivePerkUrl: string;
-  exclusivePerkCtaLabel: string;
+  perks: Perk[];
 }) {
   const photoRows = photos.map((photo, index) => ({
     id: photo.id,
@@ -166,26 +163,7 @@ export default function AttractionPreview({
             </div>
           )}
 
-          {exclusivePerkDescription && (
-            <section className="mt-6 rounded-xl border-2 border-terracota bg-terracota/5 p-5">
-              <p className="text-xs font-medium uppercase tracking-wide text-terracota">
-                Exclusivo Por Aqui Pelo Mundo
-              </p>
-              <p className="mt-2 leading-relaxed text-tinta whitespace-pre-line">
-                {linkify(exclusivePerkDescription)}
-              </p>
-              {exclusivePerkUrl && (
-                <a
-                  href={exclusivePerkUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-block rounded-full bg-terracota px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terracota/90"
-                >
-                  {exclusivePerkCtaLabel || "Aproveitar parceria"}
-                </a>
-              )}
-            </section>
-          )}
+          <ExclusivePerks perks={perks} />
 
           {personalExperience && (
             <section className="mt-6 rounded-xl bg-branco p-5">

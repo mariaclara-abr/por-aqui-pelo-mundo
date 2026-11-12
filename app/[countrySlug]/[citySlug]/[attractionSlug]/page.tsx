@@ -21,6 +21,7 @@ import ProtectedContent from "@/components/ProtectedContent";
 import DestinationCard from "@/components/DestinationCard";
 import QuestionsSection from "@/components/attraction/QuestionsSection";
 import AttractionPhotos from "@/components/attraction/AttractionPhotos";
+import ExclusivePerks, { perksFromRow } from "@/components/ExclusivePerks";
 import { SunscreenCallout } from "@/components/AffiliateCallout";
 import UpdatedAt from "@/components/UpdatedAt";
 import JsonLd, { attractionLd, breadcrumbLd, qaPageLd } from "@/components/JsonLd";
@@ -332,10 +333,12 @@ export default async function AttractionPage(
           {attraction.description && (
             <section className="space-y-5 leading-relaxed text-tinta">
               {attraction.description
-                .split(/\n+/)
+                .split(/\n\s*\n/)
                 .filter((paragraph) => paragraph.trim())
                 .map((paragraph, index) => (
-                  <p key={index}>{linkify(paragraph)}</p>
+                  <p key={index} className="whitespace-pre-line">
+                    {linkify(paragraph)}
+                  </p>
                 ))}
             </section>
           )}
@@ -362,27 +365,7 @@ export default async function AttractionPage(
             </div>
           )}
 
-          {!isContainer && attraction.exclusive_perk_description && (
-            <section className="mt-6 rounded-xl border-2 border-terracota bg-terracota/5 p-5">
-              <p className="text-xs font-medium uppercase tracking-wide text-terracota">
-                Exclusivo Por Aqui Pelo Mundo
-              </p>
-              <p className="mt-2 leading-relaxed text-tinta whitespace-pre-line">
-                {linkify(attraction.exclusive_perk_description)}
-              </p>
-              {attraction.exclusive_perk_url && (
-                <a
-                  href={attraction.exclusive_perk_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-terracota btn-cheio mt-4"
-                >
-                  {attraction.exclusive_perk_cta_label ||
-                    "Aproveitar parceria"}
-                </a>
-              )}
-            </section>
-          )}
+          <ExclusivePerks perks={perksFromRow(attraction)} />
 
           <ProtectedContent>
           {attraction.personal_experience && (

@@ -282,6 +282,12 @@ export interface Database {
           exclusive_perk_description: string | null;
           exclusive_perk_url: string | null;
           exclusive_perk_cta_label: string | null;
+          exclusive_perk_2_description: string | null;
+          exclusive_perk_2_url: string | null;
+          exclusive_perk_2_cta_label: string | null;
+          exclusive_perk_3_description: string | null;
+          exclusive_perk_3_url: string | null;
+          exclusive_perk_3_cta_label: string | null;
           status: CountryStatus;
           created_at: string;
           updated_at: string;
@@ -313,6 +319,12 @@ export interface Database {
           exclusive_perk_description?: string | null;
           exclusive_perk_url?: string | null;
           exclusive_perk_cta_label?: string | null;
+          exclusive_perk_2_description?: string | null;
+          exclusive_perk_2_url?: string | null;
+          exclusive_perk_2_cta_label?: string | null;
+          exclusive_perk_3_description?: string | null;
+          exclusive_perk_3_url?: string | null;
+          exclusive_perk_3_cta_label?: string | null;
           status?: CountryStatus;
           created_at?: string;
           updated_at?: string;
