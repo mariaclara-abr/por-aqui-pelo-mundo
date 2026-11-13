@@ -1023,6 +1023,26 @@ export interface Database {
         >;
         Relationships: [];
       };
+      natura_settings: {
+        Row: {
+          id: number;
+          coupon_code: string;
+          coupon_expires_on: string | null;
+          store_url: string;
+          conditions: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          coupon_code?: string;
+          coupon_expires_on?: string | null;
+          store_url?: string;
+          conditions?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["natura_settings"]["Insert"]>;
+        Relationships: [];
+      };
       about_visited_countries: {
         Row: {
           id: string;
@@ -1141,6 +1161,10 @@ export interface Database {
       };
     };
     Views: {
+      natura_public: {
+        Row: { store_url: string | null; coupon_code: string | null; conditions: string | null };
+        Relationships: [];
+      };
       public_profiles: {
         Row: {
           id: string;

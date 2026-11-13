@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/admin/perguntas", label: "Perguntas" },
   { href: "/admin/avaliacoes", label: "Avaliações do site" },
   { href: "/admin/afiliados", label: "Afiliados" },
+  { href: "/admin/natura", label: "Natura" },
   { href: "/admin/sobre", label: "Sobre a autora" },
 ];
 

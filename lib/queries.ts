@@ -651,3 +651,9 @@ export async function getCitiesBySlugs(slugs: string[]) {
   if (error) throw error;
   return slugs.flatMap((slug) => data.filter((city) => city.slug === slug));
 }
+
+// Link e cupom vigente da Natura (a view já esconde o cupom vencido e a validade).
+export async function getNatura() {
+  const { data } = await supabase.from("natura_public").select("*").maybeSingle();
+  return data;
+}

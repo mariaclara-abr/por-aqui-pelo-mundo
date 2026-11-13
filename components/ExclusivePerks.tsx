@@ -1,4 +1,9 @@
 import { linkify } from "@/components/Linkify";
+import CopyCoupon from "@/components/CopyCoupon";
+
+export type Natura = { store_url: string | null; coupon_code: string | null; conditions: string | null };
+
+const isNatura = (url: string) => /natura\.com/i.test(url);
 
 export type Perk = { description: string; url: string; ctaLabel: string };
 
@@ -23,10 +28,14 @@ export function perksFromRow(row?: Partial<PerkRow> | null): Perk[] {
 }
 
 // Cada espaço é independente: só aparece quando tem descrição.
-export default function ExclusivePerks({ perks }: { perks: Perk[] }) {
+// Cards da Natura (link natura.com): usam o link e o cupom do cadastro central.
+export default function ExclusivePerks({ perks, natura }: { perks: Perk[]; natura?: Natura | null }) {
   return perks
     .filter((perk) => perk.description.trim())
-    .map((perk, index) => (
+    .map((perk, index) => {
+      const nat = natura && isNatura(perk.url) ? natura : null;
+      const url = nat?.store_url || perk.url;
+      return (
       <section
         key={index}
         className="mt-6 rounded-xl border-2 border-terracota bg-terracota/5 p-5"
@@ -37,9 +46,10 @@ export default function ExclusivePerks({ perks }: { perks: Perk[] }) {
         <p className="mt-2 leading-relaxed text-tinta whitespace-pre-line">
           {linkify(perk.description)}
         </p>
-        {perk.url && (
+        {nat?.coupon_code && <CopyCoupon code={nat.coupon_code} conditions={nat.conditions} />}
+        {url && (
           <a
-            href={perk.url}
+            href={url}
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="btn btn-terracota btn-cheio mt-4"
@@ -48,5 +58,6 @@ export default function ExclusivePerks({ perks }: { perks: Perk[] }) {
           </a>
         )}
       </section>
-    ));
+      );
+    });
 }

@@ -6,6 +6,7 @@ import {
   getAttractionBySlug,
   getAttractionIdsWithChildren,
   getChildAttractions,
+  getNatura,
 } from "@/lib/queries";
 import { getAttractionQuestions } from "@/lib/questions";
 import { checkIsAuthor } from "@/lib/server-auth";
@@ -361,7 +362,7 @@ export default async function AttractionPage(
             </div>
           )}
 
-          <ExclusivePerks perks={perksFromRow(attraction)} />
+          <ExclusivePerks perks={perksFromRow(attraction)} natura={await getNatura()} />
 
           {(attraction.show_sunscreen ?? ((!isContainer || isPark) && isOutdoor)) && (
             <SunscreenCallout attractionId={attraction.id} />

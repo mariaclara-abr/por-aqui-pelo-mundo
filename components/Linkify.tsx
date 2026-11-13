@@ -24,12 +24,13 @@ export function linkify(text: string, linkClassName = "break-all text-terracota 
     }
     const labeled = part.match(/^\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)$/);
     if (labeled) {
+      // Links para páginas do próprio site abrem na mesma aba; externos em nova aba.
+      const internal = /^https?:\/\/(www\.)?poraquipelomundo\.com(\/|$)/.test(labeled[2]);
       return (
         <a
           key={index}
           href={labeled[2]}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...(internal ? {} : { target: "_blank", rel: "noopener noreferrer" })}
           className={linkClassName.replace("break-all ", "")}
         >
           {labeled[1]}

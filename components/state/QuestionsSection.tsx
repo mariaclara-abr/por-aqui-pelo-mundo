@@ -334,7 +334,7 @@ export default function QuestionsSection({
             <button
               type="submit"
               disabled={submitting || !newQuestion.trim()}
-              className="btn btn-terracota shrink-0"
+              className="btn btn-terracota btn-cheio shrink-0"
             >
               {submitting ? "Enviando..." : "Perguntar"}
             </button>
