@@ -15,6 +15,7 @@ import ComingSoonCityCard from "@/components/ComingSoonCityCard";
 import StateCard from "@/components/StateCard";
 import CountryQuestionsSection from "@/components/country/QuestionsSection";
 import ExpandableText from "@/components/ExpandableText";
+import DestinationHeader from "@/components/DestinationHeader";
 import JsonLd, { breadcrumbLd, qaPageLd } from "@/components/JsonLd";
 import ComingSoonPage from "@/components/ComingSoonPage";
 import { buildOpenGraph, comingSoonMetadata, countLabel, withDe } from "@/lib/metadata";
@@ -117,20 +118,45 @@ export default async function CountryPage(
             consegue ver esta página.
           </p>
         )}
-        <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
-          {country.name}
-        </h1>
-        {country.description ? (
-          <ExpandableText
-            text={country.description}
-            className="mt-2 text-oliva"
-          />
+        {coverImage ? (
+          <>
+            <div className="mb-12 sm:mb-16">
+              <DestinationHeader
+                title={country.name}
+                parent={{ href: "/paises", label: "Países" }}
+                coverImage={coverImage}
+                coverStyle={imagePositionStyle(parseImagePosition(country.cover_image_position))}
+                photo={country.header_photo_url}
+                description={
+                  country.description ??
+                  (hasStates
+                    ? "Escolha um estado para ver as cidades com curadoria."
+                    : "Escolha uma cidade para ver as atrações com curadoria.")
+                }
+              />
+            </div>
+            <h2 className="font-serif text-3xl text-tinta sm:text-4xl">
+              {hasStates ? "Estados:" : "Cidades:"}
+            </h2>
+          </>
         ) : (
-          <p className="mt-2 text-oliva">
-            {hasStates
-              ? "Escolha um estado para ver as cidades com curadoria."
-              : "Escolha uma cidade para ver as atrações com curadoria."}
-          </p>
+          <>
+          <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
+            {country.name}
+          </h1>
+          {country.description ? (
+            <ExpandableText
+              text={country.description}
+              className="mt-2 text-oliva"
+            />
+          ) : (
+            <p className="mt-2 text-oliva">
+              {hasStates
+                ? "Escolha um estado para ver as cidades com curadoria."
+                : "Escolha uma cidade para ver as atrações com curadoria."}
+            </p>
+          )}
+          </>
         )}
 
         {hasStates ? (

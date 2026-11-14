@@ -154,6 +154,7 @@ export interface Database {
           slug: string;
           cover_image_url: string | null;
           cover_image_position: Json | null;
+          header_photo_url: string | null;
           description: string | null;
           status: CountryStatus;
           created_at: string;
@@ -164,6 +165,7 @@ export interface Database {
           slug: string;
           cover_image_url?: string | null;
           cover_image_position?: Json | null;
+          header_photo_url?: string | null;
           description?: string | null;
           status?: CountryStatus;
           created_at?: string;
@@ -179,6 +181,7 @@ export interface Database {
           slug: string;
           cover_image_url: string | null;
           cover_image_position: Json | null;
+          header_photo_url: string | null;
           description: string | null;
           latitude: number | null;
           longitude: number | null;
@@ -191,6 +194,7 @@ export interface Database {
           slug: string;
           cover_image_url?: string | null;
           cover_image_position?: Json | null;
+          header_photo_url?: string | null;
           description?: string | null;
           latitude?: number | null;
           longitude?: number | null;
@@ -219,6 +223,7 @@ export interface Database {
           description: string | null;
           latitude: number | null;
           longitude: number | null;
+          header_photo_url: string | null;
           status: CountryStatus;
           created_at: string;
         };
@@ -233,6 +238,7 @@ export interface Database {
           description?: string | null;
           latitude?: number | null;
           longitude?: number | null;
+          header_photo_url?: string | null;
           status?: CountryStatus;
           created_at?: string;
         };

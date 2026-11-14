@@ -146,8 +146,8 @@ export default function SearchBox({
           aria-label="Buscar destinos"
           className={
             inDrawer
-              ? "w-full rounded-lg border border-branco/20 bg-branco/10 px-3 py-2.5 text-sm text-branco placeholder:text-areia/70 focus:border-terracota focus:outline-none"
-              : "w-32 rounded-full border border-oliva/30 bg-branco px-3 py-1.5 text-sm text-tinta placeholder:text-oliva/50 focus:border-terracota focus:outline-none sm:w-64"
+              ? "min-h-11 w-full rounded-lg border border-branco/20 bg-branco/10 px-4 text-sm font-light text-branco placeholder:text-[11px] placeholder:uppercase placeholder:tracking-[0.28em] placeholder:text-areia/70 focus:border-branco/40 focus:outline-none"
+              : "h-9 w-32 rounded-lg border border-oliva/25 bg-branco px-4 text-sm font-light text-tinta placeholder:text-[10px] placeholder:uppercase placeholder:tracking-[0.2em] placeholder:text-oliva/60 focus:border-oliva/50 focus:outline-none sm:w-64"
           }
         />
       ) : (

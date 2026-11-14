@@ -105,7 +105,7 @@ export default function NavDrawer() {
           (city) => city.status === "published",
         );
         if (published.length === 1) {
-          navigate(`/${country.slug}/${published[0].slug}`);
+          navigate(`/${country.slug}`);
           return;
         }
         setCities(published);

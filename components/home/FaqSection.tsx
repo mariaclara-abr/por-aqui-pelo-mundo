@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const faqs = [
@@ -42,78 +43,60 @@ export default function FaqSection() {
   return (
     <section
       aria-labelledby="faq-title"
-      className="relative border-t border-oliva/15 bg-branco px-4 py-14 sm:px-6 sm:py-20 lg:px-10 lg:py-24"
+      className="bg-[#FAF6EF] px-4 py-14 sm:px-6 sm:py-20 lg:px-10 lg:py-24"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[url('/author-paper.svg')] bg-[length:256px_256px] opacity-20"
-      />
-      <div className="relative mx-auto grid max-w-[1440px] gap-9 sm:gap-12 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:grid-rows-[min-content_1fr] lg:gap-x-12 lg:gap-y-8 xl:gap-x-16">
-        <div className="lg:col-start-1 lg:row-start-1">
-          <p className="flex items-center gap-3 text-left text-[11px] font-semibold uppercase tracking-[0.24em] text-oliva">
-            <span aria-hidden="true" className="h-px w-8 shrink-0 bg-terracota" />
-            Antes de fazer as malas
-          </p>
+      <div className="mx-auto grid max-w-[1200px] items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="min-w-0">
           <h2
             id="faq-title"
-            className="mt-4 font-serif text-4xl leading-tight tracking-tight text-tinta sm:text-5xl"
+            className="font-serif text-4xl leading-tight tracking-tight text-tinta sm:text-5xl"
           >
             Perguntas
             <br />
-            <span className="text-oliva">frequentes</span>
+            frequentes
           </h2>
-          <p className="mt-5 max-w-sm text-left text-sm leading-7 text-oliva sm:text-base">
-            Da curadoria ao seu roteiro, tire suas dúvidas e comece a planejar
-            a próxima viagem com mais confiança.
-          </p>
-        </div>
 
-        <div className="min-w-0 self-start rounded-xl border border-oliva/15 bg-areia/45 px-4 sm:px-7 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          {faqs.map((faq, index) => (
-            <details
-              key={faq.question}
-              className="group border-b border-oliva/15 last:border-b-0"
-            >
-              <summary className="flex min-h-20 cursor-pointer list-none items-start gap-3 rounded-lg py-5 text-tinta hover:text-oliva focus-visible:outline-oliva motion-safe:transition-colors sm:gap-5 sm:py-6 [&::-webkit-details-marker]:hidden">
-                <span
-                  aria-hidden="true"
-                  className="mt-1.5 shrink-0 font-sans text-[11px] font-medium tabular-nums text-oliva"
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="flex-1 font-serif text-lg leading-snug sm:text-xl">
-                  {faq.question}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-oliva/20 text-oliva group-open:border-oliva group-open:bg-oliva group-open:text-branco group-hover:border-oliva/50 motion-safe:transition-colors"
-                >
-                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="size-3.5">
+          <div className="mt-8 border-t border-oliva/30 sm:mt-10">
+            {faqs.map((faq, index) => (
+              <details key={faq.question} className="group border-b border-oliva/30">
+                <summary className="flex cursor-pointer list-none items-center gap-3 py-4 text-tinta hover:text-oliva focus-visible:outline-oliva motion-safe:transition-colors [&::-webkit-details-marker]:hidden">
+                  <span className="flex-1 font-sans text-sm leading-snug sm:text-[15px]">
+                    {index + 1}. {faq.question}
+                  </span>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    className="size-4 shrink-0 text-oliva"
+                  >
                     <path d="M3 8h10" />
                     <path d="M8 3v10" className="origin-center group-open:scale-y-0 motion-safe:transition-transform motion-safe:duration-200" />
                   </svg>
-                </span>
-              </summary>
-              <div className="pb-6 pl-7 sm:pl-9 sm:pr-12">
-                <p className="border-l-2 border-terracota/60 pl-4 text-left text-sm leading-7 text-tinta/80 sm:pl-5 sm:text-base">
+                </summary>
+                <p className="pb-5 pr-8 text-left text-[13px] leading-6 text-tinta/75 sm:text-sm">
                   {faq.answer}
                 </p>
-              </div>
-            </details>
-          ))}
+              </details>
+            ))}
+          </div>
+
+          <Link
+            href="/meu-roteiro/organizar-com-ia"
+            className="btn btn-oliva group mt-8"
+          >
+            <span>Montar meu roteiro personalizado</span>
+          </Link>
         </div>
 
-        <div className="self-start lg:col-start-1 lg:row-start-2">
-          <div className="max-w-sm border-t border-oliva/20 pt-6">
-            <p className="text-left font-serif text-xl text-tinta">Tudo pronto para o próximo destino?</p>
-            <Link
-              href="/meu-roteiro/organizar-com-ia"
-              className="btn btn-oliva group mt-4"
-            >
-              <span>Montar meu roteiro personalizado</span>
-            </Link>
-          </div>
-        </div>
+        <Image
+          src="/faq-atenas.jpg"
+          alt="Colunas do Partenon, na Acrópole de Atenas, contra o céu azul"
+          width={1200}
+          height={1600}
+          className="mx-auto aspect-[3/4] w-full max-w-md object-cover lg:max-w-none"
+        />
       </div>
     </section>
   );

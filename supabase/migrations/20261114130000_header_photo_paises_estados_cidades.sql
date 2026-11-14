@@ -1,0 +1,31 @@
+-- Segunda foto do cabeçalho (colagem ao lado da capa) para países e estados,
+-- e a escolha das fotos de cada destino publicado.
+alter table countries add column if not exists header_photo_url text;
+alter table states add column if not exists header_photo_url text;
+
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/c60a9fd5-9faf-439b-b375-ac58813354a0-templo-de-zeus-foto-tim-adams-wikimedia-commons-cc-by-3-0.jpg' where slug = 'atenas';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/bc0189af-596a-4a07-a8ba-687a094052af-266-20190714-183746.jpg' where slug = 'berlim';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/1e9916a8-aed2-421f-b5c2-a0f93b793114-bruxelas-grand-prefeitura.jpg' where slug = 'bruxelas';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/db85203f-c4f4-433f-b174-077e9a97c51a-image-20261002-140407.png' where slug = 'dubai';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/43b6bdfb-8d6c-4f8b-876a-19ac8147f8d3-cb010286-0bfe-42d6-bfa4-d7fd09cea88e.png' where slug = 'los-angeles';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/163e4cdb-21d5-4edd-848f-73fa3ddbe89f-077fc279-edfa-47d3-ae38-2ef2ba1ef016.png' where slug = 'las-vegas';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/a30e0fc7-5078-42f6-af42-6d3865e927b5-82b0bff7-29a3-4836-be6c-c5fdb6b99e99.jpg' where slug = 'florianopolis';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/4b6232a2-26ca-47ba-8253-5d9ef60bacb3-galleria-cupula.jpeg' where slug = 'milao';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/4269052a-6b3e-43c8-9ca3-3e345a02e974-port-saint-tropez-004.jpg' where slug = 'saint-tropez';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/01c815da-efd8-4b1e-a253-51fc835025e7-20191207-101811.jpg' where slug = 'rio-de-janeiro';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/f3882d69-5ad4-4c74-b369-6c6ba3664cd4-cannes-joana-d-arc.jpg' where slug = 'cannes';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/f4f7dbb9-967e-40e4-8bfd-038dc786345d-img-6393.jpg' where slug = 'nice';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/47f852e4-9df3-4023-af62-12f63035abbd-igreja-de-nossa-senhora-da-assuncao.jpg' where slug = 'eze';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/6871da30-338b-4043-b4e5-6d0428c1b32e-pucon-excursao-lanin.jpg' where slug = 'pucon';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/7ac19d16-4cf4-44ea-b355-90e0325c0275-20230701-182108.jpg' where slug = 'interlaken';
+update cities set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/2ce8c70b-8b05-4a36-8c33-212b9998c4d0-kastro%20suites%20III.jpg' where slug = 'santorini';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/9765e316-f476-4671-a1b5-225767659e90-partenon-templo-de-atenas.jpg' where slug = 'grecia';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/e085f00b-3a0b-487c-b0c9-a61811fba5b9-img-6668.jpg' where slug = 'alemanha';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/9e0d4a3d-0281-4a11-954b-6bbf6ee6df01-20190718-154746.jpg' where slug = 'belgica';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/f94b1a92-78b1-4b28-a072-5221aef6f466-the-ain-dubai.jpg' where slug = 'emirados-arabes';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/83959293-14b5-422e-a972-7dff71d5c366-6982a5df-4524-40c6-9d5c-4ed61785552f.png' where slug = 'estados-unidos';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/e65f58f4-3ac5-4343-99b6-fdc7771d9ecd-4eae5f90-f9a2-4fef-a4ee-f199bd83cb57.png' where slug = 'italia';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/8753bd1f-07af-46ad-806a-149a822b297c-senequier-cafe-2019.jpg' where slug = 'franca';
+update countries set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/0f03f220-4669-476c-846d-da66c0617aee-20191207-180851.jpg' where slug = 'brasil';
+update states set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/882e546a-a119-4794-bc8a-c0c28cbfaf9a-20191207-102059.jpg' where slug = 'rio-de-janeiro';
+update states set header_photo_url = 'https://xzsgbwrfsjfdutyfklto.supabase.co/storage/v1/object/public/media/attractions/33f813aa-bbea-4362-aacf-cfa96b7fff69-6cbd0805-8d8c-4861-96ac-22a6c9389283.jpg' where slug = 'santa-catarina';

@@ -26,6 +26,7 @@ import RelatedContent from "@/components/RelatedContent";
 import { buildCityFaq } from "@/lib/city-faq";
 import { getNearbyCities } from "@/lib/recommendations";
 import ExpandableText from "@/components/ExpandableText";
+import DestinationHeader from "@/components/DestinationHeader";
 import JsonLd, { breadcrumbLd, faqPageLd, qaPageLd } from "@/components/JsonLd";
 import CityQuestionsSection from "@/components/city/QuestionsSection";
 import StateQuestionsSection from "@/components/state/QuestionsSection";
@@ -203,18 +204,37 @@ export default async function CityOrStatePage(
               consegue ver esta página.
             </p>
           )}
-          <Link
-            href={`/${countrySlug}`}
-            className="text-sm text-oliva transition-colors hover:text-terracota"
-          >
-            {city.countries.name}
-          </Link>
-          <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
-            Atrações em {city.name}
-          </h1>
+          {coverImage ? (
+            <div className="mb-12 sm:mb-16">
+              <DestinationHeader
+                title={city.name}
+                parent={{ href: `/${countrySlug}`, label: city.countries.name }}
+                coverImage={coverImage}
+                coverStyle={imagePositionStyle(coverImagePosition)}
+                photo={city.header_photo_url}
+                description={city.description}
+              />
+            </div>
+          ) : (
+            <>
+              <Link
+                href={`/${countrySlug}`}
+                className="text-sm text-oliva transition-colors hover:text-terracota"
+              >
+                {city.countries.name}
+              </Link>
+              <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
+                Atrações em {city.name}
+              </h1>
 
-          {city.description && (
-            <ExpandableText text={city.description} className="mt-2 text-oliva" />
+              {city.description && (
+                <ExpandableText text={city.description} className="mt-2 text-oliva" />
+              )}
+            </>
+          )}
+
+          {coverImage && (
+            <h2 className="font-serif text-3xl text-tinta sm:text-4xl">Atrações:</h2>
           )}
 
           <Suspense fallback={null}>
@@ -358,22 +378,43 @@ export default async function CityOrStatePage(
         ]}
       />
       <div className="mx-auto max-w-[1440px]">
-        <Link
-          href={`/${countrySlug}`}
-          className="text-sm text-oliva transition-colors hover:text-terracota"
-        >
-          {state.countries.name}
-        </Link>
-        <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
-          Cidades em {state.name}
-        </h1>
-
-        {state.description ? (
-          <ExpandableText text={state.description} className="mt-2 text-oliva" />
+        {coverImage ? (
+          <>
+            <div className="mb-12 sm:mb-16">
+              <DestinationHeader
+                title={state.name}
+                parent={{ href: `/${countrySlug}`, label: state.countries.name }}
+                coverImage={coverImage}
+                coverStyle={imagePositionStyle(coverImagePosition)}
+                photo={state.header_photo_url}
+                description={
+                  state.description ??
+                  "Escolha uma cidade para ver as atrações com curadoria."
+                }
+              />
+            </div>
+            <h2 className="font-serif text-3xl text-tinta sm:text-4xl">Cidades:</h2>
+          </>
         ) : (
-          <p className="mt-2 text-oliva">
-            Escolha uma cidade para ver as atrações com curadoria.
-          </p>
+          <>
+            <Link
+              href={`/${countrySlug}`}
+              className="text-sm text-oliva transition-colors hover:text-terracota"
+            >
+              {state.countries.name}
+            </Link>
+            <h1 className="font-serif text-3xl text-tinta sm:text-4xl">
+              Cidades em {state.name}
+            </h1>
+
+            {state.description ? (
+              <ExpandableText text={state.description} className="mt-2 text-oliva" />
+            ) : (
+              <p className="mt-2 text-oliva">
+                Escolha uma cidade para ver as atrações com curadoria.
+              </p>
+            )}
+          </>
         )}
 
         {cities.length === 0 ? (
