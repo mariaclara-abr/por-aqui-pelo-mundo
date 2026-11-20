@@ -155,7 +155,7 @@ export default function SearchBox({
           type="button"
           onClick={() => setIsOpen(true)}
           aria-label="Buscar"
-          className="flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota group-data-hero/header:text-white group-data-hero/header:hover:bg-white/10 group-data-hero/header:hover:text-areia"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota hero:text-white hero:hover:bg-white/10 hero:hover:text-areia"
         >
           <svg
             viewBox="0 0 20 20"

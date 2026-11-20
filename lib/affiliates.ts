@@ -107,7 +107,7 @@ export const AFFILIATE_PROGRAMS: AffiliateProgram[] = [
     label: "Natura",
     checklistLabel: "Produtos Natura",
     checklistCtaLabel: "Comprar com desconto",
-    benefit: "10% de desconto com o cupom VIAJARDEZ",
+    benefit: "10% de desconto com o cupom EMBARQUE",
     isConfigured: true,
     // Link fixo da loja da consultora (Rejane), não depende do destino.
     buildUrl: () => "https://www.minhaloja.natura.com/consultoria/rejaneabrantes",

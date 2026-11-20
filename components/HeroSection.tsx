@@ -12,7 +12,7 @@ export default function HeroSection({ counts }: { counts: HeroCounts }) {
 
   return (
     // Sobe por baixo do cabeçalho (transparente na home) para a foto ocupar a tela inteira.
-    <section className="relative -mt-[var(--header-height,64px)] flex min-h-[100svh] flex-col items-center justify-center overflow-hidden">
+    <section data-hero-page className="relative -mt-[var(--header-height,64px)] flex min-h-[100svh] flex-col items-center justify-center overflow-hidden">
       <Image
         src="/hero-por-do-sol.jpeg"
         alt="Pôr do sol visto pela janela do avião, com nuvens douradas acima da asa"

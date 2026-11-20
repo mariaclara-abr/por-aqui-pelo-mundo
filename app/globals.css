@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
 
+/* Cabeçalho transparente sobre a hero da home (marcada com data-hero-page),
+   enquanto a página não rolou. Vale para o próprio cabeçalho e para o que há dentro dele. */
+@custom-variant hero {
+  body:has([data-hero-page]) &:is([data-site-header]:not([data-scrolled])),
+  body:has([data-hero-page]) [data-site-header]:not([data-scrolled]) & {
+    @slot;
+  }
+}
+
 :root {
   --background: #f0e6d2;
   --foreground: #2b2620;

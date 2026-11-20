@@ -91,7 +91,7 @@ export default function AuthStatus() {
     return (
       <Link
         href="/entrar"
-        className="btn btn-sm btn-terracota group-data-hero/header:border-white/70 group-data-hero/header:text-white group-data-hero/header:hover:border-terracota"
+        className="btn btn-sm btn-terracota hero:border-white/70 hero:text-white hero:hover:border-terracota"
       >
         Entrar
       </Link>

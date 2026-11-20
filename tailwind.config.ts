@@ -12,9 +12,8 @@ const config: Config = {
         oliva: "#4A5D43",
         areia: "#F0E6D2",
         // Fundos por nível de navegação, do mais escuro ao mais claro:
-        // Destinos em alta (home) > países > estados > cidades > atrações.
-        // Os dois primeiros levam texto claro; os demais, texto escuro.
-        "fundo-alta": "#5C3F2D",
+        // países > estados > cidades > atrações.
+        // O primeiro leva texto claro; os demais, texto escuro.
         "fundo-paises": "#7A5B44",
         "fundo-estados": "#DAC39E",
         "fundo-cidades": "#E5D4B6",

@@ -40,8 +40,12 @@ export default function AuthorBand({ about }: { about: About }) {
             <p className="mt-2.5 !text-left text-sm leading-snug">
               Desde 2017, planeja cada detalhe das viagens da própria família:
               passagens, hospedagem, transporte e roteiro dia a dia. Mãe de dois
-              filhos, monta roteiros equilibrados para todas as idades, testados
-              na prática antes de virarem recomendação aqui no site.
+              filhos, monta roteiros equilibrados para todas as idades
+              {/* no desktop este trecho vai para baixo do botão */}
+              <span className="lg:hidden">
+                , testados na prática antes de virarem recomendação aqui no site
+              </span>
+              .
             </p>
           </div>
 
@@ -80,8 +84,11 @@ export default function AuthorBand({ about }: { about: About }) {
             </div>
           </div>
 
-          <div className="mt-4 flex justify-center lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:mt-6 lg:justify-start lg:self-start">
-            <Link href="/sobre" className="btn btn-sm btn-terracota btn-cheio">
+          <div className="mt-4 flex flex-col items-center lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:mt-6 lg:items-start lg:self-start lg:pr-6">
+            <p className="hidden !text-left text-sm leading-snug lg:block">
+              Roteiros testados na prática antes de virarem recomendação aqui no site.
+            </p>
+            <Link href="/sobre" className="btn btn-sm btn-terracota btn-cheio lg:mt-12">
               Saiba mais sobre a autora
             </Link>
           </div>

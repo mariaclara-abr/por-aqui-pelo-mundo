@@ -12,7 +12,7 @@ export default function RoteiroIndicator() {
       href="/meu-roteiro"
       aria-label={`Meus roteiros, ${count} ${count === 1 ? "item" : "itens"}`}
       title="Meus roteiros"
-      className="group relative flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota group-data-hero/header:text-white group-data-hero/header:hover:bg-white/10 group-data-hero/header:hover:text-areia"
+      className="group relative flex h-9 w-9 items-center justify-center rounded-full text-tinta transition-colors hover:text-terracota hero:text-white hero:hover:bg-white/10 hero:hover:text-areia"
     >
       <SuitcaseIcon />
       {count > 0 && <CountBadge count={count} />}

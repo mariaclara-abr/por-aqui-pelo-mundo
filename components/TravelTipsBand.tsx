@@ -10,7 +10,7 @@ export default function TravelTipsBand({ tipCount }: { tipCount: number }) {
   if (tipCount === 0) return null;
 
   return (
-    <section className="bg-areia p-3 sm:p-4 lg:p-6">
+    <section className="bg-fundo-estados p-3 sm:p-4 lg:p-6">
       <div className="relative mx-auto flex aspect-[4/5] max-w-[1440px] items-center justify-center overflow-hidden sm:aspect-[16/9] lg:aspect-[13/5]">
         <Image
           src="/dicas-por-do-sol-serra.jpg"
@@ -38,7 +38,7 @@ export default function TravelTipsBand({ tipCount }: { tipCount: number }) {
           </p>
           <div className="mt-7">
             <Link href="/dicas-de-viagem" className="btn btn-claro">
-              Abrir o caderno de bordo
+              Ver dicas exclusivas
             </Link>
           </div>
         </motion.div>

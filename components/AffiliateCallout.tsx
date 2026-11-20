@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import CopyCoupon from "@/components/CopyCoupon";
 import {
   ACHADINHOS,
   AFFILIATE_PROGRAMS,
@@ -380,60 +381,83 @@ export function NaturaCard() {
     "Corpo e banho",
   ];
 
+  // Banner com cara de anúncio: bloco de cor chapada, recorte diagonal com o
+  // produto sobre raios de sol (como as embalagens da linha solar) e selo de
+  // desconto, inspirado em banners de e-commerce.
   return (
-    <section className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
-      <div className="mx-auto grid max-w-[1240px] overflow-hidden rounded-xl border border-oliva/20 bg-branco text-tinta lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="min-w-0 p-6 sm:p-8 xl:p-10">
-          <AffiliateEyebrow program={program} />
-          <div className="mt-6 grid items-center gap-5 sm:grid-cols-[minmax(0,1fr)_0.5fr]">
-            <div>
-              <h2 className="text-balance text-left font-serif text-3xl leading-tight tracking-tight sm:text-4xl">
-                Cuide de você <span className="text-terracota">em cada destino</span>
-              </h2>
-              <p className="mt-5 max-w-xl text-left text-base leading-7 text-oliva">
-                De proteção solar a perfumaria: monte sua nécessaire na loja da
-                minha consultoria Natura e leve seus cuidados favoritos na viagem.
-              </p>
-            </div>
-            <Image
-              src="/natura-protecao-solar.webp"
-              alt=""
-              width={640}
-              height={640}
-              sizes="(min-width: 640px) 200px, 160px"
-              className="mx-auto h-auto w-40 sm:w-full"
-            />
+    <section aria-labelledby="natura-dicas-title" className="px-4 pb-14 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
+      <div className="mx-auto grid max-w-[1240px] overflow-hidden rounded-xl bg-terracota text-branco md:grid-cols-[minmax(0,1fr)_300px] lg:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="relative flex h-44 items-center justify-center overflow-hidden bg-areia [clip-path:polygon(0_0,100%_0,100%_84%,0_100%)] md:order-last md:h-auto md:[clip-path:polygon(18%_0,100%_0,100%_100%,0_100%)]">
+          <svg
+            aria-hidden="true"
+            viewBox="-100 -100 200 200"
+            className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 text-terracota/30 md:left-[58%]"
+          >
+            {Array.from({ length: 48 }, (_, i) => (
+              <line
+                key={i}
+                x1="0"
+                y1="-22"
+                x2="0"
+                y2="-100"
+                stroke="currentColor"
+                strokeWidth="0.6"
+                transform={`rotate(${i * 7.5})`}
+              />
+            ))}
+          </svg>
+          <Image
+            src="/natura-protecao-solar.webp"
+            alt=""
+            width={640}
+            height={640}
+            sizes="(min-width: 1024px) 240px, (min-width: 768px) 190px, 160px"
+            className="relative h-auto w-40 -rotate-3 md:ml-[18%] md:w-[190px] lg:w-[240px]"
+          />
+          <p className="absolute right-4 top-4 flex h-16 w-16 rotate-[10deg] flex-col items-center justify-center rounded-full border-2 border-branco bg-terracota text-branco lg:right-6 lg:top-6 lg:h-20 lg:w-20">
+            <span className="font-serif text-2xl italic leading-none lg:text-3xl">10%</span>
+            <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.24em]">off</span>
+          </p>
+        </div>
+
+        <div className="min-w-0 px-5 pb-6 pt-3 sm:px-8 md:py-7 lg:py-8 lg:pl-10">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="bg-tinta px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.3em] text-branco outline outline-1 -outline-offset-[3px] outline-branco/80">
+              {program.label}
+            </span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-branco">
+              Publicidade · Parceiro
+            </span>
           </div>
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {categorias.map((c) => (
-              <li
-                key={c}
-                className="border-b border-oliva/25 pb-1 text-xs text-oliva [&:not(:last-child)]:mr-3"
-              >
+          <h2
+            id="natura-dicas-title"
+            className="mt-4 text-balance text-left font-serif text-3xl leading-[1.05] tracking-tight text-branco lg:text-4xl"
+          >
+            Sua nécessaire de viagem <span className="text-areia">com 10% off.</span>
+          </h2>
+          <ul className="mt-4 hidden w-fit flex-wrap gap-x-2 gap-y-1 rounded-lg border border-branco/50 px-3 py-1.5 text-xs text-branco sm:flex">
+            {categorias.map((c, i) => (
+              <li key={c} className="flex items-center gap-2">
+                {i > 0 && <span aria-hidden="true" className="h-1 w-1 rounded-full bg-branco/70" />}
                 {c}
               </li>
             ))}
           </ul>
-        </div>
-        <div className="flex min-w-0 flex-col justify-center border-t border-oliva/20 bg-areia/60 p-6 sm:p-8 lg:border-t-0 lg:border-l">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-oliva">
-            Cupom de desconto
+          <div className="mt-4 flex max-w-sm flex-col gap-3 lg:max-w-[620px] lg:flex-row">
+            <CopyCoupon code="EMBARQUE" className="lg:flex-1 lg:basis-0" />
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
+              className="btn btn-claro btn-cheio whitespace-nowrap px-4 lg:flex-1 lg:basis-0"
+            >
+              Comprar com desconto
+            </a>
+          </div>
+          <p className="mt-3 text-left text-[11px] leading-relaxed text-branco">
+            Link de afiliada da loja da minha consultoria Natura. Sem custo extra para você.
           </p>
-          <p className="mt-2 text-left font-serif text-5xl leading-none text-terracota sm:text-6xl">
-            10%
-          </p>
-          <p className="mt-2 text-left text-sm text-oliva">de desconto com o cupom</p>
-          <CouponCode code="VIAJARDEZ" />
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            onClick={() => trackClick(program, undefined, "dicas_de_viagem")}
-            className="btn btn-oliva btn-cheio mt-5"
-          >
-            Comprar na Natura
-          </a>
-          <p className="mt-4 text-left text-xs leading-relaxed text-oliva">Link de afiliada. Sem custo extra para você.</p>
         </div>
       </div>
     </section>
@@ -580,7 +604,7 @@ export function SunscreenCallout({
   async function handleCopyCoupon() {
     setCopyStatus("copying");
     try {
-      await navigator.clipboard.writeText("VIAJARDEZ");
+      await navigator.clipboard.writeText("EMBARQUE");
       setCopyStatus("copied");
     } catch {
       setCopyStatus("error");
@@ -628,13 +652,13 @@ export function SunscreenCallout({
           <p className="text-left text-xs text-oliva">Use o cupom</p>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="select-all text-sm font-semibold tracking-[0.14em] text-tinta">
-              VIAJARDEZ
+              EMBARQUE
             </span>
             <button
               type="button"
               onClick={handleCopyCoupon}
               disabled={copyStatus === "copying"}
-              aria-label="Copiar cupom VIAJARDEZ"
+              aria-label="Copiar cupom EMBARQUE"
               className="flex min-h-11 min-w-20 items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-semibold text-oliva transition-colors hover:bg-oliva/10 active:bg-oliva/15 disabled:opacity-60 motion-reduce:transition-none"
             >
               <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0">
@@ -652,7 +676,7 @@ export function SunscreenCallout({
           </div>
           <p role="status" className={copyStatus === "error" ? "mt-1 text-left text-xs leading-relaxed text-tinta" : "sr-only"}>
             {copyStatus === "copied"
-              ? "Cupom VIAJARDEZ copiado."
+              ? "Cupom EMBARQUE copiado."
               : copyStatus === "error"
                 ? "Não foi possível copiar. Selecione o código para copiá-lo manualmente."
                 : ""}

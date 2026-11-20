@@ -3,7 +3,15 @@
 import { useState } from "react";
 
 // Cupom em destaque com botão de copiar (parcerias da Natura).
-export default function CopyCoupon({ code, conditions }: { code: string; conditions?: string | null }) {
+export default function CopyCoupon({
+  code,
+  conditions,
+  className = "mt-4",
+}: {
+  code: string;
+  conditions?: string | null;
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -17,7 +25,7 @@ export default function CopyCoupon({ code, conditions }: { code: string; conditi
   }
 
   return (
-    <div className="mt-4 rounded-lg border border-dashed border-terracota/50 bg-branco px-4 py-3">
+    <div className={`rounded-lg border border-dashed border-terracota/50 bg-branco px-4 py-3 ${className}`}>
       <p className="text-xs text-oliva">Use o cupom</p>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="select-all text-lg font-semibold tracking-[0.14em] text-tinta">{code}</span>
